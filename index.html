@@ -281,6 +281,47 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .ability-stat.cost { color: var(--mana); }
 .ability-stat.bonus { color: var(--gold); font-size: 11px; }
 
+/* Habilidad bloqueada por maná */
+.ability-card.ability-locked { opacity: 0.5; }
+
+/* Fila de lanzar hechizo */
+.ability-cast-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 8px; gap: 12px;
+}
+.ability-roll-text {
+  font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold-light);
+  font-weight: 600;
+}
+.cast-btn {
+  padding: 6px 18px; font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600;
+  background: linear-gradient(180deg, var(--mana) 0%, var(--mana-dark) 100%);
+  border: 1px solid #5a9aff; border-radius: 4px; color: #fff; cursor: pointer;
+  transition: var(--transition); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.cast-btn:hover:not(:disabled) {
+  box-shadow: 0 0 10px rgba(59,127,224,0.5); filter: brightness(1.15);
+}
+.cast-btn:active:not(:disabled) { transform: scale(0.95); }
+.cast-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Habilidades bloqueadas (por aprender) */
+.locked-abilities-section {
+  margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gold-dark);
+}
+.locked-abilities-title {
+  font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+}
+.locked-ability {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+  margin-bottom: 4px; background: rgba(0,0,0,0.3); border: 1px solid rgba(138,115,68,0.2);
+  border-radius: 4px; opacity: 0.6;
+}
+.locked-ability-icon { font-size: 16px; filter: grayscale(1); }
+.locked-ability-name { flex: 1; font-size: 13px; color: var(--text-dim); }
+.locked-ability-req { font-size: 12px; color: var(--danger); font-family: 'Cinzel', serif; }
+
 /* ================================================================ BOTONES */
 .action-bar {
   display: flex; gap: 12px; margin-top: 20px; justify-content: center; flex-wrap: wrap;
@@ -480,29 +521,25 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
             {{ statName }}
           </div>
           <div class="stat-value-group">
-            <div class="stat-base">
-              <button class="stat-btn" @click="adjustStat(statKey, -1)">−</button>
-              <span class="stat-base-val">{{ character.baseStats[statKey] }}</span>
-              <button class="stat-btn" @click="adjustStat(statKey, 1)">+</button>
-            </div>
+            <span class="stat-base-val">{{ character.baseStats[statKey] }}</span>
             <span class="stat-final">{{ finalStats[statKey] }}</span>
             <span class="stat-bonus" v-if="statBonus(statKey) > 0">+{{ statBonus(statKey) }}</span>
           </div>
         </div>
 
         <div class="resource-bar">
-          <div class="resource-label"><span>Vida</span><span>{{ maxHP }}</span></div>
+          <div class="resource-label"><span>Vida</span><span>{{ hpActual }} / {{ maxHP }}</span></div>
           <div class="resource-track">
-            <div class="resource-fill hp" style="width:100%"></div>
-            <div class="resource-text">{{ maxHP }} / {{ maxHP }}</div>
+            <div class="resource-fill hp" :style="{ width: hpPercent + '%' }"></div>
+            <div class="resource-text">{{ hpActual }} / {{ maxHP }}</div>
           </div>
         </div>
 
         <div class="resource-bar">
-          <div class="resource-label"><span>Maná</span><span>{{ maxMana }}</span></div>
+          <div class="resource-label"><span>Maná</span><span>{{ manaActual }} / {{ maxMana }}</span></div>
           <div class="resource-track">
-            <div class="resource-fill mana" style="width:100%"></div>
-            <div class="resource-text">{{ maxMana }} / {{ maxMana }}</div>
+            <div class="resource-fill mana" :style="{ width: manaPercent + '%' }"></div>
+            <div class="resource-text">{{ manaActual }} / {{ maxMana }}</div>
           </div>
         </div>
 
@@ -519,18 +556,41 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
     <div class="wow-panel">
       <div class="panel-title">Habilidades</div>
       <div class="panel-body">
-        <div class="ability-card" v-for="ability in computedAbilities" :key="ability.id">
+        <div class="ability-card" v-for="ability in unlockedAbilities" :key="ability.id"
+             :class="{ 'ability-locked': manaActual < ability.computedCost }">
           <div class="ability-icon">{{ ability.icon }}</div>
           <div class="ability-info">
             <div class="ability-name">{{ ability.name }}</div>
-            <div class="ability-school">{{ ability.school }} · {{ ability.castTime }}</div>
+            <div class="ability-school">{{ ability.school }} · {{ ability.castTime }} · Nv. {{ ability.requiredLevel }}</div>
             <div class="ability-desc">{{ ability.description }}</div>
             <div class="ability-stats">
-              <span class="ability-stat dmg" v-if="ability.type === 'damage'">{{ ability.computedDamage }} daño</span>
-              <span class="ability-stat heal" v-if="ability.type === 'heal'">{{ ability.computedDamage }} curación</span>
-              <span class="ability-stat cost" v-if="ability.computedCost > 0">{{ ability.computedCost }} maná</span>
+              <span class="ability-stat dmg" v-if="ability.type === 'damage'">
+                Daño {{ ability.dice.count }}d{{ ability.dice.sides }}+{{ ability.dice.bonus }}
+              </span>
+              <span class="ability-stat heal" v-if="ability.type === 'heal'">
+                Curación {{ ability.dice.count }}d{{ ability.dice.sides }}+{{ ability.dice.bonus }}
+              </span>
+              <span class="ability-stat cost">{{ ability.computedCost }} maná</span>
               <span class="ability-stat bonus" v-if="ability.talentNote">{{ ability.talentNote }}</span>
             </div>
+            <div class="ability-cast-row">
+              <span class="ability-roll-text" v-if="ability.lastRoll !== undefined">
+                {{ ability.type === 'heal' ? 'Curación' : 'Daño' }}: {{ ability.lastRoll }}
+              </span>
+              <button class="cast-btn" @click="castSpell(ability)"
+                      :disabled="manaActual < ability.computedCost">
+                Lanzar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="lockedAbilities.length > 0" class="locked-abilities-section">
+          <div class="locked-abilities-title">Por aprender (en el trainer)</div>
+          <div class="locked-ability" v-for="ability in lockedAbilities" :key="ability.id">
+            <span class="locked-ability-icon">{{ ability.icon }}</span>
+            <span class="locked-ability-name">{{ ability.name }}</span>
+            <span class="locked-ability-req">Nivel {{ ability.requiredLevel }}</span>
           </div>
         </div>
       </div>
@@ -650,6 +710,8 @@ function createDefaultCharacter(classKey) {
     baseStats: { ...cls.baseStats },
     talents: {},
     currentXP: 0,
+    currentHP: null,
+    currentMana: null,
   };
 }
 
@@ -749,7 +811,7 @@ createApp({
 
     // Puntos totales: 1 por nivel desde nivel 10
     totalTalentPoints() {
-      return Math.max(0, this.character.level - 9);
+      return Math.max(0, this.character.level - 4);
     },
 
     // Disponibles = totales − gastados
@@ -867,6 +929,35 @@ createApp({
       return window.MAX_LEVEL || 60;
     },
 
+    hpActual() {
+      if (this.character.currentHP === null || this.character.currentHP === undefined) return this.maxHP;
+      return Math.max(0, Math.min(this.maxHP, this.character.currentHP));
+    },
+
+    manaActual() {
+      if (this.character.currentMana === null || this.character.currentMana === undefined) return this.maxMana;
+      return Math.max(0, Math.min(this.maxMana, this.character.currentMana));
+    },
+
+    hpPercent() {
+      return Math.floor((this.hpActual / this.maxHP) * 100);
+    },
+
+    manaPercent() {
+      if (this.maxMana === 0) return 0;
+      return Math.floor((this.manaActual / this.maxMana) * 100);
+    },
+
+    // Habilidades que ya tienes el nivel para aprender
+    unlockedAbilities() {
+      return this.computedAbilities.filter(a => this.character.level >= a.requiredLevel);
+    },
+
+    // Habilidades bloqueadas (no tienes nivel)
+    lockedAbilities() {
+      return this.classConfig.abilities.filter(a => this.character.level < a.requiredLevel);
+    },
+
     // Porcentaje de progreso hacia el siguiente nivel
     xpProgressPercent() {
       if (this.xpForNextLevel === 0) return 100;
@@ -974,6 +1065,29 @@ createApp({
       if (val >= 1 && val <= 99) this.character.baseStats[key] = val;
     },
 
+    rollDice(count, sides) {
+      let total = 0;
+      for (let i = 0; i < count; i++) total += Math.floor(Math.random() * sides) + 1;
+      return total;
+    },
+
+    castSpell(ability) {
+      const cost = ability.computedCost;
+      if (this.manaActual < cost) {
+        this.showToast('Maná insuficiente');
+        return;
+      }
+      this.character.currentMana = this.manaActual - cost;
+      const roll = this.rollDice(ability.dice.count, ability.dice.sides) + ability.dice.bonus;
+      ability.lastRoll = roll;
+      if (ability.type === 'heal') {
+        this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
+        this.showToast(ability.name + ': ' + roll + ' curación');
+      } else {
+        this.showToast(ability.name + ': ' + roll + ' daño');
+      }
+    },
+
     statBonus(key) {
       return this.finalStats[key] - this.character.baseStats[key];
     },
@@ -1026,6 +1140,8 @@ createApp({
       this.character.baseStats = { ...cls.baseStats };
       this.character.talents = {};
       this.character.currentXP = 0;
+      this.character.currentHP = null;
+      this.character.currentMana = null;
       this.showToast(`Clase cambiada a ${cls.name}`);
     },
 
@@ -1048,6 +1164,8 @@ createApp({
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
           if (!this.character.talents) this.character.talents = {};
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
+          if (this.character.currentHP === undefined) this.character.currentHP = null;
+          if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (!this.character.baseStats) this.character.baseStats = { ...(CLASS_DATA[this.character.classKey] || FALLBACK_CLASS).baseStats };
           this.showToast('Ficha cargada');
         } else {
@@ -1108,6 +1226,8 @@ createApp({
           this.character = parsed;
           if (!this.character.talents) this.character.talents = {};
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
+          if (this.character.currentHP === undefined) this.character.currentHP = null;
+          if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
           if (this.character.level > (window.MAX_LEVEL || 60)) this.character.level = window.MAX_LEVEL || 60;

@@ -86,37 +86,40 @@ window.CLASS_REGISTRY.mage = {
      HABILIDADES — 3 escuelas (Fuego, Escarcha, Arcano)
      --------------------------------------------------------------- */
   abilities: [
-    /* --- Fuego --- */
     { id: 'fireball', name: 'Bola de Fuego', icon: '🔥',
-      school: 'Fuego', type: 'damage',
+      school: 'Fuego', type: 'damage', requiredLevel: 1,
       baseDamage: 60, spellPowerRatio: 1.0, baseCost: 40, castTime: '3.5 seg',
-      description: 'Lanza una bola de fuego que explota al impactar.' },
+      description: 'Lanza una bola de fuego que explota al impactar.',
+      dice: { count: 5, sides: 6, bonus: 15 } },
 
     { id: 'fire_blast', name: 'Explosión de Fuego', icon: '💥',
-      school: 'Fuego', type: 'damage',
+      school: 'Fuego', type: 'damage', requiredLevel: 4,
       baseDamage: 35, spellPowerRatio: 0.429, baseCost: 25, castTime: 'Instantáneo',
-      description: 'Una explosión instantánea de llamas al objetivo.' },
+      description: 'Una explosión instantánea de llamas al objetivo.',
+      dice: { count: 3, sides: 4, bonus: 8 } },
 
-    /* --- Escarcha --- */
     { id: 'frostbolt', name: 'Descarga de Escarcha', icon: '❄️',
-      school: 'Escarcha', type: 'damage',
+      school: 'Escarcha', type: 'damage', requiredLevel: 6,
       baseDamage: 45, spellPowerRatio: 0.814, baseCost: 35, castTime: '3 seg',
-      description: 'Lanza un proyectil de hielo que ralentiza al objetivo.' },
+      description: 'Lanza un proyectil de hielo que ralentiza al objetivo.',
+      dice: { count: 4, sides: 6, bonus: 10 } },
 
     { id: 'ice_barrier', name: 'Barrera de Hielo', icon: '🧊',
-      school: 'Escarcha', type: 'heal',
+      school: 'Escarcha', type: 'heal', requiredLevel: 10,
       baseDamage: 80, spellPowerRatio: 0.5, baseCost: 30, castTime: 'Instantáneo',
-      description: 'Crea un escudo de hielo que absorbe daño.' },
+      description: 'Crea un escudo de hielo que absorbe daño.',
+      dice: { count: 4, sides: 8, bonus: 20 } },
 
-    /* --- Arcano --- */
     { id: 'arcane_missiles', name: 'Misiles Arcanos', icon: '✨',
-      school: 'Arcano', type: 'damage',
+      school: 'Arcano', type: 'damage', requiredLevel: 14,
       baseDamage: 50, spellPowerRatio: 0.571, baseCost: 45, castTime: 'Canalizado',
-      description: 'Dispara misiles de energía arcana al objetivo cada segundo.' },
+      description: 'Dispara misiles de energía arcana al objetivo cada segundo.',
+      dice: { count: 3, sides: 8, bonus: 12 } },
 
     { id: 'arcane_explosion', name: 'Explosión Arcana', icon: '🔮',
-      school: 'Arcano', type: 'damage',
+      school: 'Arcano', type: 'damage', requiredLevel: 18,
       baseDamage: 30, spellPowerRatio: 0.357, baseCost: 30, castTime: 'Instantáneo',
-      description: 'Estalla energía arcana alrededor del mago dañando a todos los enemigos cercanos.' },
+      description: 'Estalla energía arcana alrededor del mago dañando a todos los enemigos cercanos.',
+      dice: { count: 2, sides: 10, bonus: 8 } },
   ],
 };
