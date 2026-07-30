@@ -47,55 +47,39 @@ window.CLASS_REGISTRY.mage = {
   statGrowth: { fuerza: 0.05, agilidad: 0.05, intelecto: 1.8, aguante: 0.5, espiritu: 0.9 },
 
   /* ---------------------------------------------------------------
-     RAMAS DEL ÁRBOL DE TALENTOS
+     TALENTOS — una sola rama
      --------------------------------------------------------------- */
-  talentBranches: [
-    { name: 'Fuego', icon: '🔥', color: '#c0392b' },
-    { name: 'Escarcha', icon: '❄️', color: '#3498db' },
-    { name: 'Arcano', icon: '✨', color: '#9b59b6' },
-  ],
 
-  /* ---------------------------------------------------------------
-     ÁRBOL DE TALENTOS — 3 ramas (Fuego, Escarcha, Arcano)
-     --------------------------------------------------------------- */
   talents: [
     { id: 'ignite', name: 'Ignitar', icon: '🔥', iconImg: 'img/talents/mage/ignite.jpg',
-      branch: 0,
       description: 'Tus hechizos de Fuego dejan un daño adicional del 4% por punto durante 3 seg.',
       maxRank: 5, tier: 1, requires: null },
 
     { id: 'frostbite', name: 'Congelación', icon: '❄️', iconImg: 'img/talents/mage/frostbite.jpg',
-      branch: 1,
       description: 'Tus hechizos de Escarcha tienen un 2% de probabilidad por punto de congelar al objetivo.',
       maxRank: 3, tier: 1, requires: null },
 
     { id: 'arcane_concentration', name: 'Concentración Arcana', icon: '✨', iconImg: 'img/talents/mage/arcane_concentration.jpg',
-      branch: 2,
       description: 'Tus hechizos Arcanos tienen un 2% de probabilidad por punto de ser gratuitos.',
       maxRank: 5, tier: 1, requires: null },
 
     { id: 'improved_fireball', name: 'Bola de Fuego Mejorada', icon: '🔥', iconImg: 'img/talents/mage/improved_fireball.jpg',
-      branch: 0,
       description: 'Aumenta el daño de Bola de Fuego un 5% por punto.',
       maxRank: 3, tier: 2, requires: { id: 'ignite', points: 2 } },
 
     { id: 'ice_shards', name: 'Fragmentos de Hielo', icon: '🧊', iconImg: 'img/talents/mage/ice_shards.jpg',
-      branch: 1,
       description: 'Aumenta el daño crítico de tus hechizos de Escarcha un 10% por punto.',
       maxRank: 3, tier: 2, requires: { id: 'frostbite', points: 1 } },
 
     { id: 'arcane_mind', name: 'Mente Arcana', icon: '🔮', iconImg: 'img/talents/mage/arcane_mind.jpg',
-      branch: 2,
       description: 'Aumenta tu Intelecto total un 3% por punto.',
       maxRank: 5, tier: 2, requires: { id: 'arcane_concentration', points: 2 } },
 
     { id: 'fire_power', name: 'Poder de Fuego', icon: '🌋', iconImg: 'img/talents/mage/fire_power.jpg',
-      branch: 0,
       description: 'Aumenta el daño de todos tus hechizos de Fuego un 5% por punto.',
       maxRank: 3, tier: 3, requires: { id: 'improved_fireball', points: 2 } },
 
     { id: 'spell_power', name: 'Poder Arcano', icon: '💫', iconImg: 'img/talents/mage/spell_power.jpg',
-      branch: 2,
       description: 'Aumenta tu Poder de Hechizo total un 10% por punto.',
       maxRank: 2, tier: 3, requires: { id: 'arcane_mind', points: 3 } },
   ],
