@@ -280,6 +280,24 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .tooltip-hint { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(138,115,68,0.2); }
 
 /* ================================================================ EQUIPO */
+.equip-panel { transition: all 0.3s; }
+.equip-panel.equip-collapsed {
+  padding: 0; background: transparent; border: none; box-shadow: none;
+}
+.equip-panel.equip-collapsed .panel-title {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; margin: 0; background: var(--bg-panel);
+  border: 1px solid var(--gold-dark); border-radius: var(--radius);
+  font-size: 13px; cursor: pointer; transition: var(--transition);
+}
+.equip-panel.equip-collapsed .panel-title:hover {
+  border-color: var(--gold); box-shadow: 0 0 8px var(--gold-glow);
+}
+.equip-collapsed-icon { font-size: 18px; }
+.equip-collapsed-label {
+  font-family: 'Cinzel', serif; font-weight: 600; color: var(--gold);
+  letter-spacing: 0.03em; text-transform: uppercase; font-size: 12px;
+}
 .equip-slot {
   margin-bottom: 10px; padding: 10px;
   background: var(--bg-input); border: 1px solid rgba(138,115,68,0.2);
@@ -730,11 +748,13 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
     </div>
 
     <!-- =================== PANEL DE EQUIPO =================== -->
-    <div class="wow-panel">
-      <div class="panel-title">Equipo
-        <button class="equip-toggle-btn" @click="showEquipment = !showEquipment">
-          {{ showEquipment ? 'Ocultar' : 'Mostrar' }}
-        </button>
+    <div class="wow-panel equip-panel" :class="{ 'equip-collapsed': !showEquipment }">
+      <div class="panel-title" v-if="!showEquipment" @click="showEquipment = true" style="cursor: pointer;">
+        <span class="equip-collapsed-icon">🛡️</span>
+        <span class="equip-collapsed-label">Equipo</span>
+      </div>
+      <div class="panel-title" v-if="showEquipment">Equipo
+        <button class="equip-toggle-btn" @click="showEquipment = false">Ocultar</button>
       </div>
       <div class="panel-body" v-show="showEquipment">
         <div class="equip-slot" v-for="slot in equipmentSlots" :key="slot.key">
