@@ -279,6 +279,44 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .tooltip-req { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
 .tooltip-hint { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(138,115,68,0.2); }
 
+/* ================================================================ EQUIPO */
+.equip-slot {
+  margin-bottom: 10px; padding: 10px;
+  background: var(--bg-input); border: 1px solid rgba(138,115,68,0.2);
+  border-radius: var(--radius); transition: var(--transition);
+}
+.equip-slot:hover { border-color: var(--gold-dark); }
+.equip-slot-header {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+}
+.equip-slot-icon { font-size: 18px; }
+.equip-slot-label {
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600;
+  color: var(--gold); letter-spacing: 0.03em;
+}
+.equip-name-input {
+  width: 100%; padding: 6px 8px; margin-bottom: 8px;
+  background: var(--bg-dark); border: 1px solid var(--gold-dark); border-radius: 3px;
+  color: var(--text); font-size: 13px; outline: none; transition: var(--transition);
+}
+.equip-name-input:focus { border-color: var(--gold); }
+.equip-name-input::placeholder { color: var(--text-muted); font-style: italic; }
+.equip-bonus-grid {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.equip-bonus-cell {
+  display: flex; align-items: center; gap: 3px;
+  background: var(--bg-dark); border: 1px solid rgba(138,115,68,0.15);
+  border-radius: 3px; padding: 2px 6px;
+}
+.equip-bonus-label { font-size: 14px; }
+.equip-bonus-input {
+  width: 32px; padding: 2px; text-align: center; font-size: 12px; font-weight: 600;
+  background: transparent; border: none; border-bottom: 1px solid var(--gold-dark);
+  color: var(--success); outline: none;
+}
+.equip-bonus-input:focus { border-bottom-color: var(--gold); }
+
 /* ================================================================ HABILIDADES */
 .ability-card {
   display: flex; gap: 12px; padding: 12px; margin-bottom: 8px;
@@ -684,6 +722,28 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
       </div>
     </div>
 
+    <!-- =================== PANEL DE EQUIPO =================== -->
+    <div class="wow-panel">
+      <div class="panel-title">Equipo</div>
+      <div class="panel-body">
+        <div class="equip-slot" v-for="slot in equipmentSlots" :key="slot.key">
+          <div class="equip-slot-header">
+            <span class="equip-slot-icon">{{ slot.icon }}</span>
+            <span class="equip-slot-label">{{ slot.label }}</span>
+          </div>
+          <input type="text" v-model="character.equipment[slot.key].name"
+                 class="equip-name-input" :placeholder="'Sin equipar'">
+          <div class="equip-bonus-grid">
+            <div class="equip-bonus-cell" v-for="(statKey, statName) in statKeys" :key="statKey">
+              <span class="equip-bonus-label">{{ statIcons[statKey] }}</span>
+              <input type="number" v-model.number="character.equipment[slot.key].bonus[statKey]"
+                     class="equip-bonus-input" min="0" placeholder="0">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- =================== PANEL DE HABILIDADES =================== -->
     <div class="wow-panel">
       <div class="panel-title">Habilidades
@@ -874,6 +934,14 @@ function createDefaultCharacter(classKey) {
     currentMana: null,
     trainedRanks: {},
     currentCooldowns: {},
+    equipment: {
+      head:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      chest:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      hands:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      legs:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      feet:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      weapon:  { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+    },
   };
 }
 
@@ -891,6 +959,14 @@ createApp({
       classData: CLASS_DATA,
       statKeys: STAT_KEYS,
       statIcons: STAT_ICONS,
+      equipmentSlots: [
+        { key: 'head',   label: 'Cabeza', icon: '🪖' },
+        { key: 'chest',  label: 'Pecho',  icon: '🛡️' },
+        { key: 'hands',  label: 'Manos',  icon: '🧤' },
+        { key: 'legs',   label: 'Piernas', icon: '👖' },
+        { key: 'feet',   label: 'Pies',   icon: '🥾' },
+        { key: 'weapon', label: 'Arma',   icon: '⚔️' },
+      ],
       showExportModal: false,
       showTalentModal: false,
       toastMessage: '',
@@ -1402,7 +1478,21 @@ createApp({
     },
 
     gearStatBonus(key) {
-      return 0;
+      if (!this.character.equipment) return 0;
+      let total = 0;
+      for (const slot in this.character.equipment) {
+        const item = this.character.equipment[slot];
+        if (item && item.bonus && item.bonus[key]) total += item.bonus[key];
+      }
+      return total;
+    },
+
+    defaultEquipment() {
+      const emptyBonus = { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 };
+      const slots = ['head', 'chest', 'hands', 'legs', 'feet', 'weapon'];
+      const eq = {};
+      for (const s of slots) eq[s] = { name: '', bonus: { ...emptyBonus } };
+      return eq;
     },
 
     changeLevel(delta) {
@@ -1457,6 +1547,7 @@ createApp({
       this.character.currentMana = null;
       this.character.trainedRanks = {};
       this.character.currentCooldowns = {};
+      this.character.equipment = this.defaultEquipment();
       this.turnNumber = 1;
       this.showToast(`Clase cambiada a ${cls.name}`);
     },
@@ -1549,6 +1640,7 @@ createApp({
           if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
+          if (!this.character.equipment) this.character.equipment = this.defaultEquipment();
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
           if (this.character.level > (window.MAX_LEVEL || 60)) this.character.level = window.MAX_LEVEL || 60;
