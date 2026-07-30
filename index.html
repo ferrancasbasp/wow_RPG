@@ -130,7 +130,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 }
 
 /* ================================================================ GRID */
-.main-grid { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 20px; }
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
 
 /* ================================================================ PANELES */
@@ -316,6 +316,18 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 }
 .modal-actions { display: flex; gap: 12px; margin-top: 16px; justify-content: flex-end; }
 
+/* ================================================================ MODAL TALENTOS */
+.talent-modal {
+  max-width: 560px; max-height: 80vh; display: flex; flex-direction: column;
+}
+.talent-modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.talent-modal-body {
+  overflow-y: auto; flex: 1; padding-right: 8px;
+}
+
 /* ================================================================ TOAST */
 .toast {
   position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -400,7 +412,6 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .wow-panel { animation: fade-in 0.4s ease backwards; }
 .wow-panel:nth-child(1) { animation-delay: 0.05s; }
 .wow-panel:nth-child(2) { animation-delay: 0.1s; }
-.wow-panel:nth-child(3) { animation-delay: 0.15s; }
 @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
@@ -424,7 +435,8 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
         </select>
       </div>
     </div>
-    <div class="tp-badge" :class="{ 'has-points': availableTalentPoints > 0 }">
+    <div class="tp-badge" :class="{ 'has-points': availableTalentPoints > 0 }"
+         @click="showTalentModal = true" style="cursor: pointer;" title="Abrir árbol de talentos">
       <span>Puntos de Talento</span>
       <span class="tp-value">{{ availableTalentPoints }}</span>
     </div>
@@ -501,35 +513,6 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
       </div>
     </div>
 
-    <!-- =================== ÁRBOL DE TALENTOS =================== -->
-    <div class="wow-panel">
-      <div class="panel-title">Árbol de Talentos</div>
-      <div class="panel-body">
-        <div class="talent-tier" v-for="tier in tiers" :key="tier">
-          <div class="talent-tier-label">Nivel {{ tier }}</div>
-          <div v-for="talent in talentsByTier(tier)" :key="talent.id"
-               class="talent-card" :class="talentCardClass(talent)">
-            <div class="talent-icon">{{ talent.icon }}</div>
-            <div class="talent-info">
-              <div class="talent-name-row">
-                <span class="talent-name">{{ talent.name }}</span>
-                <span class="talent-rank" :class="{ maxed: isMaxed(talent) }">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
-              </div>
-              <div class="talent-desc">{{ talent.description }}</div>
-              <div class="talent-effect" v-if="getTalentEffectText(talent)">{{ getTalentEffectText(talent) }}</div>
-              <div class="talent-req" :class="{ met: prereqMet(talent) }" v-if="talent.requires">
-                Requiere: {{ getTalentName(talent.requires.id) }} ({{ talent.requires.points }} pts)
-              </div>
-              <div class="talent-controls">
-                <button class="talent-btn sub" @click="removeTalentPoint(talent.id)" :disabled="talentRank(talent.id) === 0">−</button>
-                <button class="talent-btn add" @click="addTalentPoint(talent.id)" :disabled="!canAddTalent(talent)">+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- =================== PANEL DE HABILIDADES =================== -->
     <div class="wow-panel">
       <div class="panel-title">Habilidades</div>
@@ -570,6 +553,46 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
         <button class="action-btn" @click="copyJson">Copiar</button>
         <button class="action-btn" @click="downloadJson">Descargar</button>
         <button class="action-btn" @click="showExportModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================== MODAL TALENTOS ============================== -->
+  <div class="modal-overlay" v-if="showTalentModal" @click="showTalentModal = false">
+    <div class="modal-content talent-modal" @click.stop>
+      <div class="talent-modal-header">
+        <div class="modal-title">Árbol de Talentos — {{ classConfig.name }}</div>
+        <div class="tp-badge" :class="{ 'has-points': availableTalentPoints > 0 }">
+          <span>Disponibles</span>
+          <span class="tp-value">{{ availableTalentPoints }}</span>
+        </div>
+      </div>
+      <div class="talent-modal-body">
+        <div class="talent-tier" v-for="tier in tiers" :key="tier">
+          <div class="talent-tier-label">Nivel {{ tier }}</div>
+          <div v-for="talent in talentsByTier(tier)" :key="talent.id"
+               class="talent-card" :class="talentCardClass(talent)">
+            <div class="talent-icon">{{ talent.icon }}</div>
+            <div class="talent-info">
+              <div class="talent-name-row">
+                <span class="talent-name">{{ talent.name }}</span>
+                <span class="talent-rank" :class="{ maxed: isMaxed(talent) }">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
+              </div>
+              <div class="talent-desc">{{ talent.description }}</div>
+              <div class="talent-effect" v-if="getTalentEffectText(talent)">{{ getTalentEffectText(talent) }}</div>
+              <div class="talent-req" :class="{ met: prereqMet(talent) }" v-if="talent.requires">
+                Requiere: {{ getTalentName(talent.requires.id) }} ({{ talent.requires.points }} pts)
+              </div>
+              <div class="talent-controls">
+                <button class="talent-btn sub" @click="removeTalentPoint(talent.id)" :disabled="talentRank(talent.id) === 0">−</button>
+                <button class="talent-btn add" @click="addTalentPoint(talent.id)" :disabled="!canAddTalent(talent)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="action-btn" @click="showTalentModal = false">Cerrar</button>
       </div>
     </div>
   </div>
@@ -626,6 +649,7 @@ createApp({
       statKeys: STAT_KEYS,
       statIcons: STAT_ICONS,
       showExportModal: false,
+      showTalentModal: false,
       toastMessage: '',
       xpInputAmount: null,
       levelUpFlash: false,
