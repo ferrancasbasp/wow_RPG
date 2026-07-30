@@ -322,6 +322,39 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .locked-ability-name { flex: 1; font-size: 13px; color: var(--text-dim); }
 .locked-ability-req { font-size: 12px; color: var(--danger); font-family: 'Cinzel', serif; }
 
+/* Boton de entrenar */
+.train-btn {
+  float: right; padding: 4px 14px; font-family: 'Cinzel', serif; font-size: 12px;
+  font-weight: 600; background: linear-gradient(180deg, var(--bg-input) 0%, var(--bg-dark) 100%);
+  border: 1px solid var(--gold-dark); border-radius: 4px; color: var(--text-dim);
+  cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.train-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold-light); }
+.train-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.train-btn.train-available {
+  color: var(--success); border-color: rgba(95,168,95,0.5);
+  animation: pulse-train 2s infinite;
+}
+@keyframes pulse-train {
+  0%, 100% { box-shadow: 0 0 0 rgba(95,168,95,0); }
+  50% { box-shadow: 0 0 8px rgba(95,168,95,0.4); }
+}
+
+/* Badge de rango en el icono */
+.ability-icon { position: relative; }
+.ability-rank-badge {
+  position: absolute; bottom: -4px; right: -4px;
+  background: var(--gold); color: var(--bg-dark);
+  font-size: 10px; font-weight: 700; font-family: 'Cinzel', serif;
+  padding: 1px 5px; border-radius: 8px; line-height: 1;
+}
+
+/* Habilidad entrenable */
+.locked-ability.trainable {
+  opacity: 0.8; border-color: rgba(95,168,95,0.3);
+}
+.locked-ability.trainable .locked-ability-req { color: var(--success); }
+
 /* ================================================================ BOTONES */
 .action-bar {
   display: flex; gap: 12px; margin-top: 20px; justify-content: center; flex-wrap: wrap;
@@ -554,23 +587,30 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
     <!-- =================== PANEL DE HABILIDADES =================== -->
     <div class="wow-panel">
-      <div class="panel-title">Habilidades</div>
+      <div class="panel-title">Habilidades
+        <button class="train-btn" @click="trainAll" :disabled="!canTrain"
+                :class="{ 'train-available': canTrain }">
+          Entrenar{{ canTrain ? ' (' + trainableAbilities.length + ')' : '' }}
+        </button>
+      </div>
       <div class="panel-body">
         <div class="ability-card" v-for="ability in unlockedAbilities" :key="ability.id"
-             :class="{ 'ability-locked': manaActual < ability.computedCost }">
-          <div class="ability-icon">{{ ability.icon }}</div>
+             :class="{ 'ability-locked': manaActual < ability.scaledCost }">
+          <div class="ability-icon">{{ ability.icon }}
+            <span class="ability-rank-badge" v-if="ability.currentRank > 1">R{{ ability.currentRank }}</span>
+          </div>
           <div class="ability-info">
             <div class="ability-name">{{ ability.name }}</div>
             <div class="ability-school">{{ ability.school }} · {{ ability.castTime }} · Nv. {{ ability.requiredLevel }}</div>
             <div class="ability-desc">{{ ability.description }}</div>
             <div class="ability-stats">
               <span class="ability-stat dmg" v-if="ability.type === 'damage'">
-                Daño {{ ability.dice.count }}d{{ ability.dice.sides }}+{{ ability.dice.bonus }}
+                Daño {{ ability.scaledDice.count }}d{{ ability.scaledDice.sides }}+{{ ability.scaledDice.bonus }}
               </span>
               <span class="ability-stat heal" v-if="ability.type === 'heal'">
-                Curación {{ ability.dice.count }}d{{ ability.dice.sides }}+{{ ability.dice.bonus }}
+                Curación {{ ability.scaledDice.count }}d{{ ability.scaledDice.sides }}+{{ ability.scaledDice.bonus }}
               </span>
-              <span class="ability-stat cost">{{ ability.computedCost }} maná</span>
+              <span class="ability-stat cost">{{ ability.scaledCost }} maná</span>
               <span class="ability-stat bonus" v-if="ability.talentNote">{{ ability.talentNote }}</span>
             </div>
             <div class="ability-cast-row">
@@ -578,16 +618,25 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
                 {{ ability.type === 'heal' ? 'Curación' : 'Daño' }}: {{ ability.lastRoll }}
               </span>
               <button class="cast-btn" @click="castSpell(ability)"
-                      :disabled="manaActual < ability.computedCost">
+                      :disabled="manaActual < ability.scaledCost">
                 Lanzar
               </button>
             </div>
           </div>
         </div>
 
+        <div v-if="trainableAbilities.length > 0" class="locked-abilities-section">
+          <div class="locked-abilities-title">Disponibles para entrenar</div>
+          <div class="locked-ability trainable" v-for="ability in trainableAbilities" :key="'tr-'+ability.id">
+            <span class="locked-ability-icon">{{ ability.icon }}</span>
+            <span class="locked-ability-name">{{ ability.name }}</span>
+            <span class="locked-ability-req">Rango {{ trainedRank(ability.id) + 1 }} → {{ maxAvailableRank(ability) }}</span>
+          </div>
+        </div>
+
         <div v-if="lockedAbilities.length > 0" class="locked-abilities-section">
-          <div class="locked-abilities-title">Por aprender (en el trainer)</div>
-          <div class="locked-ability" v-for="ability in lockedAbilities" :key="ability.id">
+          <div class="locked-abilities-title">Bloqueadas (nivel insuficiente)</div>
+          <div class="locked-ability" v-for="ability in lockedAbilities" :key="'lk-'+ability.id">
             <span class="locked-ability-icon">{{ ability.icon }}</span>
             <span class="locked-ability-name">{{ ability.name }}</span>
             <span class="locked-ability-req">Nivel {{ ability.requiredLevel }}</span>
@@ -712,6 +761,7 @@ function createDefaultCharacter(classKey) {
     currentXP: 0,
     currentHP: null,
     currentMana: null,
+    trainedRanks: {},
   };
 }
 
@@ -948,14 +998,56 @@ createApp({
       return Math.floor((this.manaActual / this.maxMana) * 100);
     },
 
-    // Habilidades que ya tienes el nivel para aprender
+    // Rango maximo disponible para una habilidad segun el nivel
+    maxAvailableRank(ability) {
+      const rankLevels = [ability.requiredLevel, ability.requiredLevel + 8, ability.requiredLevel + 16, ability.requiredLevel + 24];
+      let rank = 0;
+      for (let i = 0; i < rankLevels.length; i++) {
+        if (this.character.level >= rankLevels[i]) rank = i + 1;
+      }
+      return rank;
+    },
+
+    // Rango entrenado actual (0 = no entrenado)
+    trainedRank(abilityId) {
+      if (!this.character.trainedRanks) return 0;
+      return this.character.trainedRanks[abilityId] || 0;
+    },
+
+    // Habilidades entrenadas (con dados escalados por rango)
     unlockedAbilities() {
-      return this.computedAbilities.filter(a => this.character.level >= a.requiredLevel);
+      return this.computedAbilities.filter(a => this.trainedRank(a.id) > 0).map(a => {
+        const rank = this.trainedRank(a.id);
+        return {
+          ...a,
+          currentRank: rank,
+          scaledDice: {
+            count: a.dice.count + (rank - 1),
+            sides: a.dice.sides,
+            bonus: a.dice.bonus + (rank - 1) * Math.round(a.dice.bonus * 0.25),
+          },
+          scaledCost: Math.round(a.computedCost * (1 + (rank - 1) * 0.15)),
+        };
+      });
+    },
+
+    // Habilidades que se pueden entrenar (tienes nivel pero no las has entrenado o hay rango nuevo)
+    trainableAbilities() {
+      return this.classConfig.abilities.filter(a => {
+        const maxRank = this.maxAvailableRank(a);
+        const trained = this.trainedRank(a.id);
+        return maxRank > 0 && trained < maxRank;
+      });
     },
 
     // Habilidades bloqueadas (no tienes nivel)
     lockedAbilities() {
-      return this.classConfig.abilities.filter(a => this.character.level < a.requiredLevel);
+      return this.classConfig.abilities.filter(a => this.maxAvailableRank(a) === 0);
+    },
+
+    // Hay algo que entrenar?
+    canTrain() {
+      return this.trainableAbilities.length > 0;
     },
 
     // Porcentaje de progreso hacia el siguiente nivel
@@ -1072,19 +1164,38 @@ createApp({
     },
 
     castSpell(ability) {
-      const cost = ability.computedCost;
+      const cost = ability.scaledCost || ability.computedCost;
       if (this.manaActual < cost) {
         this.showToast('Maná insuficiente');
         return;
       }
       this.character.currentMana = this.manaActual - cost;
-      const roll = this.rollDice(ability.dice.count, ability.dice.sides) + ability.dice.bonus;
+      const dice = ability.scaledDice || ability.dice;
+      const roll = this.rollDice(dice.count, dice.sides) + dice.bonus;
       ability.lastRoll = roll;
       if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
-        this.showToast(ability.name + ': ' + roll + ' curación');
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación');
       } else {
-        this.showToast(ability.name + ': ' + roll + ' daño');
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño');
+      }
+    },
+
+    trainAll() {
+      if (!this.character.trainedRanks) this.character.trainedRanks = {};
+      let count = 0;
+      for (const ability of this.classConfig.abilities) {
+        const maxRank = this.maxAvailableRank(ability);
+        const trained = this.trainedRank(ability.id);
+        if (maxRank > trained) {
+          this.character.trainedRanks[ability.id] = maxRank;
+          count++;
+        }
+      }
+      if (count > 0) {
+        this.showToast('Entrenado: ' + count + ' habilidad' + (count > 1 ? 'es' : '') + ' actualizada' + (count > 1 ? 's' : ''));
+      } else {
+        this.showToast('Nada que entrenar');
       }
     },
 
@@ -1142,6 +1253,7 @@ createApp({
       this.character.currentXP = 0;
       this.character.currentHP = null;
       this.character.currentMana = null;
+      this.character.trainedRanks = {};
       this.showToast(`Clase cambiada a ${cls.name}`);
     },
 
@@ -1166,6 +1278,7 @@ createApp({
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
           if (this.character.currentHP === undefined) this.character.currentHP = null;
           if (this.character.currentMana === undefined) this.character.currentMana = null;
+          if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.baseStats) this.character.baseStats = { ...(CLASS_DATA[this.character.classKey] || FALLBACK_CLASS).baseStats };
           this.showToast('Ficha cargada');
         } else {
@@ -1228,6 +1341,7 @@ createApp({
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
           if (this.character.currentHP === undefined) this.character.currentHP = null;
           if (this.character.currentMana === undefined) this.character.currentMana = null;
+          if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
           if (this.character.level > (window.MAX_LEVEL || 60)) this.character.level = window.MAX_LEVEL || 60;
