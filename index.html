@@ -207,41 +207,47 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
 /* ================================================================ TALENTOS — Estilo WoW Classic */
 .wow-talent-tree {
-  display: flex; gap: 16px; justify-content: center; padding: 8px 4px;
+  display: flex; flex-direction: column; gap: 0; padding: 8px 4px; align-items: center;
 }
-.wow-branch {
-  display: flex; flex-direction: column; align-items: center; gap: 0;
+.wow-tree-header-row {
+  display: flex; gap: 48px; margin-bottom: 16px; justify-content: center;
+}
+.wow-tree-tier-row {
+  display: flex; gap: 48px; justify-content: center; min-height: 48px;
+}
+.wow-tree-cell {
+  width: 48px; height: 48px; position: relative; display: flex; align-items: center; justify-content: center;
+}
+.wow-node-empty { width: 48px; height: 48px; }
+.wow-node-connector-up {
+  position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+  width: 2px; height: 28px; background: rgba(138,115,68,0.2);
+  transition: background 0.3s;
+}
+.wow-node-connector-up.connector-active {
+  background: var(--gold); box-shadow: 0 0 4px var(--gold-glow);
+}
+.wow-tree-tier-row:not(:last-child) .wow-tree-cell::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  width: 2px; height: 28px; background: rgba(138,115,68,0.15);
 }
 .wow-branch-header {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: 10px 16px 12px; margin-bottom: 12px;
-  border-bottom: 2px solid var(--branch-color, var(--gold-dark));
-  border-radius: 0; position: relative;
+  padding: 8px 12px 10px; border-bottom: 2px solid var(--branch-color, var(--gold-dark));
+  width: 80px;
 }
-.wow-branch-icon { font-size: 28px; filter: drop-shadow(0 0 6px var(--branch-color)); }
+.wow-branch-icon { font-size: 26px; filter: drop-shadow(0 0 6px var(--branch-color)); }
 .wow-branch-name {
-  font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600;
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600;
   color: var(--branch-color, var(--gold)); letter-spacing: 0.05em; text-transform: uppercase;
 }
 .wow-branch-spent {
   font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-dim); margin-top: 2px;
 }
-.wow-branch-nodes {
-  display: flex; flex-direction: column; align-items: center; gap: 0;
-}
 .wow-node {
   position: relative; width: 48px; height: 48px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
-.wow-node-connector {
-  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-  width: 2px; height: 28px; background: rgba(138,115,68,0.2);
-  transition: background 0.3s;
-}
-.wow-node-connector.connector-active {
-  background: var(--gold); box-shadow: 0 0 4px var(--gold-glow);
-}
-.wow-node:last-child .wow-node-connector { display: none; }
 .wow-node-icon {
   width: 44px; height: 44px; border: 2px solid #555; border-radius: 4px;
   overflow: hidden; position: relative; transition: all 0.2s;
@@ -809,39 +815,52 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
       </div>
       <div class="talent-modal-body">
         <div class="wow-talent-tree">
-          <div class="wow-branch" v-for="branch in talentBranchesData" :key="branch.index">
-            <div class="wow-branch-header" :style="{ '--branch-color': branch.color }">
+          <div class="wow-tree-header-row">
+            <div class="wow-branch-header" v-for="branch in talentBranchesData" :key="branch.index"
+                 :style="{ '--branch-color': branch.color }">
               <span class="wow-branch-icon">{{ branch.icon }}</span>
               <span class="wow-branch-name">{{ branch.name }}</span>
               <span class="wow-branch-spent">{{ branchSpent(branch.index) }}</span>
             </div>
-            <div class="wow-branch-nodes">
-              <div class="wow-node" v-for="(talent, ti) in branch.talents" :key="talent.id"
-                   :class="talentNodeClass(talent)"
-                   @click="addTalentPoint(talent.id)"
-                   @contextmenu.prevent="removeTalentPoint(talent.id)">
-                <div class="wow-node-connector" v-if="ti < branch.talents.length - 1"
-                     :class="{ 'connector-active': talentRank(talent.id) > 0 }"></div>
+          </div>
+          <div class="wow-tree-tier-row" v-for="tier in tiers" :key="tier">
+            <div class="wow-tree-cell" v-for="branch in talentBranchesData" :key="branch.index">
+              <div class="wow-node-connector-up" v-if="tier > 1"
+                   :class="{ 'connector-active': hasActiveAbove(branch.index, tier) }"></div>
+              <div v-if="talentAtBranchTier(branch.index, tier)"
+                   class="wow-node" :class="talentNodeClass(talentAtBranchTier(branch.index, tier))"
+                   @click="addTalentPoint(talentAtBranchTier(branch.index, tier).id)"
+                   @contextmenu.prevent="removeTalentPoint(talentAtBranchTier(branch.index, tier).id)">
                 <div class="wow-node-icon">
-                  <img v-if="talent.iconImg" :src="talent.iconImg" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'">
-                  <span v-if="talent.iconImg" style="display:none; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 28px;">{{ talent.icon }}</span>
-                  <span v-if="!talent.iconImg" class="wow-node-emoji">{{ talent.icon }}</span>
-                  <span class="wow-node-rank">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
+                  <img v-if="talentAtBranchTier(branch.index, tier).iconImg"
+                       :src="talentAtBranchTier(branch.index, tier).iconImg"
+                       @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'">
+                  <span v-if="talentAtBranchTier(branch.index, tier).iconImg"
+                        style="display:none; align-items:center; justify-content:center; width:100%; height:100%; font-size:28px;">
+                    {{ talentAtBranchTier(branch.index, tier).icon }}
+                  </span>
+                  <span v-if="!talentAtBranchTier(branch.index, tier).iconImg" class="wow-node-emoji">
+                    {{ talentAtBranchTier(branch.index, tier).icon }}
+                  </span>
+                  <span class="wow-node-rank">
+                    {{ talentRank(talentAtBranchTier(branch.index, tier).id) }}/{{ talentAtBranchTier(branch.index, tier).maxRank }}
+                  </span>
                 </div>
                 <div class="wow-node-tooltip">
-                  <div class="tooltip-name">{{ talent.name }}</div>
-                  <div class="tooltip-rank">Rango {{ talentRank(talent.id) }} de {{ talent.maxRank }}</div>
-                  <div class="tooltip-desc">{{ talent.description }}</div>
-                  <div class="tooltip-effect" v-if="getTalentEffectText(talent)">{{ getTalentEffectText(talent) }}</div>
-                  <div class="tooltip-req" v-if="talent.requires">
-                    Requiere: {{ getTalentName(talent.requires.id) }} ({{ talent.requires.points }} pts)
-                    <span :style="{ color: prereqMet(talent) ? 'var(--success)' : 'var(--danger)' }">
-                      {{ prereqMet(talent) ? '✓' : '✗' }}
+                  <div class="tooltip-name">{{ talentAtBranchTier(branch.index, tier).name }}</div>
+                  <div class="tooltip-rank">Rango {{ talentRank(talentAtBranchTier(branch.index, tier).id) }} de {{ talentAtBranchTier(branch.index, tier).maxRank }}</div>
+                  <div class="tooltip-desc">{{ talentAtBranchTier(branch.index, tier).description }}</div>
+                  <div class="tooltip-effect" v-if="getTalentEffectText(talentAtBranchTier(branch.index, tier))">{{ getTalentEffectText(talentAtBranchTier(branch.index, tier)) }}</div>
+                  <div class="tooltip-req" v-if="talentAtBranchTier(branch.index, tier).requires">
+                    Requiere: {{ getTalentName(talentAtBranchTier(branch.index, tier).requires.id) }} ({{ talentAtBranchTier(branch.index, tier).requires.points }} pts)
+                    <span :style="{ color: prereqMet(talentAtBranchTier(branch.index, tier)) ? 'var(--success)' : 'var(--danger)' }">
+                      {{ prereqMet(talentAtBranchTier(branch.index, tier)) ? '✓' : '✗' }}
                     </span>
                   </div>
                   <div class="tooltip-hint">Click: añadir · Click derecho: quitar</div>
                 </div>
               </div>
+              <div v-else class="wow-node-empty"></div>
             </div>
           </div>
         </div>
@@ -1284,6 +1303,15 @@ createApp({
       if (rank > 0) return 'wow-node-active';
       if (this.canAddTalent(talent)) return 'wow-node-available';
       return 'wow-node-grey';
+    },
+
+    talentAtBranchTier(branchIdx, tier) {
+      return this.classConfig.talents.find(t => (t.branch || 0) === branchIdx && t.tier === tier) || null;
+    },
+
+    hasActiveAbove(branchIdx, tier) {
+      const above = this.talentAtBranchTier(branchIdx, tier - 1);
+      return above && this.talentRank(above.id) > 0;
     },
 
     getTalentName(id) {
