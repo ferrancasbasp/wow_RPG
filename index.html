@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
 <!-- Vue 3 vía CDN (sin build step, funciona abriendo el .html directamente) -->
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
 <!-- Archivos de clases: cada uno registra su clase en window.CLASS_REGISTRY.
      Para añadir una nueva clase, crea un archivo aquí y añade su <script> tag. -->
@@ -418,7 +418,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 </style>
 </head>
 <body>
-<div id="app" v-cloak :style="{ '--class-color': classConfig.color, '--class-glow': classConfig.color + '4D' }">
+<div id="app" v-cloak style="display:none" :style="{ display: 'block', '--class-color': classConfig.color, '--class-glow': classConfig.color + '4D' }">
 
   <!-- ============================== HEADER ============================== -->
   <div class="app-header">
@@ -604,6 +604,15 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
 <script>
 const { createApp } = Vue;
+
+window.addEventListener('error', function(e) {
+  console.error('Vue app error:', e.message);
+  var app = document.getElementById('app');
+  if (app && app.style.display === 'none') {
+    app.style.display = 'block';
+    app.innerHTML = '<div style=\"color:#c45151;padding:40px;text-align:center;font-family:serif;\">Error al cargar la ficha: ' + e.message + '</div>';
+  }
+});
 
 /* ================================================================
    REGISTRO DE CLASES
@@ -1100,20 +1109,29 @@ createApp({
   },
 
   mounted() {
-    const saved = localStorage.getItem('ttrpg_wow_character');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('ttrpg_wow_character');
+      if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && CLASS_DATA[parsed.classKey]) {
+        if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
           this.character = parsed;
           if (!this.character.talents) this.character.talents = {};
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
+          if (!this.character.level || this.character.level < 1) this.character.level = 1;
+          if (this.character.level > (window.MAX_LEVEL || 60)) this.character.level = window.MAX_LEVEL || 60;
         }
-      } catch (e) {}
+      }
+    } catch (e) {
+      console.error('Error loading saved character:', e);
     }
   },
 }).mount('#app');
 </script>
+<noscript>
+  <div style="color:#c9b27e;background:#111;padding:40px;font-family:serif;text-align:center;">
+    JavaScript es necesario para usar la ficha de personaje.
+  </div>
+</noscript>
 </body>
 </html>
