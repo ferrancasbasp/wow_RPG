@@ -353,6 +353,14 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   font-size: 10px; font-weight: 700; font-family: 'Cinzel', serif;
   padding: 1px 5px; border-radius: 8px; line-height: 1;
 }
+.ability-cd-badge {
+  position: absolute; top: -4px; left: -4px;
+  background: #c0392b; color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 2px 6px; border-radius: 50%; line-height: 1;
+}
+.ability-icon.on-cooldown { filter: grayscale(0.7) brightness(0.5); }
+.ability-card.ability-cd { opacity: 0.6; }
 
 /* Habilidad entrenable */
 .locked-ability.trainable {
@@ -377,6 +385,14 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .action-btn:active { transform: scale(0.97); }
 .action-btn.danger { color: var(--danger); border-color: rgba(196,81,81,0.4); }
 .action-btn.danger:hover { border-color: var(--danger); box-shadow: 0 0 10px rgba(196,81,81,0.3); }
+.end-turn-btn {
+  background: linear-gradient(180deg, #2d4a1e 0%, #1a2d10 100%);
+  border-color: #4a7c2e; color: #7cc44a;
+}
+.end-turn-btn:hover {
+  background: linear-gradient(180deg, #3a5e26 0%, #234015 100%);
+  border-color: #6ba83a; color: #a0e060; box-shadow: 0 0 12px rgba(108,168,58,0.4);
+}
 
 /* ================================================================ MODAL */
 .modal-overlay {
@@ -605,16 +621,17 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
       </div>
       <div class="panel-body">
         <div class="ability-card" v-for="ability in unlockedAbilities" :key="ability.id"
-             :class="{ 'ability-locked': manaActual < ability.scaledCost }">
-          <div class="ability-icon">
+             :class="{ 'ability-locked': manaActual < ability.scaledCost, 'ability-cd': getCooldown(ability.id) > 0 }">
+          <div class="ability-icon" :class="{ 'on-cooldown': getCooldown(ability.id) > 0 }">
             <img v-if="ability.iconImg" :src="ability.iconImg" class="ability-icon-img" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='inline'">
             <span v-if="ability.iconImg" style="display:none">{{ ability.icon }}</span>
             <span v-if="!ability.iconImg">{{ ability.icon }}</span>
             <span class="ability-rank-badge" v-if="ability.currentRank > 1">R{{ ability.currentRank }}</span>
+            <span class="ability-cd-badge" v-if="getCooldown(ability.id) > 0">{{ getCooldown(ability.id) }}</span>
           </div>
           <div class="ability-info">
             <div class="ability-name">{{ ability.name }}</div>
-            <div class="ability-school">{{ ability.school }} · {{ ability.castTime }} · Nv. {{ ability.requiredLevel }}</div>
+            <div class="ability-school">{{ ability.school }} · {{ ability.castType === 'instant' ? 'Instantáneo' : 'Casteo' }} · Nv. {{ ability.requiredLevel }}</div>
             <div class="ability-desc">{{ ability.description }}</div>
             <div class="ability-stats">
               <span class="ability-stat dmg" v-if="ability.type === 'damage'">
@@ -631,8 +648,8 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
                 {{ ability.type === 'heal' ? 'Curación' : 'Daño' }}: {{ ability.lastRoll }}
               </span>
               <button class="cast-btn" @click="castSpell(ability)"
-                      :disabled="manaActual < ability.scaledCost">
-                Lanzar
+                      :disabled="manaActual < ability.scaledCost || getCooldown(ability.id) > 0">
+                {{ getCooldown(ability.id) > 0 ? 'CD' : 'Lanzar' }}
               </button>
             </div>
           </div>
@@ -662,6 +679,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
   <!-- ============================== ACCIONES ============================== -->
   <div class="action-bar">
+    <button class="action-btn end-turn-btn" @click="endTurn">Fin de Turno ({{ turnNumber }})</button>
     <button class="action-btn" @click="saveToLocalStorage">Guardar</button>
     <button class="action-btn" @click="loadFromLocalStorage">Cargar</button>
     <button class="action-btn" @click="openExport">Exportar JSON</button>
@@ -780,6 +798,7 @@ function createDefaultCharacter(classKey) {
     currentHP: null,
     currentMana: null,
     trainedRanks: {},
+    currentCooldowns: {},
   };
 }
 
@@ -802,6 +821,7 @@ createApp({
       toastMessage: '',
       xpInputAmount: null,
       levelUpFlash: false,
+      turnNumber: 1,
     };
   },
 
@@ -1188,16 +1208,43 @@ createApp({
         this.showToast('Maná insuficiente');
         return;
       }
+      if (this.getCooldown(ability.id) > 0) {
+        this.showToast(ability.name + ' está en cooldown (' + this.getCooldown(ability.id) + ' turno' + (this.getCooldown(ability.id) > 1 ? 's' : '') + ')');
+        return;
+      }
       this.character.currentMana = this.manaActual - cost;
       const dice = ability.scaledDice || ability.dice;
       const roll = this.rollDice(dice.count, dice.sides) + dice.bonus;
       ability.lastRoll = roll;
+      if (ability.cooldown > 0) {
+        if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
+        this.character.currentCooldowns[ability.id] = ability.cooldown;
+      }
       if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación');
       } else {
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño');
       }
+    },
+
+    getCooldown(abilityId) {
+      if (!this.character.currentCooldowns) return 0;
+      return this.character.currentCooldowns[abilityId] || 0;
+    },
+
+    endTurn() {
+      if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
+      for (const id in this.character.currentCooldowns) {
+        if (this.character.currentCooldowns[id] > 0) {
+          this.character.currentCooldowns[id]--;
+          if (this.character.currentCooldowns[id] <= 0) delete this.character.currentCooldowns[id];
+        }
+      }
+      const regen = Math.round(this.manaRegen * 0.5);
+      this.character.currentMana = Math.min(this.maxMana, this.manaActual + regen);
+      this.turnNumber++;
+      this.showToast('Fin de turno ' + (this.turnNumber - 1) + ' · +' + regen + ' maná regenerado');
     },
 
     trainAll() {
@@ -1281,6 +1328,8 @@ createApp({
       this.character.currentHP = null;
       this.character.currentMana = null;
       this.character.trainedRanks = {};
+      this.character.currentCooldowns = {};
+      this.turnNumber = 1;
       this.showToast(`Clase cambiada a ${cls.name}`);
     },
 
@@ -1288,7 +1337,7 @@ createApp({
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v2', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1297,7 +1346,7 @@ createApp({
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character');
+        const data = localStorage.getItem('ttrpg_wow_character_v2');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
@@ -1306,6 +1355,7 @@ createApp({
           if (this.character.currentHP === undefined) this.character.currentHP = null;
           if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
+          if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.baseStats) this.character.baseStats = { ...(CLASS_DATA[this.character.classKey] || FALLBACK_CLASS).baseStats };
           this.showToast('Ficha cargada');
         } else {
@@ -1344,6 +1394,7 @@ createApp({
     resetCharacter() {
       if (confirm('¿Reiniciar la ficha? Se perderán los cambios sin guardar.')) {
         this.character = createDefaultCharacter(this.character.classKey);
+        this.turnNumber = 1;
         this.showToast('Ficha reiniciada');
       }
     },
@@ -1359,7 +1410,7 @@ createApp({
 
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character');
+      const saved = localStorage.getItem('ttrpg_wow_character_v2');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
@@ -1369,6 +1420,7 @@ createApp({
           if (this.character.currentHP === undefined) this.character.currentHP = null;
           if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
+          if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
           if (this.character.level > (window.MAX_LEVEL || 60)) this.character.level = window.MAX_LEVEL || 60;
