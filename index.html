@@ -172,6 +172,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .stat-base-val { width: 28px; text-align: center; font-size: 16px; color: var(--text); }
 .stat-final { font-size: 18px; font-weight: 600; color: var(--gold-light); }
 .stat-bonus { font-size: 12px; color: var(--success); }
+.stat-level-bonus { font-size: 13px; color: var(--text-dim); }
 
 /* ================================================================ BARRAS */
 .resource-bar { margin-top: 12px; }
@@ -563,6 +564,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
           </div>
           <div class="stat-value-group">
             <span class="stat-base-val">{{ character.baseStats[statKey] }}</span>
+            <span class="stat-level-bonus" v-if="levelStatBonus(statKey) > 0">+{{ levelStatBonus(statKey) }}</span>
             <span class="stat-final">{{ finalStats[statKey] }}</span>
             <span class="stat-bonus" v-if="statBonus(statKey) > 0">+{{ statBonus(statKey) }}</span>
           </div>
@@ -757,6 +759,7 @@ const FALLBACK_CLASS = {
   },
   baseStats: { fuerza: 15, agilidad: 10, intelecto: 25, aguante: 20, espiritu: 18 },
   startingLevel: 1,
+  statGrowth: { fuerza: 0.5, agilidad: 0.5, intelecto: 0.5, aguante: 0.5, espiritu: 0.5 },
   talents: [],
   abilities: [],
 };
@@ -808,21 +811,32 @@ createApp({
       return CLASS_DATA[this.character.classKey] || CLASS_DATA.shaman || FALLBACK_CLASS;
     },
 
-    // Atributos finales = base + bonificación por nivel (0.5 por nivel)
+    // Atributos finales = base + crecimiento por nivel (statGrowth de la clase)
     // + talentos que modifican atributos (ej: Mente Arcana del Mago)
     finalStats() {
-      const lvlBonus = Math.floor((this.character.level - 1) * 0.5);
+      const growth = this.classConfig.statGrowth || {};
+      const level = this.character.level;
       const result = {};
       for (const key of Object.values(STAT_KEYS)) {
-        result[key] = this.character.baseStats[key] + lvlBonus;
+        const perLevel = growth[key] || 0;
+        result[key] = this.character.baseStats[key] + Math.floor((level - 1) * perLevel);
       }
       // Mago: Mente Arcana (+3% Intelecto por punto)
       const arcaneMind = this.talentRank('arcane_mind');
       if (arcaneMind > 0) {
         result.intelecto = Math.round(result.intelecto * (1 + arcaneMind * 0.03));
       }
-      // Mago: Poder Arcano (+10% Poder de Hechizo) se aplica en spellPower()
       return result;
+    },
+
+    // Bonus por nivel (no verde) — diferencia entre finalStats y baseStats
+    levelStatBonus(key) {
+      return this.finalStats[key] - this.character.baseStats[key] - this.gearStatBonus(key);
+    },
+
+    // Bonus de equipo (verde) — de momento 0, para futuro bonus de objetos
+    gearStatBonus(key) {
+      return 0;
     },
 
     // Vida máxima — fórmula de clase + Aguante + nivel
@@ -1215,7 +1229,7 @@ createApp({
     },
 
     statBonus(key) {
-      return this.finalStats[key] - this.character.baseStats[key];
+      return this.gearStatBonus(key);
     },
 
     changeLevel(delta) {

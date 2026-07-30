@@ -39,9 +39,12 @@ window.CLASS_REGISTRY.mage = {
     manaRegen:   (s, lvl) => Math.round(s.espiritu * 0.8 + lvl * 0.3),
   },
 
-  /* Atributos base: el Mago prioriza Intelecto y Espíritu */
-  baseStats: { fuerza: 5, agilidad: 8, intelecto: 30, aguante: 15, espiritu: 25 },
-  startingLevel: 20,
+  /* Atributos base al crear un personaje de esta clase (nivel 1) */
+  baseStats: { fuerza: 3, agilidad: 3, intelecto: 20, aguante: 14, espiritu: 18 },
+  startingLevel: 1,
+
+  /* Crecimiento de stats por nivel (valores de WoW Classic) */
+  statGrowth: { fuerza: 0.05, agilidad: 0.05, intelecto: 1.8, aguante: 0.5, espiritu: 0.9 },
 
   /* ---------------------------------------------------------------
      ÁRBOL DE TALENTOS — 3 ramas (Fuego, Escarcha, Arcano)
