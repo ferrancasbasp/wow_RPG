@@ -12,8 +12,7 @@
      5. Talentos:        array de objetos con id, name, effects, requires
      6. Habilidades:     array de objetos con damage, cost, scaling
 
-   Recuerda añadir el <script> tag en index.html:
-     <script src="js/classes/mage.js"></script>
+   Recuerda anadir el tag de script de mage.js en index.html
 
    Y registrar los efectos de talentos en index.html:
      - computedAbilities() → cómo afecta al daño/coste
