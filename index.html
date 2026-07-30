@@ -205,59 +205,105 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .derived-label { color: var(--text-dim); }
 .derived-value { color: var(--gold-light); font-weight: 600; }
 
-/* ================================================================ TALENTOS */
-.talent-tier { margin-bottom: 16px; }
-.talent-tier:not(:last-child)::after {
-  content: ''; display: block; width: 2px; height: 16px;
-  background: var(--gold-dark); margin: 8px auto; opacity: 0.3;
+/* ================================================================ TALENTOS — Estilo WoW Classic */
+.wow-talent-tree {
+  display: flex; gap: 16px; justify-content: center; padding: 8px 4px;
 }
-.talent-tier-label {
-  font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
-  padding-bottom: 4px; border-bottom: 1px dashed rgba(138,115,68,0.2);
+.wow-branch {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.wow-branch-header {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 16px 12px; margin-bottom: 12px;
+  border-bottom: 2px solid var(--branch-color, var(--gold-dark));
+  border-radius: 0; position: relative;
+}
+.wow-branch-icon { font-size: 28px; filter: drop-shadow(0 0 6px var(--branch-color)); }
+.wow-branch-name {
+  font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600;
+  color: var(--branch-color, var(--gold)); letter-spacing: 0.05em; text-transform: uppercase;
+}
+.wow-branch-spent {
+  font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-dim); margin-top: 2px;
+}
+.wow-branch-nodes {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.wow-node {
+  position: relative; width: 48px; height: 48px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.wow-node-connector {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  width: 2px; height: 28px; background: rgba(138,115,68,0.2);
+  transition: background 0.3s;
+}
+.wow-node-connector.connector-active {
+  background: var(--gold); box-shadow: 0 0 4px var(--gold-glow);
+}
+.wow-node:last-child .wow-node-connector { display: none; }
+.wow-node-icon {
+  width: 44px; height: 44px; border: 2px solid #555; border-radius: 4px;
+  overflow: hidden; position: relative; transition: all 0.2s;
+  background: var(--bg-dark);
+}
+.wow-node-icon img { width: 100%; height: 100%; object-fit: cover; }
+.wow-node-emoji {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%; font-size: 24px;
+}
+.wow-node-rank {
+  position: absolute; bottom: -2px; right: -2px;
+  background: rgba(0,0,0,0.85); color: var(--gold-light);
+  font-size: 10px; font-weight: 700; font-family: 'Cinzel', serif;
+  padding: 1px 5px; border-radius: 3px; line-height: 1;
+  border: 1px solid var(--gold-dark);
+}
+.wow-node-active .wow-node-icon {
+  border-color: var(--gold); box-shadow: 0 0 8px var(--gold-glow);
+}
+.wow-node-active .wow-node-rank { color: var(--gold-light); border-color: var(--gold); }
+.wow-node-maxed .wow-node-icon {
+  border-color: var(--gold-light); box-shadow: 0 0 12px var(--gold-glow);
+}
+.wow-node-maxed .wow-node-rank { background: var(--gold); color: var(--bg-dark); border-color: var(--gold-light); }
+.wow-node-available .wow-node-icon {
+  border-color: #5a9e4a; box-shadow: 0 0 6px rgba(90,158,74,0.3);
+}
+.wow-node-available:hover .wow-node-icon {
+  border-color: #7cc44a; box-shadow: 0 0 12px rgba(124,196,74,0.5);
+  transform: scale(1.08);
+}
+.wow-node-locked .wow-node-icon {
+  border-color: #444; filter: grayscale(0.8) brightness(0.4);
+}
+.wow-node-locked { cursor: not-allowed; }
+.wow-node-grey .wow-node-icon {
+  border-color: #555; filter: grayscale(0.5) brightness(0.6);
+}
+.wow-node-grey:hover .wow-node-icon {
+  border-color: #777; filter: grayscale(0.3) brightness(0.8);
 }
 
-.talent-card {
-  display: flex; gap: 12px; padding: 12px; margin-bottom: 8px;
-  background: var(--bg-input); border: 1px solid rgba(138,115,68,0.3);
-  border-radius: var(--radius); transition: var(--transition); position: relative;
+/* Tooltip WoW-style */
+.wow-node-tooltip {
+  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+  width: 240px; padding: 12px 14px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
+  border: 1px solid var(--gold); border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 12px var(--gold-glow);
+  z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.15s;
 }
-.talent-card.active { border-color: var(--gold); box-shadow: 0 0 8px var(--gold-glow); }
-.talent-card.maxed { border-color: var(--gold-light); box-shadow: 0 0 12px var(--gold-glow); }
-.talent-card.locked { opacity: 0.45; filter: grayscale(0.6); }
-.talent-card.available:hover { border-color: var(--gold); background: var(--bg-panel-hover); }
-
-.talent-icon {
-  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-  font-size: 20px; background: var(--bg-dark); border: 1px solid var(--gold-dark);
-  border-radius: var(--radius); flex-shrink: 0; overflow: hidden;
+.wow-node:hover .wow-node-tooltip { opacity: 1; }
+.tooltip-name {
+  font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600; color: var(--gold-light);
+  margin-bottom: 2px;
 }
-.talent-icon-img { width: 100%; height: 100%; object-fit: cover; }
-.talent-card.active .talent-icon { border-color: var(--gold); box-shadow: 0 0 6px var(--gold-glow); }
-
-.talent-info { flex: 1; }
-.talent-name-row { display: flex; justify-content: space-between; align-items: center; }
-.talent-name { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600; color: var(--text); }
-.talent-rank { font-family: 'Cinzel', serif; font-size: 13px; color: var(--gold); }
-.talent-rank.maxed { color: var(--gold-light); }
-.talent-desc { font-size: 13px; color: var(--text-dim); margin-top: 4px; line-height: 1.4; }
-.talent-effect { font-size: 12px; color: var(--success); margin-top: 2px; }
-.talent-req { font-size: 12px; color: var(--danger); margin-top: 2px; }
-.talent-req.met { color: var(--success); }
-
-.talent-controls { display: flex; align-items: center; gap: 4px; margin-top: 8px; }
-.talent-btn {
-  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-  background: var(--bg-panel); border: 1px solid var(--gold-dark); border-radius: 4px;
-  color: var(--gold); cursor: pointer; font-size: 16px; font-weight: bold; transition: var(--transition);
-}
-.talent-btn:hover:not(:disabled) { background: var(--bg-panel-hover); border-color: var(--gold); color: var(--gold-light); }
-.talent-btn:active:not(:disabled) { transform: scale(0.9); }
-.talent-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.talent-btn.add { color: var(--success); border-color: rgba(95,168,95,0.5); }
-.talent-btn.add:hover:not(:disabled) { background: rgba(95,168,95,0.15); }
-.talent-btn.sub { color: var(--danger); border-color: rgba(196,81,81,0.5); }
-.talent-btn.sub:hover:not(:disabled) { background: rgba(196,81,81,0.15); }
+.tooltip-rank { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+.tooltip-desc { font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+.tooltip-effect { font-size: 12px; color: var(--success); margin-bottom: 4px; font-weight: 600; }
+.tooltip-req { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+.tooltip-hint { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(138,115,68,0.2); }
 
 /* ================================================================ HABILIDADES */
 .ability-card {
@@ -415,7 +461,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
 /* ================================================================ MODAL TALENTOS */
 .talent-modal {
-  max-width: 560px; max-height: 80vh; display: flex; flex-direction: column;
+  max-width: 720px; max-height: 85vh; display: flex; flex-direction: column;
 }
 .talent-modal-header {
   display: flex; justify-content: space-between; align-items: center;
@@ -751,7 +797,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
     </div>
   </div>
 
-  <!-- ============================== MODAL TALENTOS ============================== -->
+  <!-- ============================== MODAL TALENTOS (estilo WoW Classic) ============================== -->
   <div class="modal-overlay" v-if="showTalentModal" @click="showTalentModal = false">
     <div class="modal-content talent-modal" @click.stop>
       <div class="talent-modal-header">
@@ -762,28 +808,39 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
         </div>
       </div>
       <div class="talent-modal-body">
-        <div class="talent-tier" v-for="tier in tiers" :key="tier">
-          <div class="talent-tier-label">Nivel {{ tier }}</div>
-          <div v-for="talent in talentsByTier(tier)" :key="talent.id"
-               class="talent-card" :class="talentCardClass(talent)">
-            <div class="talent-icon">
-              <img v-if="talent.iconImg" :src="talent.iconImg" class="talent-icon-img" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='inline'">
-              <span v-if="talent.iconImg" style="display:none">{{ talent.icon }}</span>
-              <span v-if="!talent.iconImg">{{ talent.icon }}</span>
+        <div class="wow-talent-tree">
+          <div class="wow-branch" v-for="branch in talentBranchesData" :key="branch.index">
+            <div class="wow-branch-header" :style="{ '--branch-color': branch.color }">
+              <span class="wow-branch-icon">{{ branch.icon }}</span>
+              <span class="wow-branch-name">{{ branch.name }}</span>
+              <span class="wow-branch-spent">{{ branchSpent(branch.index) }}</span>
             </div>
-            <div class="talent-info">
-              <div class="talent-name-row">
-                <span class="talent-name">{{ talent.name }}</span>
-                <span class="talent-rank" :class="{ maxed: isMaxed(talent) }">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
-              </div>
-              <div class="talent-desc">{{ talent.description }}</div>
-              <div class="talent-effect" v-if="getTalentEffectText(talent)">{{ getTalentEffectText(talent) }}</div>
-              <div class="talent-req" :class="{ met: prereqMet(talent) }" v-if="talent.requires">
-                Requiere: {{ getTalentName(talent.requires.id) }} ({{ talent.requires.points }} pts)
-              </div>
-              <div class="talent-controls">
-                <button class="talent-btn sub" @click="removeTalentPoint(talent.id)" :disabled="talentRank(talent.id) === 0">−</button>
-                <button class="talent-btn add" @click="addTalentPoint(talent.id)" :disabled="!canAddTalent(talent)">+</button>
+            <div class="wow-branch-nodes">
+              <div class="wow-node" v-for="(talent, ti) in branch.talents" :key="talent.id"
+                   :class="talentNodeClass(talent)"
+                   @click="addTalentPoint(talent.id)"
+                   @contextmenu.prevent="removeTalentPoint(talent.id)">
+                <div class="wow-node-connector" v-if="ti < branch.talents.length - 1"
+                     :class="{ 'connector-active': talentRank(talent.id) > 0 }"></div>
+                <div class="wow-node-icon">
+                  <img v-if="talent.iconImg" :src="talent.iconImg" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'">
+                  <span v-if="talent.iconImg" style="display:none; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 28px;">{{ talent.icon }}</span>
+                  <span v-if="!talent.iconImg" class="wow-node-emoji">{{ talent.icon }}</span>
+                  <span class="wow-node-rank">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
+                </div>
+                <div class="wow-node-tooltip">
+                  <div class="tooltip-name">{{ talent.name }}</div>
+                  <div class="tooltip-rank">Rango {{ talentRank(talent.id) }} de {{ talent.maxRank }}</div>
+                  <div class="tooltip-desc">{{ talent.description }}</div>
+                  <div class="tooltip-effect" v-if="getTalentEffectText(talent)">{{ getTalentEffectText(talent) }}</div>
+                  <div class="tooltip-req" v-if="talent.requires">
+                    Requiere: {{ getTalentName(talent.requires.id) }} ({{ talent.requires.points }} pts)
+                    <span :style="{ color: prereqMet(talent) ? 'var(--success)' : 'var(--danger)' }">
+                      {{ prereqMet(talent) ? '✓' : '✗' }}
+                    </span>
+                  </div>
+                  <div class="tooltip-hint">Click: añadir · Click derecho: quitar</div>
+                </div>
               </div>
             </div>
           </div>
@@ -830,6 +887,7 @@ const FALLBACK_CLASS = {
   baseStats: { fuerza: 15, agilidad: 10, intelecto: 25, aguante: 20, espiritu: 18 },
   startingLevel: 1,
   statGrowth: { fuerza: 0.5, agilidad: 0.5, intelecto: 0.5, aguante: 0.5, espiritu: 0.5 },
+  talentBranches: [{ name: 'General', icon: '⭐', color: '#c9b27e' }],
   talents: [],
   abilities: [],
 };
@@ -965,6 +1023,17 @@ createApp({
     // Lista de tiers del árbol (1, 2, 3...) para iterar en la UI
     tiers() {
       return [...new Set(this.classConfig.talents.map(t => t.tier))].sort();
+    },
+
+    // Agrupar talentos por rama con metadatos para el árbol estilo WoW
+    talentBranchesData() {
+      const branches = this.classConfig.talentBranches || [{ name: 'General', icon: '⭐', color: '#c9b27e' }];
+      return branches.map((branch, idx) => {
+        const talents = this.classConfig.talents
+          .filter(t => (t.branch || 0) === idx)
+          .sort((a, b) => a.tier - b.tier);
+        return { ...branch, index: idx, talents };
+      });
     },
 
     /* ============================================================
@@ -1201,6 +1270,20 @@ createApp({
 
     talentsByTier(tier) {
       return this.classConfig.talents.filter(t => t.tier === tier);
+    },
+
+    branchSpent(branchIdx) {
+      const talents = this.classConfig.talents.filter(t => (t.branch || 0) === branchIdx);
+      return talents.reduce((sum, t) => sum + this.talentRank(t.id), 0);
+    },
+
+    talentNodeClass(talent) {
+      const rank = this.talentRank(talent.id);
+      if (rank === 0 && !this.prereqMet(talent)) return 'wow-node-locked';
+      if (this.isMaxed(talent)) return 'wow-node-maxed';
+      if (rank > 0) return 'wow-node-active';
+      if (this.canAddTalent(talent)) return 'wow-node-available';
+      return 'wow-node-grey';
     },
 
     getTalentName(id) {
