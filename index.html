@@ -936,6 +936,15 @@ createApp({
       return Math.round(this.classConfig.formulas.mana(this.finalStats, this.character.level));
     },
 
+    // Maná base (sin equipo, solo stats base + nivel) — para calcular coste de hechizos
+    baseMana() {
+      const lvl = this.character.level;
+      const growth = this.classConfig.statGrowth || {};
+      const baseInt = (this.classConfig.baseStats.intelecto || 0) + Math.floor((lvl - 1) * (growth.intelecto || 0));
+      const baseStatsForMana = { ...this.classConfig.baseStats, intelecto: baseInt };
+      return Math.round(this.classConfig.formulas.mana(baseStatsForMana, lvl));
+    },
+
     // Poder de Hechizo base desde Intelecto
     baseSpellPower() {
       return this.classConfig.formulas.spellPower(this.finalStats);
@@ -1080,9 +1089,8 @@ createApp({
           }
         }
 
-        // === COSTE DE MANÁ ===
-        // Talento: Enfoque Elemental (-2% coste por punto)
-        let cost = ability.baseCost;
+        // === COSTE DE MANÁ (% del maná base) ===
+        let cost = (ability.costPct || 0) * this.baseMana;
         const ef = this.talentRank('elemental_focus');
         if (ef > 0) cost *= (1 - ef * 0.02);
 
