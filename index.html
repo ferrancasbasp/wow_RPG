@@ -747,34 +747,6 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
       </div>
     </div>
 
-    <!-- =================== PANEL DE EQUIPO =================== -->
-    <div class="wow-panel equip-panel" :class="{ 'equip-collapsed': !showEquipment }">
-      <div class="panel-title" v-if="!showEquipment" @click="showEquipment = true" style="cursor: pointer;">
-        <span class="equip-collapsed-icon">🛡️</span>
-        <span class="equip-collapsed-label">Equipo</span>
-      </div>
-      <div class="panel-title" v-if="showEquipment">Equipo
-        <button class="equip-toggle-btn" @click="showEquipment = false">Ocultar</button>
-      </div>
-      <div class="panel-body" v-show="showEquipment">
-        <div class="equip-slot" v-for="slot in equipmentSlots" :key="slot.key">
-          <div class="equip-slot-header">
-            <span class="equip-slot-icon">{{ slot.icon }}</span>
-            <span class="equip-slot-label">{{ slot.label }}</span>
-          </div>
-          <input type="text" v-model="character.equipment[slot.key].name"
-                 class="equip-name-input" :placeholder="'Sin equipar'">
-          <div class="equip-bonus-grid">
-            <div class="equip-bonus-cell" v-for="(statKey, statName) in statKeys" :key="statKey">
-              <span class="equip-bonus-label">{{ statIcons[statKey] }}</span>
-              <input type="number" v-model.number="character.equipment[slot.key].bonus[statKey]"
-                     class="equip-bonus-input" min="0" placeholder="0">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- =================== PANEL DE HABILIDADES =================== -->
     <div class="wow-panel">
       <div class="panel-title">Habilidades
@@ -834,6 +806,34 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
             <span class="locked-ability-icon">{{ ability.icon }}</span>
             <span class="locked-ability-name">{{ ability.name }}</span>
             <span class="locked-ability-req">Nivel {{ ability.requiredLevel }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================== PANEL DE EQUIPO =================== -->
+    <div class="wow-panel equip-panel" :class="{ 'equip-collapsed': !showEquipment }">
+      <div class="panel-title" v-if="!showEquipment" @click="showEquipment = true" style="cursor: pointer;">
+        <span class="equip-collapsed-icon">🛡️</span>
+        <span class="equip-collapsed-label">Equipo</span>
+      </div>
+      <div class="panel-title" v-if="showEquipment">Equipo
+        <button class="equip-toggle-btn" @click="showEquipment = false">Ocultar</button>
+      </div>
+      <div class="panel-body" v-show="showEquipment">
+        <div class="equip-slot" v-for="slot in equipmentSlots" :key="slot.key">
+          <div class="equip-slot-header">
+            <span class="equip-slot-icon">{{ slot.icon }}</span>
+            <span class="equip-slot-label">{{ slot.label }}</span>
+          </div>
+          <input type="text" v-model="character.equipment[slot.key].name"
+                 class="equip-name-input" :placeholder="'Sin equipar'">
+          <div class="equip-bonus-grid">
+            <div class="equip-bonus-cell" v-for="(statKey, statName) in statKeys" :key="statKey">
+              <span class="equip-bonus-label">{{ statIcons[statKey] }}</span>
+              <input type="number" v-model.number="character.equipment[slot.key].bonus[statKey]"
+                     class="equip-bonus-input" min="0" placeholder="0">
+            </div>
           </div>
         </div>
       </div>
