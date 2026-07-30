@@ -475,8 +475,8 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   </div>
 
   <!-- ============================== MODAL EXPORT ============================== -->
-  <div class="modal-overlay" v-if="showExportModal" @click.self="showExportModal = false">
-    <div class="modal-content">
+  <div class="modal-overlay" v-if="showExportModal" @click="showExportModal = false">
+    <div class="modal-content" @click.stop>
       <div class="modal-title">Exportar Ficha (JSON)</div>
       <textarea class="modal-textarea" readonly :value="exportedJson"></textarea>
       <div class="modal-actions">
