@@ -13,6 +13,11 @@
 <!-- Vue 3 vía CDN (sin build step, funciona abriendo el .html directamente) -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
+<!-- Archivos de clases: cada uno registra su clase en window.CLASS_REGISTRY.
+     Para añadir una nueva clase, crea un archivo aquí y añade su <script> tag. -->
+<script src="js/classes/shaman.js"></script>
+<script src="js/classes/mage.js"></script>
+
 <style>
 /* ================================================================
    VARIABLES DE TEMA
@@ -404,6 +409,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
           <div class="derived-row"><span class="derived-label">Poder de Hechizo</span><span class="derived-value">{{ spellPower }}</span></div>
           <div class="derived-row"><span class="derived-label">Prob. Crítico</span><span class="derived-value">{{ spellCrit }}%</span></div>
           <div class="derived-row"><span class="derived-label">Poder de Ataque</span><span class="derived-value">{{ attackPower }}</span></div>
+          <div class="derived-row"><span class="derived-label">Regen. de Maná</span><span class="derived-value">{{ manaRegen }}/5s</span></div>
         </div>
       </div>
     </div>
@@ -488,132 +494,19 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 const { createApp } = Vue;
 
 /* ================================================================
-   CONFIGURACIÓN DE CLASES
+   REGISTRO DE CLASES
    ================================================================
-   Cada clase es un objeto dentro de CLASS_DATA.
+   Las clases se definen en archivos separados bajo js/classes/.
+   Cada archivo registra su clase en window.CLASS_REGISTRY.
+   Aquí simplemente recogemos el resultado.
+
    Para añadir una nueva clase:
-     1. Copia el bloque completo de una clase existente (ej: shaman)
-     2. Cambia la clave del objeto (ej: 'paladin')
-     3. Modifica nombre, color, icono, fórmulas, talentos y habilidades
-     4. Aparecerá automáticamente en el selector de clase del header
+     1. Crea js/classes/mi_clase.js (copia shaman.js o mage.js como plantilla)
+     2. Añade <script src="js/classes/mi_clase.js"></script> en el <head>
+     3. Registra los efectos de talentos en computedAbilities() y
+        getTalentEffectText() más abajo
    ================================================================ */
-const CLASS_DATA = {
-  /* ---------------------------------------------------------------
-     CHAMÁN — Clase de ejemplo completa
-     --------------------------------------------------------------- */
-  shaman: {
-    name: 'Chamán',
-    color: '#0070DD',
-    icon: '⚡',
-
-    // Fórmulas de derivación: reciben los atributos finales + nivel
-    // y devuelven el valor calculado. Cámbialas para ajustar el balance.
-    formulas: {
-      hp:      (s, lvl) => 40 + s.aguante * 10 + lvl * 5,
-      mana:    (s, lvl) => 30 + s.intelecto * 15 + lvl * 3,
-      spellPower: (s)      => Math.round(s.intelecto * 0.5),
-      attackPower:(s)      => s.fuerza * 2,
-    },
-
-    // Atributos base al crear un personaje de esta clase
-    baseStats: { fuerza: 15, agilidad: 10, intelecto: 25, aguante: 20 },
-    startingLevel: 20,
-
-    /* ---------------------------------------------------------------
-       ÁRBOL DE TALENTOS
-       Cada talento:
-         id          → clave única (se guarda en character.talents[id])
-         name/icon   → texto e icono mostrados en la UI
-         description → descripción legible
-         maxRank     → máximo de puntos invertibles
-         tier        → nivel del árbol (1=base, 2=medio, 3=avanzado)
-         requires    → { id, points } del talento prerequisite, o null
-       Para añadir un talento nuevo, copca un objeto y modifica los campos.
-       Luego añade su efecto en las computed properties (ver más abajo).
-       --------------------------------------------------------------- */
-    talents: [
-      { id: 'elemental_focus', name: 'Enfoque Elemental', icon: '🔮',
-        description: 'Reduce el coste de maná de todos tus hechizos un 2% por punto.',
-        maxRank: 5, tier: 1, requires: null },
-      { id: 'convection', name: 'Convección', icon: '🌀',
-        description: 'Aumenta el daño de todos tus hechizos un 3% por punto.',
-        maxRank: 5, tier: 1, requires: null },
-      { id: 'improved_lightning_bolt', name: 'Descarga Mejorada', icon: '⚡',
-        description: 'Aumenta el daño de Descarga de Rayo un 5% por punto.',
-        maxRank: 3, tier: 2, requires: { id: 'convection', points: 2 } },
-      { id: 'call_of_thunder', name: 'Llamada del Trueno', icon: '🌩️',
-        description: 'Aumenta tu probabilidad de crítico con hechizos un 1% por punto.',
-        maxRank: 3, tier: 2, requires: { id: 'elemental_focus', points: 2 } },
-      { id: 'lightning_mastery', name: 'Maestría de Rayos', icon: '💫',
-        description: 'Aumenta el daño de todos tus hechizos de Naturaleza un 5% por punto.',
-        maxRank: 3, tier: 3, requires: { id: 'improved_lightning_bolt', points: 2 } },
-      { id: 'storm_power', name: 'Poder de Tormenta', icon: '🌪️',
-        description: 'Aumenta tu Poder de Hechizo total un 10% por punto.',
-        maxRank: 2, tier: 3, requires: { id: 'call_of_thunder', points: 2 } },
-    ],
-
-    /* ---------------------------------------------------------------
-       HABILIDADES
-       Cada habilidad:
-         id, name, icon    → identificación y UI
-         school            → escuela de magia (afecta a algunos talentos)
-         type              → 'damage' o 'heal'
-         baseDamage        → daño/curación base sin modificadores
-         spellPowerRatio   → ratio de escalamiento con Poder de Hechizo
-         baseCost          → coste de maná base
-         castTime          → texto descriptivo
-         description       → texto mostrado en la UI
-       El daño final se calcula en la computed 'computedAbilities'.
-       --------------------------------------------------------------- */
-    abilities: [
-      { id: 'lightning_bolt', name: 'Descarga de Rayo', icon: '⚡',
-        school: 'Naturaleza', type: 'damage',
-        baseDamage: 50, spellPowerRatio: 0.714, baseCost: 30, castTime: '2 seg',
-        description: 'Lanza un rayo de energía natural al objetivo.' },
-      { id: 'earth_shock', name: 'Choque de Tierra', icon: '🌍',
-        school: 'Naturaleza', type: 'damage',
-        baseDamage: 40, spellPowerRatio: 0.429, baseCost: 25, castTime: 'Instantáneo',
-        description: 'Libera una onda de tierra que daña al objetivo.' },
-      { id: 'healing_wave', name: 'Ola de Sanación', icon: '🌊',
-        school: 'Naturaleza', type: 'heal',
-        baseDamage: 60, spellPowerRatio: 0.857, baseCost: 35, castTime: '3 seg',
-        description: 'Canaliza energía curativa para restaurar vida al aliado.' },
-      { id: 'lightning_shield', name: 'Escudo de Rayos', icon: '🛡️',
-        school: 'Naturaleza', type: 'damage',
-        baseDamage: 30, spellPowerRatio: 0.286, baseCost: 20, castTime: 'Instantáneo',
-        description: 'Te envuelve en electricidad que daña a quien te ataque.' },
-    ],
-  },
-
-  /* ---------------------------------------------------------------
-     EJEMPLO: GUERRERO — Plantilla simplificada para mostrar
-     cómo añadir clases. Descomenta y adapta para activarlo.
-     --------------------------------------------------------------- */
-  /*
-  warrior: {
-    name: 'Guerrero', color: '#C79C6E', icon: '⚔️',
-    formulas: {
-      hp:   (s, lvl) => 60 + s.aguante * 12 + lvl * 8,
-      mana: () => 0,
-      spellPower: () => 0,
-      attackPower: (s) => s.fuerza * 2 + s.agilidad,
-    },
-    baseStats: { fuerza: 25, agilidad: 15, intelecto: 5, aguante: 25 },
-    startingLevel: 20,
-    talents: [
-      { id: 'improved_heroic_strike', name: 'Golpe Heroico Mejorado', icon: '🗡️',
-        description: 'Aumenta el daño de Golpe Heroico un 5% por punto.',
-        maxRank: 3, tier: 1, requires: null },
-    ],
-    abilities: [
-      { id: 'heroic_strike', name: 'Golpe Heroico', icon: '🗡️',
-        school: 'Físico', type: 'damage',
-        baseDamage: 35, spellPowerRatio: 0, baseCost: 0, castTime: 'Instantáneo',
-        description: 'Un golpe potente que daña al objetivo.' },
-    ],
-  },
-  */
-};
+const CLASS_DATA = window.CLASS_REGISTRY || {};
 
 /* ================================================================
    DATOS POR DEFECTO
@@ -631,8 +524,8 @@ function createDefaultCharacter(classKey) {
 }
 
 /* Mapeo de nombres legibles a claves internas de atributos */
-const STAT_KEYS = { 'Fuerza': 'fuerza', 'Agilidad': 'agilidad', 'Intelecto': 'intelecto', 'Aguante': 'aguante' };
-const STAT_ICONS = { fuerza: '💪', agilidad: '🏃', intelecto: '🧠', aguante: '❤️' };
+const STAT_KEYS = { 'Fuerza': 'fuerza', 'Agilidad': 'agilidad', 'Intelecto': 'intelecto', 'Aguante': 'aguante', 'Espíritu': 'espiritu' };
+const STAT_ICONS = { fuerza: '💪', agilidad: '🏃', intelecto: '🧠', aguante: '❤️', espiritu: '✨' };
 
 /* ================================================================
    APLICACIÓN VUE 3 (Options API — más legible para prototipos)
@@ -656,12 +549,19 @@ createApp({
     },
 
     // Atributos finales = base + bonificación por nivel (0.5 por nivel)
+    // + talentos que modifican atributos (ej: Mente Arcana del Mago)
     finalStats() {
       const lvlBonus = Math.floor((this.character.level - 1) * 0.5);
       const result = {};
       for (const key of Object.values(STAT_KEYS)) {
         result[key] = this.character.baseStats[key] + lvlBonus;
       }
+      // Mago: Mente Arcana (+3% Intelecto por punto)
+      const arcaneMind = this.talentRank('arcane_mind');
+      if (arcaneMind > 0) {
+        result.intelecto = Math.round(result.intelecto * (1 + arcaneMind * 0.03));
+      }
+      // Mago: Poder Arcano (+10% Poder de Hechizo) se aplica en spellPower()
       return result;
     },
 
@@ -681,11 +581,13 @@ createApp({
     },
 
     // Poder de Hechizo final con talentos aplicados
-    // Talento "Poder de Tormenta": +10% por punto
+    // Chamán: Poder de Tormenta (+10% por punto)
+    // Mago: Poder Arcano (+10% por punto)
     spellPower() {
       let sp = this.baseSpellPower;
       const stormPower = this.talentRank('storm_power');
-      sp = Math.round(sp * (1 + stormPower * 0.10));
+      const mageSpellPower = this.talentRank('spell_power');
+      sp = Math.round(sp * (1 + stormPower * 0.10 + mageSpellPower * 0.10));
       return sp;
     },
 
@@ -698,6 +600,12 @@ createApp({
     // Poder de ataque desde Fuerza
     attackPower() {
       return this.classConfig.formulas.attackPower(this.finalStats);
+    },
+
+    // Regen. de Maná desde Espíritu (fórmula de clase)
+    manaRegen() {
+      if (!this.classConfig.formulas.manaRegen) return 0;
+      return this.classConfig.formulas.manaRegen(this.finalStats, this.character.level);
     },
 
     // Puntos de talento gastados (suma de todos los rangos)
@@ -760,6 +668,43 @@ createApp({
           if (ilb > 0) {
             value *= (1 + ilb * 0.05);
             talentNotes.push(`+${ilb * 5}% Descarga`);
+          }
+        }
+
+        // --- Mago: Ignitar (+4% daño Fuego) ---
+        if (ability.school === 'Fuego') {
+          const ig = this.talentRank('ignite');
+          if (ig > 0) {
+            value *= (1 + ig * 0.04);
+            talentNotes.push(`+${ig * 4}% Ignitar`);
+          }
+        }
+
+        // --- Mago: Bola de Fuego Mejorada (+5% Bola de Fuego) ---
+        if (ability.id === 'fireball') {
+          const ifb = this.talentRank('improved_fireball');
+          if (ifb > 0) {
+            value *= (1 + ifb * 0.05);
+            talentNotes.push(`+${ifb * 5}% Bola Fuego`);
+          }
+        }
+
+        // --- Mago: Poder de Fuego (+5% daño Fuego) ---
+        if (ability.school === 'Fuego') {
+          const fp = this.talentRank('fire_power');
+          if (fp > 0) {
+            value *= (1 + fp * 0.05);
+            talentNotes.push(`+${fp * 5}% P. Fuego`);
+          }
+        }
+
+        // --- Mago: Fragmentos de Hielo (+10% daño crítico Escarcha) ---
+        // (afecta al daño base como bonus plano por ahora)
+        if (ability.school === 'Escarcha') {
+          const is = this.talentRank('ice_shards');
+          if (is > 0) {
+            value *= (1 + is * 0.03);
+            talentNotes.push(`+${is * 3}% Fragmentos`);
           }
         }
 
@@ -858,6 +803,15 @@ createApp({
         case 'call_of_thunder':         return `Crítico de hechizos: +${rank}%`;
         case 'lightning_mastery':       return `Daño Naturaleza: +${rank * 5}%`;
         case 'storm_power':             return `Poder de Hechizo: +${rank * 10}%`;
+        // --- Mago ---
+        case 'ignite':                  return `Daño Fuego (DoT): +${rank * 4}%`;
+        case 'frostbite':               return `Prob. congelar: +${rank * 2}%`;
+        case 'arcane_concentration':    return `Hechizo gratuito: +${rank * 2}%`;
+        case 'improved_fireball':       return `Daño Bola de Fuego: +${rank * 5}%`;
+        case 'ice_shards':              return `Daño Escarcha: +${rank * 3}%`;
+        case 'arcane_mind':             return `Intelecto: +${rank * 3}%`;
+        case 'fire_power':              return `Daño Fuego: +${rank * 5}%`;
+        case 'spell_power':             return `Poder de Hechizo: +${rank * 10}%`;
         default: return '';
       }
     },

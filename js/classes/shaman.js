@@ -1,0 +1,109 @@
+/* ================================================================
+   CHAMÁN
+   ================================================================
+   Este archivo define la clase Chamán para la Ficha de Personaje.
+   Se registra automáticamente en window.CLASS_REGISTRY.
+
+   Para crear una nueva clase:
+     1. Copia este archivo y renómbralo (ej: paladin.js)
+     2. Cambia la clave del registro (ej: window.CLASS_REGISTRY.paladin)
+     3. Modifica nombre, color, icono, fórmulas, talentos y habilidades
+     4. Añade el <script> tag en index.html
+     5. Los efectos de talentos se configuran en index.html
+        (computedAbilities y getTalentEffectText)
+   ================================================================ */
+
+window.CLASS_REGISTRY = window.CLASS_REGISTRY || {};
+window.CLASS_REGISTRY.shaman = {
+  name: 'Chamán',
+  color: '#0070DD',
+  icon: '⚡',
+
+  /* ---------------------------------------------------------------
+     FÓRMULAS DE DERIVACIÓN
+     Reciben (s, lvl) donde:
+       s   = atributos finales {fuerza, agilidad, intelecto, aguante, espiritu}
+       lvl = nivel del personaje
+     Devuelven el valor calculado. Cámbialas para ajustar el balance.
+     --------------------------------------------------------------- */
+  formulas: {
+    hp:          (s, lvl) => 40 + s.aguante * 10 + lvl * 5,
+    mana:        (s, lvl) => 30 + s.intelecto * 15 + lvl * 3,
+    spellPower:  (s)      => Math.round(s.intelecto * 0.5),
+    attackPower: (s)      => s.fuerza * 2,
+    manaRegen:   (s, lvl) => Math.round(s.espiritu * 0.5 + lvl * 0.2),
+  },
+
+  /* Atributos base al crear un personaje de esta clase */
+  baseStats: { fuerza: 15, agilidad: 10, intelecto: 25, aguante: 20, espiritu: 18 },
+  startingLevel: 20,
+
+  /* ---------------------------------------------------------------
+     ÁRBOL DE TALENTOS
+     Cada talento:
+       id          → clave única (se guarda en character.talents[id])
+       name/icon   → texto e icono mostrados en la UI
+       description → descripción legible
+       maxRank     → máximo de puntos invertibles
+       tier        → nivel del árbol (1=base, 2=medio, 3=avanzado)
+       requires    → { id, points } del talento prerequisite, o null
+
+     Para añadir un talento nuevo, copia un objeto y modifica los campos.
+     Luego añade su efecto en index.html:
+       - computedAbilities() → modifica daño/coste
+       - getTalentEffectText() → texto que se muestra en la tarjeta
+     --------------------------------------------------------------- */
+  talents: [
+    { id: 'elemental_focus', name: 'Enfoque Elemental', icon: '🔮',
+      description: 'Reduce el coste de maná de todos tus hechizos un 2% por punto.',
+      maxRank: 5, tier: 1, requires: null },
+    { id: 'convection', name: 'Convección', icon: '🌀',
+      description: 'Aumenta el daño de todos tus hechizos un 3% por punto.',
+      maxRank: 5, tier: 1, requires: null },
+    { id: 'improved_lightning_bolt', name: 'Descarga Mejorada', icon: '⚡',
+      description: 'Aumenta el daño de Descarga de Rayo un 5% por punto.',
+      maxRank: 3, tier: 2, requires: { id: 'convection', points: 2 } },
+    { id: 'call_of_thunder', name: 'Llamada del Trueno', icon: '🌩️',
+      description: 'Aumenta tu probabilidad de crítico con hechizos un 1% por punto.',
+      maxRank: 3, tier: 2, requires: { id: 'elemental_focus', points: 2 } },
+    { id: 'lightning_mastery', name: 'Maestría de Rayos', icon: '💫',
+      description: 'Aumenta el daño de todos tus hechizos de Naturaleza un 5% por punto.',
+      maxRank: 3, tier: 3, requires: { id: 'improved_lightning_bolt', points: 2 } },
+    { id: 'storm_power', name: 'Poder de Tormenta', icon: '🌪️',
+      description: 'Aumenta tu Poder de Hechizo total un 10% por punto.',
+      maxRank: 2, tier: 3, requires: { id: 'call_of_thunder', points: 2 } },
+  ],
+
+  /* ---------------------------------------------------------------
+     HABILIDADES
+     Cada habilidad:
+       id, name, icon    → identificación y UI
+       school            → escuela de magia (afecta a algunos talentos)
+       type              → 'damage' o 'heal'
+       baseDamage        → daño/curación base sin modificadores
+       spellPowerRatio   → ratio de escalamiento con Poder de Hechizo
+       baseCost          → coste de maná base
+       castTime          → texto descriptivo
+       description       → texto mostrado en la UI
+
+     El daño final se calcula automáticamente en index.html (computedAbilities).
+     --------------------------------------------------------------- */
+  abilities: [
+    { id: 'lightning_bolt', name: 'Descarga de Rayo', icon: '⚡',
+      school: 'Naturaleza', type: 'damage',
+      baseDamage: 50, spellPowerRatio: 0.714, baseCost: 30, castTime: '2 seg',
+      description: 'Lanza un rayo de energía natural al objetivo.' },
+    { id: 'earth_shock', name: 'Choque de Tierra', icon: '🌍',
+      school: 'Naturaleza', type: 'damage',
+      baseDamage: 40, spellPowerRatio: 0.429, baseCost: 25, castTime: 'Instantáneo',
+      description: 'Libera una onda de tierra que daña al objetivo.' },
+    { id: 'healing_wave', name: 'Ola de Sanación', icon: '🌊',
+      school: 'Naturaleza', type: 'heal',
+      baseDamage: 60, spellPowerRatio: 0.857, baseCost: 35, castTime: '3 seg',
+      description: 'Canaliza energía curativa para restaurar vida al aliado.' },
+    { id: 'lightning_shield', name: 'Escudo de Rayos', icon: '🛡️',
+      school: 'Naturaleza', type: 'damage',
+      baseDamage: 30, spellPowerRatio: 0.286, baseCost: 20, castTime: 'Instantáneo',
+      description: 'Te envuelve en electricidad que daña a quien te ataque.' },
+  ],
+};
