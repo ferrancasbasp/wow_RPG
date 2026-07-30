@@ -829,16 +829,6 @@ createApp({
       return result;
     },
 
-    // Bonus por nivel (no verde) — diferencia entre finalStats y baseStats
-    levelStatBonus(key) {
-      return this.finalStats[key] - this.character.baseStats[key] - this.gearStatBonus(key);
-    },
-
-    // Bonus de equipo (verde) — de momento 0, para futuro bonus de objetos
-    gearStatBonus(key) {
-      return 0;
-    },
-
     // Vida máxima — fórmula de clase + Aguante + nivel
     maxHP() {
       return Math.round(this.classConfig.formulas.hp(this.finalStats, this.character.level));
@@ -1230,6 +1220,14 @@ createApp({
 
     statBonus(key) {
       return this.gearStatBonus(key);
+    },
+
+    levelStatBonus(key) {
+      return this.finalStats[key] - this.character.baseStats[key] - this.gearStatBonus(key);
+    },
+
+    gearStatBonus(key) {
+      return 0;
     },
 
     changeLevel(delta) {
