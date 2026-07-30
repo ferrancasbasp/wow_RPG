@@ -392,6 +392,13 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   border: 1px solid var(--gold-dark); border-radius: 4px; color: var(--text-dim);
   cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 0.05em;
 }
+.equip-toggle-btn {
+  float: right; padding: 4px 14px; font-family: 'Cinzel', serif; font-size: 12px;
+  font-weight: 600; background: linear-gradient(180deg, var(--bg-input) 0%, var(--bg-dark) 100%);
+  border: 1px solid var(--gold-dark); border-radius: 4px; color: var(--text-dim);
+  cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.equip-toggle-btn:hover { border-color: var(--gold); color: var(--gold-light); }
 .train-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold-light); }
 .train-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .train-btn.train-available {
@@ -724,8 +731,12 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
     <!-- =================== PANEL DE EQUIPO =================== -->
     <div class="wow-panel">
-      <div class="panel-title">Equipo</div>
-      <div class="panel-body">
+      <div class="panel-title">Equipo
+        <button class="equip-toggle-btn" @click="showEquipment = !showEquipment">
+          {{ showEquipment ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+      <div class="panel-body" v-show="showEquipment">
         <div class="equip-slot" v-for="slot in equipmentSlots" :key="slot.key">
           <div class="equip-slot-header">
             <span class="equip-slot-icon">{{ slot.icon }}</span>
@@ -969,6 +980,7 @@ createApp({
       ],
       showExportModal: false,
       showTalentModal: false,
+      showEquipment: false,
       toastMessage: '',
       xpInputAmount: null,
       levelUpFlash: false,
