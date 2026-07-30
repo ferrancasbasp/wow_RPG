@@ -998,22 +998,6 @@ createApp({
       return Math.floor((this.manaActual / this.maxMana) * 100);
     },
 
-    // Rango maximo disponible para una habilidad segun el nivel
-    maxAvailableRank(ability) {
-      const rankLevels = [ability.requiredLevel, ability.requiredLevel + 8, ability.requiredLevel + 16, ability.requiredLevel + 24];
-      let rank = 0;
-      for (let i = 0; i < rankLevels.length; i++) {
-        if (this.character.level >= rankLevels[i]) rank = i + 1;
-      }
-      return rank;
-    },
-
-    // Rango entrenado actual (0 = no entrenado)
-    trainedRank(abilityId) {
-      if (!this.character.trainedRanks) return 0;
-      return this.character.trainedRanks[abilityId] || 0;
-    },
-
     // Habilidades entrenadas (con dados escalados por rango)
     unlockedAbilities() {
       return this.computedAbilities.filter(a => this.trainedRank(a.id) > 0).map(a => {
@@ -1064,6 +1048,22 @@ createApp({
   },
 
   methods: {
+    /* ==================== RANGOS DE HABILIDADES ==================== */
+
+    maxAvailableRank(ability) {
+      const rankLevels = [ability.requiredLevel, ability.requiredLevel + 8, ability.requiredLevel + 16, ability.requiredLevel + 24];
+      let rank = 0;
+      for (let i = 0; i < rankLevels.length; i++) {
+        if (this.character.level >= rankLevels[i]) rank = i + 1;
+      }
+      return rank;
+    },
+
+    trainedRank(abilityId) {
+      if (!this.character.trainedRanks) return 0;
+      return this.character.trainedRanks[abilityId] || 0;
+    },
+
     /* ==================== UTILIDADES DE TALENTOS ==================== */
 
     talentRank(id) {
