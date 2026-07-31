@@ -1453,6 +1453,25 @@ createApp({
       } else {
         this.turnDamage += roll;
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño');
+        this.sendDamageEvent(ability, roll);
+      }
+    },
+
+    sendDamageEvent(ability, damage) {
+      try {
+        if (typeof firebase === 'undefined' || !firebase.apps.length) return;
+        const db = firebase.database();
+        db.ref('damageEvents').push({
+          player: this.character.name || 'Jugador',
+          ability: ability.name,
+          rank: ability.currentRank || 1,
+          damage: damage,
+          turn: this.turnNumber,
+          timestamp: Date.now(),
+          assigned: false,
+        });
+      } catch (e) {
+        console.error('Firebase send error:', e);
       }
     },
 
@@ -1588,7 +1607,7 @@ createApp({
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character_v2', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v3', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1597,7 +1616,7 @@ createApp({
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character_v2');
+        const data = localStorage.getItem('ttrpg_wow_character_v3');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
@@ -1661,7 +1680,7 @@ createApp({
 
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v2');
+      const saved = localStorage.getItem('ttrpg_wow_character_v3');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
@@ -1684,6 +1703,12 @@ createApp({
   },
 }).mount('#app');
 </script>
+
+<!-- Firebase SDK al final del body para no bloquear Vue -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+
 <noscript>
   <div style="color:#c9b27e;background:#111;padding:40px;font-family:serif;text-align:center;">
     JavaScript es necesario para usar la ficha de personaje.

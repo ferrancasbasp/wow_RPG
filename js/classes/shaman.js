@@ -36,7 +36,9 @@ window.CLASS_REGISTRY.shaman = {
 
   /* Atributos base al crear un personaje de esta clase */
   baseStats: { fuerza: 15, agilidad: 10, intelecto: 25, aguante: 20, espiritu: 18 },
-  startingLevel: 20,
+  startingLevel: 1,
+
+  statGrowth: { fuerza: 0.3, agilidad: 0.3, intelecto: 1.2, aguante: 0.8, espiritu: 0.7 },
 
   /* ---------------------------------------------------------------
      ÁRBOL DE TALENTOS
@@ -91,22 +93,22 @@ window.CLASS_REGISTRY.shaman = {
   abilities: [
     { id: 'lightning_bolt', name: 'Descarga de Rayo', icon: '⚡',
       school: 'Naturaleza', type: 'damage', requiredLevel: 1,
-      baseDamage: 50, spellPowerRatio: 0.714, baseCost: 30, castTime: '2 seg',
+      baseDamage: 50, spellPowerRatio: 0.714, costPct: 0.08, castType: 'cast', cooldown: 0,
       description: 'Lanza un rayo de energía natural al objetivo.',
       dice: { count: 4, sides: 6, bonus: 12 } },
     { id: 'earth_shock', name: 'Choque de Tierra', icon: '🌍',
       school: 'Naturaleza', type: 'damage', requiredLevel: 4,
-      baseDamage: 40, spellPowerRatio: 0.429, baseCost: 25, castTime: 'Instantáneo',
+      baseDamage: 40, spellPowerRatio: 0.429, costPct: 0.06, castType: 'instant', cooldown: 1,
       description: 'Libera una onda de tierra que daña al objetivo.',
       dice: { count: 3, sides: 6, bonus: 8 } },
     { id: 'healing_wave', name: 'Ola de Sanación', icon: '🌊',
       school: 'Naturaleza', type: 'heal', requiredLevel: 8,
-      baseDamage: 60, spellPowerRatio: 0.857, baseCost: 35, castTime: '3 seg',
+      baseDamage: 60, spellPowerRatio: 0.857, costPct: 0.09, castType: 'cast', cooldown: 0,
       description: 'Canaliza energía curativa para restaurar vida al aliado.',
       dice: { count: 4, sides: 8, bonus: 15 } },
     { id: 'lightning_shield', name: 'Escudo de Rayos', icon: '🛡️',
       school: 'Naturaleza', type: 'damage', requiredLevel: 12,
-      baseDamage: 30, spellPowerRatio: 0.286, baseCost: 20, castTime: 'Instantáneo',
+      baseDamage: 30, spellPowerRatio: 0.286, costPct: 0.04, castType: 'instant', cooldown: 2,
       description: 'Te envuelve en electricidad que daña a quien te ataque.',
       dice: { count: 2, sides: 6, bonus: 5 } },
   ],
