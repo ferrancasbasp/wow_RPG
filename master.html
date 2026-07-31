@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master Screen · TTRPG WoW</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+
+<style>
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-panel: #14141f;
+  --bg-panel-hover: #1a1a28;
+  --bg-input: #1c1c2a;
+  --gold: #c9b27e;
+  --gold-light: #e8d5a3;
+  --gold-dark: #8a7344;
+  --gold-glow: rgba(201,178,126,0.15);
+  --text: #d4c5a9;
+  --text-dim: #8a8070;
+  --text-muted: #5a554a;
+  --danger: #c45151;
+  --success: #5fa85f;
+  --radius: 6px;
+  --transition: all 0.2s ease;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg-dark); color: var(--text);
+  font-family: 'EB Garamond', serif; min-height: 100vh; padding: 20px;
+}
+[v-cloak] { display: none !important; }
+
+.master-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto;
+}
+@media (max-width: 900px) { .master-layout { grid-template-columns: 1fr; } }
+
+.app-header {
+  grid-column: 1 / -1; text-align: center; margin-bottom: 8px;
+}
+.app-title {
+  font-family: 'Cinzel', serif; font-size: 28px; font-weight: 900;
+  color: var(--gold-light); letter-spacing: 0.1em; text-transform: uppercase;
+  text-shadow: 0 0 20px var(--gold-glow);
+}
+
+.wow-panel {
+  background: var(--bg-panel); border: 1px solid var(--gold-dark);
+  border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+.panel-title {
+  font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--gold);
+  padding: 12px 16px; border-bottom: 1px solid rgba(138,115,68,0.2);
+  background: linear-gradient(180deg, rgba(138,115,68,0.08) 0%, transparent 100%);
+  letter-spacing: 0.05em; text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.panel-body { padding: 14px 16px; }
+
+/* === DAMAGE LOG === */
+.damage-log {
+  display: flex; flex-direction: column; gap: 8px; max-height: 500px; overflow-y: auto;
+}
+.damage-event {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  background: var(--bg-input); border: 1px solid rgba(138,115,68,0.2);
+  border-radius: var(--radius); transition: var(--transition); cursor: pointer;
+  animation: slide-in 0.3s ease;
+}
+@keyframes slide-in { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+.damage-event:hover { border-color: var(--gold-dark); background: var(--bg-panel-hover); }
+.damage-event.selected { border-color: var(--gold); box-shadow: 0 0 8px var(--gold-glow); }
+.damage-event.assigned { opacity: 0.4; filter: grayscale(0.5); }
+.damage-event-icon { font-size: 22px; }
+.damage-event-info { flex: 1; }
+.damage-event-player {
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: var(--gold-light);
+}
+.damage-event-detail { font-size: 13px; color: var(--text-dim); }
+.damage-event-value {
+  font-size: 24px; font-weight: 700; color: #c0392b; font-family: 'Cinzel', serif;
+}
+.damage-empty {
+  text-align: center; padding: 40px 20px; color: var(--text-muted);
+  font-style: italic; font-size: 14px;
+}
+
+/* === MONSTERS === */
+.monster-list { display: flex; flex-direction: column; gap: 10px; }
+.monster-card {
+  background: var(--bg-input); border: 1px solid rgba(138,115,68,0.2);
+  border-radius: var(--radius); padding: 12px; transition: var(--transition);
+}
+.monster-card.targeting { border-color: var(--gold); box-shadow: 0 0 12px var(--gold-glow); cursor: crosshair; }
+.monster-card.dead { opacity: 0.5; filter: grayscale(0.7); }
+.monster-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+}
+.monster-name {
+  font-family: 'Cinzel', serif; font-size: 15px; font-weight: 600; color: var(--text);
+}
+.monster-name.dead-name { color: var(--danger); text-decoration: line-through; }
+.monster-actions { display: flex; gap: 4px; }
+.monster-btn {
+  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-panel); border: 1px solid var(--gold-dark); border-radius: 3px;
+  color: var(--text-dim); cursor: pointer; font-size: 14px; transition: var(--transition);
+}
+.monster-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+.monster-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+.monster-hp-bar {
+  height: 22px; background: var(--bg-dark); border: 1px solid var(--gold-dark);
+  border-radius: 3px; position: relative; overflow: hidden; margin-bottom: 6px;
+}
+.monster-hp-fill {
+  height: 100%; background: linear-gradient(180deg, #4a8e3a 0%, #2d6b1f 100%);
+  transition: width 0.4s ease; border-radius: 2px;
+}
+.monster-hp-fill.low { background: linear-gradient(180deg, #c4a830 0%, #8a7a1e 100%); }
+.monster-hp-fill.critical { background: linear-gradient(180deg, #c0392b 0%, #8b2e1e 100%); }
+.monster-hp-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 12px; font-weight: 600; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  font-family: 'Cinzel', serif;
+}
+.monster-hp-controls { display: flex; gap: 6px; align-items: center; }
+.monster-hp-input {
+  width: 60px; padding: 4px 6px; text-align: center; font-size: 13px;
+  background: var(--bg-dark); border: 1px solid var(--gold-dark); border-radius: 3px;
+  color: var(--text); outline: none;
+}
+.monster-hp-input:focus { border-color: var(--gold); }
+.monster-dmg-btn {
+  padding: 4px 10px; font-size: 12px; font-weight: 600;
+  background: linear-gradient(180deg, #4a1a1a 0%, #2d0e0e 100%);
+  border: 1px solid #8b2e2e; border-radius: 3px; color: #e07070;
+  cursor: pointer; transition: var(--transition);
+}
+.monster-dmg-btn:hover { border-color: #c0392b; color: #ff9090; }
+.monster-dmg-btn:active { transform: scale(0.95); }
+
+/* === ADD MONSTER === */
+.add-monster-row {
+  display: flex; gap: 6px; margin-bottom: 12px;
+}
+.add-monster-input {
+  flex: 1; padding: 8px 10px; background: var(--bg-dark);
+  border: 1px solid var(--gold-dark); border-radius: 3px; color: var(--text);
+  font-size: 14px; outline: none;
+}
+.add-monster-input:focus { border-color: var(--gold); }
+.add-monster-input::placeholder { color: var(--text-muted); }
+.add-monster-btn {
+  padding: 8px 16px; font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600;
+  background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
+  border: 1px solid var(--gold-dark); border-radius: 3px; color: var(--gold);
+  cursor: pointer; transition: var(--transition); text-transform: uppercase;
+}
+.add-monster-btn:hover { border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 8px var(--gold-glow); }
+
+/* === TOAST === */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  padding: 12px 24px; background: var(--bg-panel); border: 1px solid var(--gold);
+  border-radius: var(--radius); color: var(--gold-light); font-family: 'Cinzel', serif;
+  font-size: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 12px var(--gold-glow);
+  z-index: 200; animation: toast-in 0.3s ease, toast-out 0.3s ease 2.2s forwards;
+}
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes toast-out { to { opacity: 0; transform: translate(-50%, 20px); } }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+.connection-status {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim);
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.status-dot.connected { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.status-dot.disconnected { background: var(--danger); }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div class="app-header">
+    <div class="app-title">Master Screen</div>
+  </div>
+
+  <div class="master-layout">
+
+    <!-- =================== DAMAGE LOG =================== -->
+    <div class="wow-panel">
+      <div class="panel-title">
+        Daño Entrante
+        <span class="connection-status">
+          <span class="status-dot" :class="firebaseConnected ? 'connected' : 'disconnected'"></span>
+          {{ firebaseConnected ? 'Conectado' : 'Sin conexión' }}
+        </span>
+      </div>
+      <div class="panel-body">
+        <div class="damage-log" v-if="pendingEvents.length > 0">
+          <div v-for="event in pendingEvents" :key="event.id"
+               class="damage-event"
+               :class="{ selected: selectedEventId === event.id, assigned: event.assigned }"
+               @click="selectEvent(event.id)">
+            <span class="damage-event-icon">⚔️</span>
+            <div class="damage-event-info">
+              <div class="damage-event-player">{{ event.player }}</div>
+              <div class="damage-event-detail">{{ event.ability }} R{{ event.rank }} · Turno {{ event.turn }}</div>
+            </div>
+            <span class="damage-event-value">{{ event.damage }}</span>
+          </div>
+        </div>
+        <div class="damage-empty" v-else>
+          Esperando daño de los jugadores...
+        </div>
+      </div>
+    </div>
+
+    <!-- =================== MONSTERS =================== -->
+    <div class="wow-panel">
+      <div class="panel-title">Monstruos ({{ monsters.length }})</div>
+      <div class="panel-body">
+        <div class="add-monster-row">
+          <input type="text" v-model="newMonsterName" class="add-monster-input"
+                 placeholder="Nombre del monstruo" @keyup.enter="addMonster">
+          <input type="number" v-model.number="newMonsterHP" class="add-monster-input"
+                 placeholder="HP" style="flex: 0 0 80px;" @keyup.enter="addMonster">
+          <button class="add-monster-btn" @click="addMonster">Añadir</button>
+        </div>
+
+        <div class="monster-list" v-if="monsters.length > 0">
+          <div v-for="monster in monsters" :key="monster.id"
+               class="monster-card"
+               :class="{ targeting: selectedEventId !== null && !getEvent(selectedEventId).assigned, dead: monster.currentHP <= 0 }"
+               @click="assignDamageToMonster(monster)">
+            <div class="monster-header">
+              <span class="monster-name" :class="{ 'dead-name': monster.currentHP <= 0 }">{{ monster.name }}</span>
+              <div class="monster-actions">
+                <button class="monster-btn" @click.stop="healMonster(monster)" title="Curar">+</button>
+                <button class="monster-btn danger" @click.stop="removeMonster(monster.id)" title="Eliminar">✕</button>
+              </div>
+            </div>
+            <div class="monster-hp-bar">
+              <div class="monster-hp-fill"
+                   :class="{ low: monsterHPPercent(monster) <= 50 && monsterHPPercent(monster) > 25, critical: monsterHPPercent(monster) <= 25 }"
+                   :style="{ width: monsterHPPercent(monster) + '%' }"></div>
+              <div class="monster-hp-text">{{ monster.currentHP }} / {{ monster.maxHP }}</div>
+            </div>
+            <div class="monster-hp-controls">
+              <input type="number" v-model.number="dmgInput[monster.id]" class="monster-hp-input"
+                     placeholder="Daño" min="1" @keyup.enter="applyManualDamage(monster)">
+              <button class="monster-dmg-btn" @click.stop="applyManualDamage(monster)">Daño</button>
+            </div>
+          </div>
+        </div>
+        <div class="damage-empty" v-else>
+          No hay monstruos. Añade uno arriba.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" v-if="toastMessage">{{ toastMessage }}</div>
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      pendingEvents: [],
+      monsters: [],
+      selectedEventId: null,
+      newMonsterName: '',
+      newMonsterHP: null,
+      dmgInput: {},
+      toastMessage: '',
+      firebaseConnected: false,
+      monsterIdCounter: 1,
+    };
+  },
+
+  mounted() {
+    this.loadMonsters();
+    if (typeof firebase !== 'undefined' && firebase.apps.length) {
+      this.initFirebaseListener();
+    } else {
+      this.showToast('Firebase no configurado');
+    }
+  },
+
+  methods: {
+    initFirebaseListener() {
+      const db = firebase.database();
+      db.ref('.info/connected').on('value', (snap) => {
+        this.firebaseConnected = snap.val() === true;
+      });
+      db.ref('damageEvents').on('child_added', (snapshot) => {
+        const event = snapshot.val();
+        event.id = snapshot.key;
+        if (!event.assigned) {
+          this.pendingEvents.push(event);
+        }
+      });
+      db.ref('damageEvents').on('child_changed', (snapshot) => {
+        const event = snapshot.val();
+        event.id = snapshot.key;
+        if (event.assigned) {
+          this.pendingEvents = this.pendingEvents.filter(e => e.id !== event.id);
+          if (this.selectedEventId === event.id) this.selectedEventId = null;
+        }
+      });
+    },
+
+    selectEvent(id) {
+      const event = this.getEvent(id);
+      if (event && event.assigned) return;
+      this.selectedEventId = this.selectedEventId === id ? null : id;
+    },
+
+    getEvent(id) {
+      return this.pendingEvents.find(e => e.id === id);
+    },
+
+    assignDamageToMonster(monster) {
+      if (this.selectedEventId === null) return;
+      const event = this.getEvent(this.selectedEventId);
+      if (!event || event.assigned) return;
+      monster.currentHP = Math.max(0, monster.currentHP - event.damage);
+      this.markEventAssigned(event);
+      this.selectedEventId = null;
+      this.saveMonsters();
+      if (monster.currentHP <= 0) {
+        this.showToast(monster.name + ' derrotado (-' + event.damage + ')');
+      } else {
+        this.showToast(event.damage + ' daño a ' + monster.name);
+      }
+    },
+
+    markEventAssigned(event) {
+      event.assigned = true;
+      if (typeof firebase !== 'undefined' && firebase.apps.length) {
+        firebase.database().ref('damageEvents/' + event.id).update({ assigned: true });
+      }
+      this.pendingEvents = this.pendingEvents.filter(e => e.id !== event.id);
+    },
+
+    applyManualDamage(monster) {
+      const dmg = this.dmgInput[monster.id];
+      if (!dmg || dmg <= 0) return;
+      monster.currentHP = Math.max(0, monster.currentHP - dmg);
+      this.dmgInput[monster.id] = null;
+      this.saveMonsters();
+      if (monster.currentHP <= 0) {
+        this.showToast(monster.name + ' derrotado (-' + dmg + ')');
+      } else {
+        this.showToast('-' + dmg + ' a ' + monster.name);
+      }
+    },
+
+    healMonster(monster) {
+      monster.currentHP = monster.maxHP;
+      this.saveMonsters();
+      this.showToast(monster.name + ' curado al máximo');
+    },
+
+    addMonster() {
+      if (!this.newMonsterName.trim() || !this.newMonsterHP || this.newMonsterHP <= 0) return;
+      this.monsters.push({
+        id: this.monsterIdCounter++,
+        name: this.newMonsterName.trim(),
+        maxHP: this.newMonsterHP,
+        currentHP: this.newMonsterHP,
+      });
+      this.newMonsterName = '';
+      this.newMonsterHP = null;
+      this.saveMonsters();
+      this.showToast('Monstruo añadido');
+    },
+
+    removeMonster(id) {
+      this.monsters = this.monsters.filter(m => m.id !== id);
+      this.saveMonsters();
+    },
+
+    monsterHPPercent(monster) {
+      if (monster.maxHP === 0) return 0;
+      return Math.max(0, Math.floor((monster.currentHP / monster.maxHP) * 100));
+    },
+
+    saveMonsters() {
+      try {
+        localStorage.setItem('ttrpg_wow_monsters', JSON.stringify({
+          monsters: this.monsters,
+          counter: this.monsterIdCounter,
+        }));
+      } catch (e) {}
+    },
+
+    loadMonsters() {
+      try {
+        const data = localStorage.getItem('ttrpg_wow_monsters');
+        if (data) {
+          const parsed = JSON.parse(data);
+          this.monsters = parsed.monsters || [];
+          this.monsterIdCounter = parsed.counter || (this.monsters.length + 1);
+        }
+      } catch (e) {}
+    },
+
+    showToast(msg) {
+      this.toastMessage = msg;
+      clearTimeout(this._toastTimer);
+      this._toastTimer = setTimeout(() => { this.toastMessage = ''; }, 2500);
+    },
+  },
+}).mount('#app');
+</script>
+</body>
+</html>

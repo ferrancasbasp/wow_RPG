@@ -19,6 +19,11 @@
 <script src="js/classes/shaman.js"></script>
 <script src="js/classes/mage.js"></script>
 
+<!-- Firebase SDK (para enviar daño al master screen) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+
 <style>
 /* ================================================================
    VARIABLES DE TEMA
@@ -1453,12 +1458,31 @@ createApp({
       } else {
         this.turnDamage += roll;
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño');
+        this.sendDamageEvent(ability, roll);
       }
     },
 
     getCooldown(abilityId) {
       if (!this.character.currentCooldowns) return 0;
       return this.character.currentCooldowns[abilityId] || 0;
+    },
+
+    sendDamageEvent(ability, damage) {
+      if (typeof firebase === 'undefined' || !firebase.apps.length) return;
+      try {
+        const db = firebase.database();
+        db.ref('damageEvents').push({
+          player: this.character.name || 'Jugador',
+          ability: ability.name,
+          rank: ability.currentRank || 1,
+          damage: damage,
+          turn: this.turnNumber,
+          timestamp: Date.now(),
+          assigned: false,
+        });
+      } catch (e) {
+        console.error('Firebase send error:', e);
+      }
     },
 
     endTurn() {
