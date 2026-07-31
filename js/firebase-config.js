@@ -1,7 +1,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyCxsMUUHvw_LQrl24VgDtJiperHF2rRL_Y",
   authDomain: "rpgwow-118f7.firebaseapp.com",
-  databaseURL: "https://rpgwow-118f7-default-rtdb.firebaseio.com",
+  databaseURL: "https://rpgwow-118f7-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "rpgwow-118f7",
   storageBucket: "rpgwow-118f7.firebasestorage.app",
   messagingSenderId: "408168433969",
