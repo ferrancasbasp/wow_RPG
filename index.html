@@ -279,6 +279,70 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .tooltip-req { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
 .tooltip-hint { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(138,115,68,0.2); }
 
+/* ================================================================ EFECTOS ACTIVOS */
+.effects-section {
+  margin-bottom: 20px; background: var(--bg-panel); border: 1px solid var(--gold-dark);
+  border-radius: var(--radius); overflow: hidden;
+}
+.effects-header {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  background: linear-gradient(180deg, rgba(138,115,68,0.08) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(138,115,68,0.15); transition: var(--transition);
+}
+.effects-header:hover { background: linear-gradient(180deg, rgba(138,115,68,0.12) 0%, transparent 100%); }
+.effects-title {
+  font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--gold);
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.effects-count {
+  background: var(--gold); color: var(--bg-dark); font-size: 11px; font-weight: 700;
+  padding: 1px 7px; border-radius: 10px; font-family: 'Cinzel', serif;
+}
+.effects-toggle { margin-left: auto; color: var(--text-dim); font-size: 12px; }
+.effects-body { padding: 12px 16px; }
+.effects-active-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.effect-chip {
+  display: flex; align-items: center; gap: 6px; padding: 6px 10px;
+  background: var(--bg-input); border: 1px solid var(--eff-color, var(--gold-dark));
+  border-radius: 20px; border-left: 3px solid var(--eff-color, var(--gold-dark));
+  transition: var(--transition);
+}
+.effect-chip:hover { background: var(--bg-panel-hover); }
+.effect-icon { font-size: 14px; }
+.effect-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.effect-value { font-size: 12px; color: var(--eff-color, var(--gold)); font-weight: 600; }
+.effect-duration {
+  font-size: 11px; color: var(--text-dim); background: var(--bg-dark);
+  padding: 1px 6px; border-radius: 8px; font-family: 'Cinzel', serif;
+}
+.effect-remove {
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; color: var(--text-muted); cursor: pointer;
+  font-size: 12px; border-radius: 50%; transition: var(--transition);
+}
+.effect-remove:hover { color: var(--danger); background: rgba(196,81,81,0.15); }
+.effects-empty { color: var(--text-muted); font-style: italic; font-size: 13px; margin-bottom: 12px; }
+.effect-add-form {
+  display: flex; gap: 6px; flex-wrap: wrap; padding-top: 10px;
+  border-top: 1px dashed rgba(138,115,68,0.15);
+}
+.effect-input {
+  padding: 6px 8px; background: var(--bg-dark); border: 1px solid var(--gold-dark);
+  border-radius: 3px; color: var(--text); font-size: 13px; outline: none;
+}
+.effect-input:focus { border-color: var(--gold); }
+.effect-input option { background: var(--bg-dark); }
+.effect-name-field { flex: 1; min-width: 120px; }
+.effect-value-field { width: 70px; }
+.effect-dur-field { width: 70px; }
+.effect-add-btn {
+  padding: 6px 16px; font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600;
+  background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
+  border: 1px solid var(--gold-dark); border-radius: 3px; color: var(--gold);
+  cursor: pointer; transition: var(--transition); text-transform: uppercase;
+}
+.effect-add-btn:hover { border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 8px var(--gold-glow); }
+
 /* ================================================================ EQUIPO */
 .equip-panel { transition: all 0.3s; }
 .equip-panel.equip-collapsed {
@@ -703,6 +767,44 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
       </div>
     </div>
   </div>
+
+  <!-- ============================== EFECTOS ACTIVOS ============================== -->
+  <div class="effects-section">
+    <div class="effects-header" @click="showEffectsPanel = !showEffectsPanel" style="cursor: pointer;">
+      <span class="effects-title">Efectos Activos</span>
+      <span class="effects-count" v-if="character.activeEffects && character.activeEffects.length > 0">
+        {{ character.activeEffects.length }}
+      </span>
+      <span class="effects-toggle">{{ showEffectsPanel ? '▼' : '▶' }}</span>
+    </div>
+    <div class="effects-body" v-show="showEffectsPanel">
+      <div class="effects-active-list" v-if="character.activeEffects && character.activeEffects.length > 0">
+        <div class="effect-chip" v-for="eff in character.activeEffects" :key="eff.id"
+             :style="{ '--eff-color': effectTypes[eff.type].color }">
+          <span class="effect-icon">{{ effectTypes[eff.type].icon }}</span>
+          <span class="effect-name">{{ eff.name }}</span>
+          <span class="effect-value">{{ effectValueText(eff) }}</span>
+          <span class="effect-duration">{{ eff.duration }}t</span>
+          <button class="effect-remove" @click.stop="removeEffect(eff.id)">✕</button>
+        </div>
+      </div>
+      <div class="effects-empty" v-else>Sin efectos activos</div>
+
+      <div class="effect-add-form">
+        <select v-model="newEffect.type" class="effect-input">
+          <option v-for="(info, key) in effectTypes" :key="key" :value="key">{{ info.label }}</option>
+        </select>
+        <input type="text" v-model="newEffect.name" class="effect-input effect-name-field" placeholder="Nombre">
+        <select v-model="newEffect.target" class="effect-input">
+          <option v-for="t in effectTargets" :key="t" :value="t">{{ t }}</option>
+        </select>
+        <input type="number" v-model.number="newEffect.value" class="effect-input effect-value-field" placeholder="Valor" min="0">
+        <input type="number" v-model.number="newEffect.duration" class="effect-input effect-dur-field" placeholder="Turnos" min="1">
+        <button class="effect-add-btn" @click="addEffect">Añadir</button>
+      </div>
+    </div>
+  </div>
+
   <div class="main-grid">
 
     <!-- =================== PANEL DE ATRIBUTOS =================== -->
@@ -973,8 +1075,25 @@ function createDefaultCharacter(classKey) {
       feet:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
       weapon:  { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
     },
+    activeEffects: [],
   };
 }
+
+const EFFECT_TYPES = {
+  buff:   { label: 'Buff', icon: '⬆️', color: '#5fa85f' },
+  debuff: { label: 'Debuff', icon: '⬇️', color: '#c45151' },
+  hot:    { label: 'HoT', icon: '💚', color: '#5fa85f' },
+  dot:    { label: 'DoT', icon: '🩸', color: '#c0392b' },
+  status: { label: 'Estado', icon: '⛔', color: '#e8d5a3' },
+  dmgmod: { label: 'Mod. Daño', icon: '⚔️', color: '#9b59b6' },
+};
+
+const EFFECT_TARGETS = [
+  'fuerza', 'agilidad', 'intelecto', 'aguante', 'espiritu',
+  'spellPower', 'spellCrit', 'manaRegen', 'maxHP', 'maxMana',
+  'fireDamage', 'frostDamage', 'arcaneDamage', 'damageTaken',
+  'stunned', 'frozen', 'silenced', 'rooted',
+];
 
 /* Mapeo de nombres legibles a claves internas de atributos */
 const STAT_KEYS = { 'Fuerza': 'fuerza', 'Agilidad': 'agilidad', 'Intelecto': 'intelecto', 'Aguante': 'aguante', 'Espíritu': 'espiritu' };
@@ -1001,6 +1120,10 @@ createApp({
       showExportModal: false,
       showTalentModal: false,
       showEquipment: false,
+      showEffectsPanel: false,
+      effectTypes: EFFECT_TYPES,
+      effectTargets: EFFECT_TARGETS,
+      newEffect: { type: 'buff', name: '', target: 'aguante', value: 0, duration: 1 },
       toastMessage: '',
       xpInputAmount: null,
       levelUpFlash: false,
@@ -1490,9 +1613,62 @@ createApp({
       }
       const regen = Math.round(this.manaRegen * 0.5);
       this.character.currentMana = Math.min(this.maxMana, this.manaActual + regen);
+      this.processEffects();
       this.turnNumber++;
       this.turnDamage = 0;
       this.showToast('Fin de turno ' + (this.turnNumber - 1) + ' · +' + regen + ' maná regenerado');
+    },
+
+    processEffects() {
+      if (!this.character.activeEffects || this.character.activeEffects.length === 0) return;
+      const messages = [];
+      for (const eff of this.character.activeEffects) {
+        if (eff.type === 'hot') {
+          this.character.currentHP = Math.min(this.maxHP, this.hpActual + eff.value);
+          messages.push('+' + eff.value + ' ' + eff.name);
+        } else if (eff.type === 'dot') {
+          this.character.currentHP = Math.max(0, this.hpActual - eff.value);
+          messages.push('-' + eff.value + ' ' + eff.name);
+        }
+      }
+      this.character.activeEffects = this.character.activeEffects.map(e => {
+        return { ...e, duration: e.duration - 1 };
+      }).filter(e => e.duration > 0);
+      if (messages.length > 0) {
+        this.showToast(messages.join(' · '));
+      }
+    },
+
+    addEffect() {
+      if (!this.newEffect.name.trim() || this.newEffect.value === null || this.newEffect.value === undefined) {
+        this.showToast('Faltan datos del efecto');
+        return;
+      }
+      if (!this.character.activeEffects) this.character.activeEffects = [];
+      this.character.activeEffects.push({
+        id: Date.now() + Math.random(),
+        type: this.newEffect.type,
+        name: this.newEffect.name.trim(),
+        target: this.newEffect.target,
+        value: Math.abs(this.newEffect.value),
+        duration: this.newEffect.duration || 1,
+      });
+      this.newEffect = { type: 'buff', name: '', target: 'aguante', value: 0, duration: 1 };
+      this.showToast('Efecto añadido');
+    },
+
+    removeEffect(id) {
+      this.character.activeEffects = this.character.activeEffects.filter(e => e.id !== id);
+    },
+
+    effectValueText(eff) {
+      if (eff.type === 'buff') return '+' + eff.value + ' ' + eff.target;
+      if (eff.type === 'debuff') return '-' + eff.value + ' ' + eff.target;
+      if (eff.type === 'hot') return '+' + eff.value + ' HP/turno';
+      if (eff.type === 'dot') return '-' + eff.value + ' HP/turno';
+      if (eff.type === 'status') return eff.target;
+      if (eff.type === 'dmgmod') return (eff.value > 0 ? '+' : '') + eff.value + '% ' + eff.target;
+      return '';
     },
 
     takeDamage(amount) {
@@ -1521,11 +1697,26 @@ createApp({
     },
 
     statBonus(key) {
-      return this.gearStatBonus(key);
+      return this.gearStatBonus(key) + this.effectStatBonus(key);
     },
 
     levelStatBonus(key) {
-      return this.finalStats[key] - this.character.baseStats[key] - this.gearStatBonus(key);
+      return this.finalStats[key] - this.character.baseStats[key] - this.gearStatBonus(key) - this.effectStatBonus(key);
+    },
+
+    effectStatBonus(key) {
+      if (!this.character.activeEffects) return 0;
+      let total = 0;
+      for (const eff of this.character.activeEffects) {
+        if (eff.type === 'buff' && eff.target === key) total += eff.value;
+        if (eff.type === 'debuff' && eff.target === key) total -= eff.value;
+      }
+      return total;
+    },
+
+    hasStatus(status) {
+      if (!this.character.activeEffects) return false;
+      return this.character.activeEffects.some(e => e.type === 'status' && e.target === status);
     },
 
     gearStatBonus(key) {
@@ -1599,6 +1790,7 @@ createApp({
       this.character.trainedRanks = {};
       this.character.currentCooldowns = {};
       this.character.equipment = this.defaultEquipment();
+      this.character.activeEffects = [];
       this.turnNumber = 1;
       this.showToast(`Clase cambiada a ${cls.name}`);
     },
@@ -1692,6 +1884,7 @@ createApp({
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.equipment) this.character.equipment = this.defaultEquipment();
+          if (!this.character.activeEffects) this.character.activeEffects = [];
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
           if (this.character.level > (window.MAX_LEVEL || 60)) this.character.level = window.MAX_LEVEL || 60;
