@@ -197,17 +197,30 @@ createApp({
       return sp;
     },
 
-    // Probabilidad de crítico (5% base + Intelecto + talentos)
-    // WoW Classic: ~60 Intelecto = 1% spell crit
+    // Prob. Crítico de Hechizos (5% base + Intelecto + nivel + talentos)
+    // WoW Classic: 60 Int = 1% spell crit, +0.02% por nivel
     // Talento "Llamada del Trueno" (Chamán): +1% por punto
     spellCrit() {
-      const fromInt = Math.floor(this.finalStats.intelecto / 60);
-      return 5 + fromInt + this.talentRank('call_of_thunder') * 1;
+      const fromInt = this.finalStats.intelecto / 60;
+      const fromLevel = this.character.level * 0.02;
+      const fromTalent = this.talentRank('call_of_thunder');
+      return (5 + fromInt + fromLevel + fromTalent).toFixed(2);
     },
 
-    // Poder de ataque desde Fuerza
+    // Prob. Crítico Físico/Melee (5% base + Agilidad + nivel)
+    // WoW Classic: 20 Agi = 1% melee crit, +0.02% por nivel
+    meleeCrit() {
+      const fromAgi = this.finalStats.agilidad / 20;
+      const fromLevel = this.character.level * 0.02;
+      return (5 + fromAgi + fromLevel).toFixed(2);
+    },
+
+    // Poder de Ataque (Fuerza × 2 + Nivel × 2 - 10)
+    // WoW Classic: melee AP = STR×2 + level×2 - 10
     attackPower() {
-      return this.classConfig.formulas.attackPower(this.finalStats);
+      const base = this.finalStats.fuerza * 2 + this.character.level * 2 - 10;
+      const fromFormula = this.classConfig.formulas.attackPower(this.finalStats);
+      return Math.max(base, fromFormula);
     },
 
     // Regen. de Maná desde Espíritu (fórmula de clase)
