@@ -31,7 +31,7 @@ window.CLASS_REGISTRY.shaman = {
     mana:        (s, lvl) => 30 + s.intelecto * 15 + lvl * 3,
     spellPower:  (s)      => Math.round(s.intelecto * 0.5),
     attackPower: (s)      => s.fuerza * 2,
-    manaRegen:   (s, lvl) => Math.round(s.espiritu * 0.5 + lvl * 0.2),
+    manaRegen:   (s)      => Math.round(s.espiritu * 0.25 + 15),
   },
 
   /* Atributos base al crear un personaje de esta clase */

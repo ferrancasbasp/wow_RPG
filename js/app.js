@@ -24,7 +24,7 @@ const FALLBACK_CLASS = {
     mana: (s, lvl) => 30 + s.intelecto * 15 + lvl * 3,
     spellPower: (s) => Math.round(s.intelecto * 0.5),
     attackPower: (s) => s.fuerza * 2,
-    manaRegen: (s, lvl) => Math.round(s.espiritu * 0.5 + lvl * 0.2),
+    manaRegen: (s) => Math.round(s.espiritu * 0.25 + 15),
   },
   baseStats: { fuerza: 15, agilidad: 10, intelecto: 25, aguante: 20, espiritu: 18 },
   startingLevel: 1,
