@@ -142,8 +142,8 @@ createApp({
       return CLASS_DATA[this.character.classKey] || CLASS_DATA.shaman || FALLBACK_CLASS;
     },
 
-    // Atributos finales = base + crecimiento por nivel (statGrowth de la clase)
-    // + talentos que modifican atributos (ej: Mente Arcana del Mago)
+    // Atributos finales = base + crecimiento por nivel + equipo + efectos
+    // + talentos que modifican atributos
     finalStats() {
       const growth = this.classConfig.statGrowth || {};
       const level = this.character.level;
@@ -151,6 +151,8 @@ createApp({
       for (const key of Object.values(STAT_KEYS)) {
         const perLevel = growth[key] || 0;
         result[key] = this.character.baseStats[key] + Math.floor((level - 1) * perLevel);
+        result[key] += this.gearStatBonus(key);
+        result[key] += this.effectStatBonus(key);
       }
       // Mago: Mente Arcana (+3% Intelecto por punto)
       const arcaneMind = this.talentRank('arcane_mind');
@@ -195,10 +197,12 @@ createApp({
       return sp;
     },
 
-    // Probabilidad de crítico (5% base + talentos)
-    // Talento "Llamada del Trueno": +1% por punto
+    // Probabilidad de crítico (5% base + Intelecto + talentos)
+    // WoW Classic: ~60 Intelecto = 1% spell crit
+    // Talento "Llamada del Trueno" (Chamán): +1% por punto
     spellCrit() {
-      return 5 + this.talentRank('call_of_thunder') * 1;
+      const fromInt = Math.floor(this.finalStats.intelecto / 60);
+      return 5 + fromInt + this.talentRank('call_of_thunder') * 1;
     },
 
     // Poder de ataque desde Fuerza
