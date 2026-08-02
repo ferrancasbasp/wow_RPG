@@ -791,15 +791,47 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
       <div class="effects-empty" v-else>Sin efectos activos</div>
 
       <div class="effect-add-form">
-        <select v-model="newEffect.type" class="effect-input">
+        <select v-model="newEffect.type" class="effect-input" @change="onEffectTypeChange">
           <option v-for="(info, key) in effectTypes" :key="key" :value="key">{{ info.label }}</option>
         </select>
-        <input type="text" v-model="newEffect.name" class="effect-input effect-name-field" placeholder="Nombre">
-        <select v-model="newEffect.target" class="effect-input">
-          <option v-for="t in effectTargets" :key="t" :value="t">{{ t }}</option>
+
+        <!-- Nombre (todos excepto status) -->
+        <input v-if="newEffect.type !== 'status'" type="text" v-model="newEffect.name"
+               class="effect-input effect-name-field" placeholder="Nombre">
+
+        <!-- Status: selector de estado, sin valor ni duracion -->
+        <select v-if="newEffect.type === 'status'" v-model="newEffect.target" class="effect-input">
+          <option v-for="s in statusOptions" :key="s.key" :value="s.key">{{ s.label }}</option>
         </select>
-        <input type="number" v-model.number="newEffect.value" class="effect-input effect-value-field" placeholder="Valor" min="0">
-        <input type="number" v-model.number="newEffect.duration" class="effect-input effect-dur-field" placeholder="Turnos" min="1">
+
+        <!-- Buff/Debuff: selector de stat + valor + duracion -->
+        <select v-if="newEffect.type === 'buff' || newEffect.type === 'debuff'"
+                v-model="newEffect.target" class="effect-input">
+          <option v-for="s in buffDebuffStats" :key="s.key" :value="s.key">{{ s.label }}</option>
+        </select>
+        <input v-if="newEffect.type === 'buff' || newEffect.type === 'debuff'"
+               type="number" v-model.number="newEffect.value" class="effect-input effect-value-field" placeholder="Valor" min="0">
+        <input v-if="newEffect.type === 'buff' || newEffect.type === 'debuff'"
+               type="number" v-model.number="newEffect.duration" class="effect-input effect-dur-field" placeholder="Turnos" min="1">
+
+        <!-- HoT/DoT: selector vida/mana + valor + duracion -->
+        <select v-if="newEffect.type === 'hot' || newEffect.type === 'dot'"
+                v-model="newEffect.target" class="effect-input">
+          <option v-for="t in hotDotTargets" :key="t.key" :value="t.key">{{ t.label }}</option>
+        </select>
+        <input v-if="newEffect.type === 'hot' || newEffect.type === 'dot'"
+               type="number" v-model.number="newEffect.value" class="effect-input effect-value-field" placeholder="Valor" min="0">
+        <input v-if="newEffect.type === 'hot' || newEffect.type === 'dot'"
+               type="number" v-model.number="newEffect.duration" class="effect-input effect-dur-field" placeholder="Turnos" min="1">
+
+        <!-- Misc: texto libre de target + valor + duracion -->
+        <input v-if="newEffect.type === 'misc'" type="text" v-model="newEffect.target"
+               class="effect-input" placeholder="Target libre" style="min-width: 120px;">
+        <input v-if="newEffect.type === 'misc'"
+               type="number" v-model.number="newEffect.value" class="effect-input effect-value-field" placeholder="Valor" min="0">
+        <input v-if="newEffect.type === 'misc'"
+               type="number" v-model.number="newEffect.duration" class="effect-input effect-dur-field" placeholder="Turnos" min="1">
+
         <button class="effect-add-btn" @click="addEffect">Añadir</button>
       </div>
     </div>
@@ -1085,14 +1117,31 @@ const EFFECT_TYPES = {
   hot:    { label: 'HoT', icon: '💚', color: '#5fa85f' },
   dot:    { label: 'DoT', icon: '🩸', color: '#c0392b' },
   status: { label: 'Estado', icon: '⛔', color: '#e8d5a3' },
-  dmgmod: { label: 'Mod. Daño', icon: '⚔️', color: '#9b59b6' },
+  misc:   { label: 'Misc', icon: '✦', color: '#9b59b6' },
 };
 
-const EFFECT_TARGETS = [
-  'fuerza', 'agilidad', 'intelecto', 'aguante', 'espiritu',
-  'spellPower', 'spellCrit', 'manaRegen', 'maxHP', 'maxMana',
-  'fireDamage', 'frostDamage', 'arcaneDamage', 'damageTaken',
-  'stunned', 'frozen', 'silenced', 'rooted',
+const BUFF_DEBUFF_STATS = [
+  { key: 'fuerza', label: 'Fuerza' },
+  { key: 'agilidad', label: 'Agilidad' },
+  { key: 'aguante', label: 'Aguante' },
+  { key: 'espiritu', label: 'Espíritu' },
+  { key: 'intelecto', label: 'Intelecto' },
+  { key: 'attackPower', label: 'Poder de Ataque' },
+  { key: 'spellPower', label: 'Poder de Hechizo' },
+  { key: 'spellCrit', label: 'Prob. Crítico Hechizos' },
+  { key: 'physCrit', label: 'Prob. Crítico Físico' },
+];
+
+const STATUS_OPTIONS = [
+  { key: 'stunned', label: 'Stunned' },
+  { key: 'silenced', label: 'Silenced' },
+  { key: 'rooted', label: 'Rooted' },
+  { key: 'frozen', label: 'Frozen' },
+];
+
+const HOT_DOT_TARGETS = [
+  { key: 'hp', label: 'Vida' },
+  { key: 'mana', label: 'Maná' },
 ];
 
 /* Mapeo de nombres legibles a claves internas de atributos */
@@ -1122,7 +1171,9 @@ createApp({
       showEquipment: false,
       showEffectsPanel: false,
       effectTypes: EFFECT_TYPES,
-      effectTargets: EFFECT_TARGETS,
+      buffDebuffStats: BUFF_DEBUFF_STATS,
+      statusOptions: STATUS_OPTIONS,
+      hotDotTargets: HOT_DOT_TARGETS,
       newEffect: { type: 'buff', name: '', target: 'aguante', value: 0, duration: 1 },
       toastMessage: '',
       xpInputAmount: null,
@@ -1624,10 +1675,18 @@ createApp({
       const messages = [];
       for (const eff of this.character.activeEffects) {
         if (eff.type === 'hot') {
-          this.character.currentHP = Math.min(this.maxHP, this.hpActual + eff.value);
+          if (eff.target === 'mana') {
+            this.character.currentMana = Math.min(this.maxMana, this.manaActual + eff.value);
+          } else {
+            this.character.currentHP = Math.min(this.maxHP, this.hpActual + eff.value);
+          }
           messages.push('+' + eff.value + ' ' + eff.name);
         } else if (eff.type === 'dot') {
-          this.character.currentHP = Math.max(0, this.hpActual - eff.value);
+          if (eff.target === 'mana') {
+            this.character.currentMana = Math.max(0, this.manaActual - eff.value);
+          } else {
+            this.character.currentHP = Math.max(0, this.hpActual - eff.value);
+          }
           messages.push('-' + eff.value + ' ' + eff.name);
         }
       }
@@ -1639,21 +1698,86 @@ createApp({
       }
     },
 
-    addEffect() {
-      if (!this.newEffect.name.trim() || this.newEffect.value === null || this.newEffect.value === undefined) {
-        this.showToast('Faltan datos del efecto');
-        return;
+    onEffectTypeChange() {
+      if (this.newEffect.type === 'status') {
+        this.newEffect.target = 'stunned';
+        this.newEffect.value = 0;
+        this.newEffect.duration = 1;
+        this.newEffect.name = '';
+      } else if (this.newEffect.type === 'buff' || this.newEffect.type === 'debuff') {
+        this.newEffect.target = 'aguante';
+        this.newEffect.value = 0;
+        this.newEffect.duration = 1;
+        this.newEffect.name = '';
+      } else if (this.newEffect.type === 'hot' || this.newEffect.type === 'dot') {
+        this.newEffect.target = 'hp';
+        this.newEffect.value = 0;
+        this.newEffect.duration = 1;
+        this.newEffect.name = '';
+      } else if (this.newEffect.type === 'misc') {
+        this.newEffect.target = '';
+        this.newEffect.value = 0;
+        this.newEffect.duration = 1;
+        this.newEffect.name = '';
       }
-      if (!this.character.activeEffects) this.character.activeEffects = [];
-      this.character.activeEffects.push({
-        id: Date.now() + Math.random(),
-        type: this.newEffect.type,
-        name: this.newEffect.name.trim(),
-        target: this.newEffect.target,
-        value: Math.abs(this.newEffect.value),
-        duration: this.newEffect.duration || 1,
-      });
-      this.newEffect = { type: 'buff', name: '', target: 'aguante', value: 0, duration: 1 };
+    },
+
+    addEffect() {
+      const t = this.newEffect.type;
+      if (t === 'status') {
+        if (!this.character.activeEffects) this.character.activeEffects = [];
+        this.character.activeEffects.push({
+          id: Date.now() + Math.random(),
+          type: 'status',
+          name: this.statusOptions.find(s => s.key === this.newEffect.target)?.label || this.newEffect.target,
+          target: this.newEffect.target,
+          value: 0,
+          duration: 1,
+        });
+      } else if (t === 'buff' || t === 'debuff') {
+        if (!this.newEffect.name.trim() || !this.newEffect.value) {
+          this.showToast('Faltan datos del efecto');
+          return;
+        }
+        if (!this.character.activeEffects) this.character.activeEffects = [];
+        this.character.activeEffects.push({
+          id: Date.now() + Math.random(),
+          type: t,
+          name: this.newEffect.name.trim(),
+          target: this.newEffect.target,
+          value: Math.abs(this.newEffect.value),
+          duration: this.newEffect.duration || 1,
+        });
+      } else if (t === 'hot' || t === 'dot') {
+        if (!this.newEffect.name.trim() || !this.newEffect.value) {
+          this.showToast('Faltan datos del efecto');
+          return;
+        }
+        if (!this.character.activeEffects) this.character.activeEffects = [];
+        this.character.activeEffects.push({
+          id: Date.now() + Math.random(),
+          type: t,
+          name: this.newEffect.name.trim(),
+          target: this.newEffect.target,
+          value: Math.abs(this.newEffect.value),
+          duration: this.newEffect.duration || 1,
+        });
+      } else if (t === 'misc') {
+        if (!this.newEffect.name.trim()) {
+          this.showToast('Faltan datos del efecto');
+          return;
+        }
+        if (!this.character.activeEffects) this.character.activeEffects = [];
+        this.character.activeEffects.push({
+          id: Date.now() + Math.random(),
+          type: 'misc',
+          name: this.newEffect.name.trim(),
+          target: this.newEffect.target,
+          value: Math.abs(this.newEffect.value),
+          duration: this.newEffect.duration || 1,
+        });
+      }
+      this.onEffectTypeChange();
       this.showToast('Efecto añadido');
     },
 
@@ -1664,10 +1788,10 @@ createApp({
     effectValueText(eff) {
       if (eff.type === 'buff') return '+' + eff.value + ' ' + eff.target;
       if (eff.type === 'debuff') return '-' + eff.value + ' ' + eff.target;
-      if (eff.type === 'hot') return '+' + eff.value + ' HP/turno';
-      if (eff.type === 'dot') return '-' + eff.value + ' HP/turno';
-      if (eff.type === 'status') return eff.target;
-      if (eff.type === 'dmgmod') return (eff.value > 0 ? '+' : '') + eff.value + '% ' + eff.target;
+      if (eff.type === 'hot') return '+' + eff.value + ' ' + (eff.target === 'mana' ? 'maná' : 'vida') + '/turno';
+      if (eff.type === 'dot') return '-' + eff.value + ' ' + (eff.target === 'mana' ? 'maná' : 'vida') + '/turno';
+      if (eff.type === 'status') return eff.name;
+      if (eff.type === 'misc') return (eff.value > 0 ? '+' : '') + eff.value + ' ' + eff.target;
       return '';
     },
 
