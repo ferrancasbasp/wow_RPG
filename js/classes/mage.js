@@ -123,5 +123,18 @@ window.CLASS_REGISTRY.mage = {
       baseDamage: 30, spellPowerRatio: 0.357, costPct: 0.07, castType: 'instant', cooldown: 2,
       description: 'Estalla energía arcana alrededor del mago dañando a todos los enemigos cercanos.',
       dice: { count: 2, sides: 10, bonus: 8 } },
+
+    { id: 'arcane_intellect', name: 'Intelecto Arcano', icon: '🧠', iconImg: 'img/abilities/mage/arcane_mind.jpg',
+      school: 'Arcano', type: 'utility', requiredLevel: 1,
+      costPct: 0.06, castType: 'instant', cooldown: 0,
+      description: 'Aumenta el Intelecto del objetivo. Aplica manualmente el buff en la hoja.',
+      buff: { stat: 'intelecto', duration: 30 },
+      buffRanks: [
+        { rank: 1, level: 1,  value: 2,  costPct: 0.06 },
+        { rank: 2, level: 14, value: 7,  costPct: 0.07 },
+        { rank: 3, level: 28, value: 10, costPct: 0.08 },
+        { rank: 4, level: 42, value: 15, costPct: 0.09 },
+        { rank: 5, level: 56, value: 20, costPct: 0.10 },
+      ] },
   ],
 };

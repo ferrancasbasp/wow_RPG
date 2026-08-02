@@ -259,6 +259,37 @@
       </div>
     </div>
 
+    <!-- =================== PANEL DE UTILIDAD =================== -->
+    <div class="wow-panel" v-if="unlockedUtility.length > 0">
+      <div class="panel-title">Utilidad</div>
+      <div class="panel-body">
+        <div class="ability-card" v-for="ability in unlockedUtility" :key="ability.id"
+             :class="{ 'ability-locked': manaActual < ability.scaledCost }">
+          <div class="ability-icon">
+            <img v-if="ability.iconImg" :src="ability.iconImg" class="ability-icon-img" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='inline'">
+            <span v-if="ability.iconImg" style="display:none">{{ ability.icon }}</span>
+            <span v-if="!ability.iconImg">{{ ability.icon }}</span>
+            <span class="ability-rank-badge" v-if="ability.currentRank > 1">R{{ ability.currentRank }}</span>
+          </div>
+          <div class="ability-info">
+            <div class="ability-name">{{ ability.name }}</div>
+            <div class="ability-school">{{ ability.school }} · Instantáneo · Nv. {{ ability.requiredLevel }}</div>
+            <div class="ability-desc">{{ ability.description }}</div>
+            <div class="ability-stats">
+              <span class="ability-stat bonus">+{{ ability.currentBuffValue }} {{ ability.currentBuffStat }} · {{ ability.currentBuffDuration }} turnos</span>
+              <span class="ability-stat cost">{{ ability.scaledCost }} maná</span>
+            </div>
+            <div class="ability-cast-row">
+              <button class="cast-btn" @click="castUtility(ability)"
+                      :disabled="manaActual < ability.scaledCost">
+                Lanzar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- =================== PANEL DE EQUIPO =================== -->
     <div class="wow-panel equip-panel" :class="{ 'equip-collapsed': !showEquipment }">
       <div class="panel-title" v-if="!showEquipment" @click="showEquipment = true" style="cursor: pointer;">

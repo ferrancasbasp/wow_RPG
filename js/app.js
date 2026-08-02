@@ -367,9 +367,9 @@ createApp({
       return Math.floor((this.manaActual / this.maxMana) * 100);
     },
 
-    // Habilidades entrenadas (con dados escalados por rango)
+    // Habilidades entrenadas (con dados escalados por rango) — solo damage/heal
     unlockedAbilities() {
-      return this.computedAbilities.filter(a => this.trainedRank(a.id) > 0).map(a => {
+      return this.computedAbilities.filter(a => a.type !== 'utility' && this.trainedRank(a.id) > 0).map(a => {
         const rank = this.trainedRank(a.id);
         return {
           ...a,
@@ -384,9 +384,33 @@ createApp({
       });
     },
 
+    // Habilidades de utilidad (buffs sin dados, no envian daño al master)
+    unlockedUtility() {
+      return this.classConfig.abilities.filter(a => a.type === 'utility' && this.trainedRank(a.id) > 0).map(a => {
+        const rank = this.trainedRank(a.id);
+        const buffRank = a.buffRanks ? a.buffRanks.find(br => br.rank === rank) : null;
+        const costPct = buffRank ? buffRank.costPct : a.costPct;
+        const cost = Math.round(costPct * this.baseMana);
+        return {
+          ...a,
+          currentRank: rank,
+          scaledCost: cost,
+          currentBuffValue: buffRank ? buffRank.value : (a.buff ? a.buff.value : 0),
+          currentBuffDuration: a.buff ? a.buff.duration : 1,
+          currentBuffStat: a.buff ? a.buff.stat : '',
+        };
+      });
+    },
+
     // Habilidades que se pueden entrenar (tienes nivel pero no las has entrenado o hay rango nuevo)
     trainableAbilities() {
       return this.classConfig.abilities.filter(a => {
+        if (a.type === 'utility') {
+          if (a.buffRanks) {
+            const maxBR = a.buffRanks.filter(br => this.character.level >= br.level).length;
+            return maxBR > this.trainedRank(a.id);
+          }
+        }
         const maxRank = this.maxAvailableRank(a);
         const trained = this.trainedRank(a.id);
         return maxRank > 0 && trained < maxRank;
@@ -395,7 +419,12 @@ createApp({
 
     // Habilidades bloqueadas (no tienes nivel)
     lockedAbilities() {
-      return this.classConfig.abilities.filter(a => this.maxAvailableRank(a) === 0);
+      return this.classConfig.abilities.filter(a => {
+        if (a.type === 'utility') {
+          if (a.buffRanks) return a.buffRanks[0].level > this.character.level;
+        }
+        return this.maxAvailableRank(a) === 0;
+      });
     },
 
     // Hay algo que entrenar?
@@ -583,6 +612,17 @@ createApp({
       }
     },
 
+    castUtility(ability) {
+      const cost = ability.scaledCost;
+      if (this.manaActual < cost) {
+        this.showToast('Maná insuficiente');
+        return;
+      }
+      this.character.currentMana = this.manaActual - cost;
+      const buffText = '+' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ' (' + ability.currentBuffDuration + ' turnos)';
+      this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
+    },
+
     sendDamageEvent(ability, damage) {
       try {
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
@@ -758,11 +798,20 @@ createApp({
       if (!this.character.trainedRanks) this.character.trainedRanks = {};
       let count = 0;
       for (const ability of this.classConfig.abilities) {
-        const maxRank = this.maxAvailableRank(ability);
-        const trained = this.trainedRank(ability.id);
-        if (maxRank > trained) {
-          this.character.trainedRanks[ability.id] = maxRank;
-          count++;
+        if (ability.type === 'utility' && ability.buffRanks) {
+          const maxBR = ability.buffRanks.filter(br => this.character.level >= br.level).length;
+          const trained = this.trainedRank(ability.id);
+          if (maxBR > trained) {
+            this.character.trainedRanks[ability.id] = maxBR;
+            count++;
+          }
+        } else {
+          const maxRank = this.maxAvailableRank(ability);
+          const trained = this.trainedRank(ability.id);
+          if (maxRank > trained) {
+            this.character.trainedRanks[ability.id] = maxRank;
+            count++;
+          }
         }
       }
       if (count > 0) {
