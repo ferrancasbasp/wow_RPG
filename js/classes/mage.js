@@ -139,5 +139,19 @@ window.CLASS_REGISTRY.mage = {
         { rank: 4, level: 42, value: 15, costPct: 0.09 },
         { rank: 5, level: 56, value: 20, costPct: 0.10 },
       ] },
+
+    { id: 'frost_armor', name: 'Armadura de Escarcha', icon: '🧊', iconImg: 'img/abilities/mage/ice_barrier.jpg',
+      school: 'Escarcha', type: 'utility', requiredLevel: 4,
+      costPct: 0.30, castType: 'instant', cooldown: 0,
+      description: 'Crea una barrera de hielo que aumenta tu armadura física.',
+      buff: { stat: 'armor', duration: 30, applySelf: true },
+      buffRanks: [
+        { rank: 1, level: 4,  value: 5,  costPct: 0.30 },
+        { rank: 2, level: 14, value: 7,  costPct: 0.30 },
+        { rank: 3, level: 24, value: 9,  costPct: 0.30 },
+        { rank: 4, level: 34, value: 11, costPct: 0.30 },
+        { rank: 5, level: 44, value: 13, costPct: 0.30 },
+        { rank: 6, level: 54, value: 15, costPct: 0.30 },
+      ] },
   ],
 };

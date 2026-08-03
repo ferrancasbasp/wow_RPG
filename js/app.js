@@ -231,14 +231,26 @@ createApp({
       return this.classConfig.formulas.manaRegen(this.finalStats, this.character.level);
     },
 
-    // Armadura física base de clase (sin equipo por ahora)
+    // Armadura física: base de clase + buffs de armor activos
     armorTotal() {
-      return this.classConfig.armor || 0;
+      let total = this.classConfig.armor || 0;
+      if (this.character.activeEffects) {
+        for (const eff of this.character.activeEffects) {
+          if (eff.type === 'buff' && eff.target === 'armor') total += eff.value;
+        }
+      }
+      return total;
     },
 
-    // Armadura mágica base de clase
+    // Armadura mágica: base de clase + buffs activos
     magicResistTotal() {
-      return this.classConfig.magicResist || 0;
+      let total = this.classConfig.magicResist || 0;
+      if (this.character.activeEffects) {
+        for (const eff of this.character.activeEffects) {
+          if (eff.type === 'buff' && eff.target === 'magicResist') total += eff.value;
+        }
+      }
+      return total;
     },
 
     // % de reducción de daño físico (armadura / (armadura + 50))
@@ -659,8 +671,22 @@ createApp({
         return;
       }
       this.character.currentMana = this.manaActual - cost;
-      const buffText = '+' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ' (' + ability.currentBuffDuration + ' turnos)';
-      this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
+      if (ability.buff && ability.buff.applySelf) {
+        if (!this.character.activeEffects) this.character.activeEffects = [];
+        this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== ability.name);
+        this.character.activeEffects.push({
+          id: Date.now() + Math.random(),
+          type: 'buff',
+          name: ability.name,
+          target: ability.currentBuffStat,
+          value: ability.currentBuffValue,
+          duration: ability.currentBuffDuration,
+        });
+        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + ' ' + ability.currentBuffStat);
+      } else {
+        const buffText = '+' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ' (' + ability.currentBuffDuration + ' turnos)';
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
+      }
     },
 
     sendDamageEvent(ability, damage) {
