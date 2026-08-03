@@ -785,7 +785,17 @@ createApp({
         this.turnDamage += roll;
         let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '')) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText);
-        this.sendDamageEvent(ability, roll);
+        const hits = ability.multiHit || 1;
+        for (let h = 0; h < hits; h++) {
+          let hitRoll = roll;
+          if (hits > 1 && h > 0) {
+            hitRoll = (ability.currentMin || 0) + Math.floor(Math.random() * ((ability.currentMax || 0) - (ability.currentMin || 0) + 1));
+            if (isCrit) hitRoll = Math.round(hitRoll * 1.5);
+            if (isRage && this.warriorStance === 'battle') hitRoll = Math.round(hitRoll * 1.10);
+            this.turnDamage += hitRoll;
+          }
+          this.sendDamageEvent(ability, hitRoll, h + 1, hits);
+        }
       }
     },
 
@@ -897,7 +907,7 @@ createApp({
       }
     },
 
-    sendDamageEvent(ability, damage) {
+    sendDamageEvent(ability, damage, hitNum, totalHits) {
       try {
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
         const db = firebase.database();
@@ -913,9 +923,10 @@ createApp({
             return { ...eff };
           });
         }
+        const abilityName = totalHits > 1 ? ability.name + ' (' + hitNum + '/' + totalHits + ')' : ability.name;
         db.ref('damageEvents').push({
           player: this.character.name || 'Jugador',
-          ability: ability.name,
+          ability: abilityName,
           rank: ability.currentRank || 1,
           damage: damage,
           damageType: ability.damageType || 'magical',
@@ -1091,7 +1102,13 @@ createApp({
       if (amount <= 0) return;
       this.character.currentHP = Math.max(0, this.hpActual - amount);
       this.hpLossAmount = null;
-      this.showToast('-' + amount + ' vida');
+      let rageText = '';
+      if (this.resourceConfig.type === 'rage') {
+        const rageGain = 2 + Math.floor(Math.random() * 3);
+        this.character.currentRage = Math.min(this.resourceMax, this.resourceActual + rageGain);
+        rageText = ' · +' + rageGain + ' ira';
+      }
+      this.showToast('-' + amount + ' vida' + rageText);
     },
 
     trainAll() {

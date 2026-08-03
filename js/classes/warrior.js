@@ -122,6 +122,33 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 4, level: 24, value: 28, duration: 5 },
       ] },
 
+    { id: 'cleave', name: 'Hender', icon: '🪓',
+      school: 'Físico', type: 'damage', requiredLevel: 12, damageType: 'physical',
+      baseDamage: 20, spellPowerRatio: 0, costRage: 10, generatesRage: 0, castType: 'instant', cooldown: 0,
+      description: 'Golpe a dos enemigos cercanos. Envía dos ataques al master.',
+      damageRanges: [
+        { rank: 1, level: 12, min: 20, max: 30 },
+        { rank: 2, level: 18, min: 36, max: 50 },
+        { rank: 3, level: 24, min: 60, max: 82 },
+        { rank: 4, level: 30, min: 92, max: 122 },
+      ],
+      multiHit: 2 },
+
+    { id: 'thunder_clap', name: 'Aplastar', icon: '⚡',
+      school: 'Físico', type: 'damage', requiredLevel: 14, damageType: 'physical',
+      baseDamage: 15, spellPowerRatio: 0, costRage: 10, generatesRage: 0, castType: 'instant', cooldown: 2,
+      description: 'Daño en área que ralentiza a los enemigos.',
+      damageRanges: [
+        { rank: 1, level: 14, min: 8,  max: 12 },
+        { rank: 2, level: 20, min: 14, max: 20 },
+        { rank: 3, level: 26, min: 24, max: 32 },
+        { rank: 4, level: 32, min: 38, max: 50 },
+      ],
+      aoe: true,
+      inflictsEffects: [
+        { type: 'debuff', name: 'Ralentizado', stat: 'speed', value: 1, duration: 2 },
+      ] },
+
     { id: 'shout', name: 'Grito de Batalla', icon: '📢',
       school: 'Físico', type: 'utility', requiredLevel: 8,
       costRage: 10, castType: 'instant', cooldown: 0,
