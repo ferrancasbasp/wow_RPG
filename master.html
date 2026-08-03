@@ -169,6 +169,14 @@ body {
 }
 .add-monster-btn:hover { border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 8px var(--gold-glow); }
 
+.clear-btn {
+  padding: 4px 12px; font-family: 'Cinzel', serif; font-size: 11px; font-weight: 600;
+  background: linear-gradient(180deg, #4a1a1a 0%, #2d0e0e 100%);
+  border: 1px solid #8b2e2e; border-radius: 3px; color: #e07070;
+  cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+}
+.clear-btn:hover { border-color: #c0392b; color: #ff9090; box-shadow: 0 0 8px rgba(192,57,43,0.3); }
+
 /* === TOAST === */
 .toast {
   position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -205,10 +213,13 @@ body {
     <div class="wow-panel">
       <div class="panel-title">
         Daño Entrante
-        <span class="connection-status">
-          <span class="status-dot" :class="firebaseConnected ? 'connected' : 'disconnected'"></span>
-          {{ firebaseConnected ? 'Conectado' : 'Sin conexión' }}
-        </span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="connection-status">
+            <span class="status-dot" :class="firebaseConnected ? 'connected' : 'disconnected'"></span>
+            {{ firebaseConnected ? 'Conectado' : 'Sin conexión' }}
+          </span>
+          <button class="clear-btn" @click="clearAllEvents" v-if="pendingEvents.length > 0">Limpiar</button>
+        </div>
       </div>
       <div class="panel-body">
         <div class="damage-log" v-if="pendingEvents.length > 0">
@@ -422,6 +433,18 @@ createApp({
           this.monsterIdCounter = parsed.counter || (this.monsters.length + 1);
         }
       } catch (e) {}
+    },
+
+    clearAllEvents() {
+      for (const event of this.pendingEvents) {
+        event.assigned = true;
+        if (typeof firebase !== 'undefined' && firebase.apps.length) {
+          firebase.database().ref('damageEvents/' + event.id).update({ assigned: true });
+        }
+      }
+      this.pendingEvents = [];
+      this.selectedEventId = null;
+      this.showToast('Eventos limpiados');
     },
 
     showToast(msg) {

@@ -657,7 +657,7 @@ createApp({
         if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
         this.character.currentCooldowns[ability.id] = this.getEffectiveCooldown(ability);
       }
-      let ccText = clearcast ? ' ¡Claridad Arcana! Maná devuelto.' : '';
+      let ccText = clearcast ? ' · ¡CLARIDAD ARCANA! Maná devuelto' : '';
       if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText);
@@ -704,7 +704,7 @@ createApp({
         if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
         this.character.currentCooldowns[ability.id] = cd;
       }
-      let ccText = clearcast ? ' ¡Claridad Arcana! Maná devuelto.' : '';
+      let ccText = clearcast ? ' · ¡CLARIDAD ARCANA! Maná devuelto' : '';
       if (ability.buff && ability.buff.applySelf) {
         if (!this.character.activeEffects) this.character.activeEffects = [];
         this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== ability.name);
