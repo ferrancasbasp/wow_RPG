@@ -80,8 +80,8 @@
         <button class="stance-btn" :class="{ active: warriorStance === 'protection' }" @click="warriorStance = 'protection'">🛡️ Prot</button>
       </div>
       <div class="warrior-weapon-row" v-if="character.classKey === 'warrior'">
-        <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'dualwield' }" @click="warriorWeaponMode = 'dualwield'">🗡️ Dual Wield</button>
-        <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'twohanded' }" @click="warriorWeaponMode = 'twohanded'">🔨 Two-Handed</button>
+        <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'dualwield' }" @click="warriorWeaponMode = 'dualwield'">🗡️ 1H + Off</button>
+        <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'twohanded' }" @click="warriorWeaponMode = 'twohanded'">🔨 2H</button>
       </div>
       <div class="turn-damage-box">
         <span class="turn-damage-label">Daño del Turno</span>

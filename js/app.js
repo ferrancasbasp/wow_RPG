@@ -61,9 +61,9 @@ function createDefaultCharacter(classKey) {
       hands:     { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
       legs:      { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
       feet:      { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
-      weapon:    { name: 'Arma básica', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 15 },
-      offhand:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, defense: 0 },
-      dualwield: { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 },
+      mainHand:  { name: 'Arma básica', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 15 },
+      offHand:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0, defense: 0 },
+      twoHand:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 },
     },
     activeEffects: [],
   };
@@ -122,9 +122,9 @@ createApp({
         { key: 'hands',     label: 'Manos',    icon: '🧤' },
         { key: 'legs',      label: 'Piernas',  icon: '👖' },
         { key: 'feet',      label: 'Pies',     icon: '🥾' },
-        { key: 'weapon',    label: 'Arma',     icon: '⚔️', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] },
-        { key: 'offhand',   label: 'Escudo',   icon: '🛡️', extraFields: [{ key: 'defense', label: 'Defensa', icon: '🛡️' }] },
-        { key: 'dualwield', label: 'Dual Wield', icon: '🗡️', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] },
+        { key: 'mainHand',  label: 'Mano Fuerte', icon: '⚔️', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] },
+        { key: 'offHand',   label: 'Mano Débil', icon: '🗡️', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }, { key: 'defense', label: 'Defensa', icon: '🛡️' }] },
+        { key: 'twoHand',   label: 'Arma a Dos Manos', icon: '🔨', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] },
       ],
       showExportModal: false,
       showTalentModal: false,
@@ -453,15 +453,15 @@ createApp({
       });
     },
 
-    // Daño de arma total según modo de arma del warrior
+    // Daño de arma total según modo del warrior
     totalWeaponDamage() {
       if (!this.character.equipment) return 0;
       if (this.warriorWeaponMode === 'dualwield') {
-        const w = this.character.equipment.weapon ? this.character.equipment.weapon.weaponDamage || 0 : 0;
-        const d = this.character.equipment.dualwield ? this.character.equipment.dualwield.weaponDamage || 0 : 0;
-        return w + d;
+        const main = this.character.equipment.mainHand ? this.character.equipment.mainHand.weaponDamage || 0 : 0;
+        const off = this.character.equipment.offHand ? this.character.equipment.offHand.weaponDamage || 0 : 0;
+        return main + off;
       } else {
-        return this.character.equipment.weapon ? this.character.equipment.weapon.weaponDamage || 0 : 0;
+        return this.character.equipment.twoHand ? this.character.equipment.twoHand.weaponDamage || 0 : 0;
       }
     },
 
@@ -1045,16 +1045,19 @@ createApp({
 
     defaultEquipment() {
       const emptyBonus = { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 };
-      const slots = ['head', 'chest', 'hands', 'legs', 'feet', 'weapon', 'offhand', 'dualwield'];
-      const extraFields = { head: 'defense', chest: 'defense', weapon: 'weaponDamage', offhand: 'defense', dualwield: 'weaponDamage' };
+      const slots = ['head', 'chest', 'hands', 'legs', 'feet', 'mainHand', 'offHand', 'twoHand'];
+      const extras = {
+        head: ['defense'], chest: ['defense'],
+        mainHand: ['weaponDamage'], offHand: ['weaponDamage', 'defense'], twoHand: ['weaponDamage'],
+      };
       const eq = {};
       for (const s of slots) {
         const item = { name: '', bonus: { ...emptyBonus } };
-        if (extraFields[s]) item[extraFields[s]] = 0;
+        if (extras[s]) for (const f of extras[s]) item[f] = 0;
         eq[s] = item;
       }
-      eq.weapon.name = 'Arma básica';
-      eq.weapon.weaponDamage = 15;
+      eq.mainHand.name = 'Arma básica';
+      eq.mainHand.weaponDamage = 15;
       return eq;
     },
 
@@ -1121,7 +1124,7 @@ createApp({
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character_v5', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v6', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1130,7 +1133,7 @@ createApp({
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character_v5');
+        const data = localStorage.getItem('ttrpg_wow_character_v6');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
@@ -1209,7 +1212,7 @@ createApp({
 
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v5');
+      const saved = localStorage.getItem('ttrpg_wow_character_v6');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
@@ -1222,12 +1225,14 @@ createApp({
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.equipment) this.character.equipment = this.defaultEquipment();
-          if (this.character.equipment.weapon && this.character.equipment.weapon.weaponDamage === undefined) {
-            this.character.equipment.weapon.weaponDamage = 15;
-            this.character.equipment.weapon.name = this.character.equipment.weapon.name || 'Arma básica';
-          }
-          if (!this.character.equipment.offhand) this.character.equipment.offhand = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, defense: 0 };
-          if (!this.character.equipment.dualwield) this.character.equipment.dualwield = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 };
+          const eq = this.character.equipment;
+          if (eq.weapon && !eq.mainHand) { eq.mainHand = eq.weapon; delete eq.weapon; }
+          if (eq.offhand && !eq.offHand) { eq.offHand = eq.offhand; delete eq.offhand; }
+          if (eq.dualwield) { delete eq.dualwield; }
+          if (!eq.mainHand) eq.mainHand = { name: 'Arma básica', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 15 };
+          if (eq.mainHand.weaponDamage === undefined) eq.mainHand.weaponDamage = 15;
+          if (!eq.offHand) eq.offHand = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0, defense: 0 };
+          if (!eq.twoHand) eq.twoHand = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 };
           if (!this.character.activeEffects) this.character.activeEffects = [];
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
