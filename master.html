@@ -173,6 +173,25 @@ body {
 .monster-attack-dmg {
   font-size: 11px; color: #c0392b; font-weight: 700;
 }
+
+.monster-effects {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;
+}
+.monster-effect-chip {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  display: flex; align-items: center; gap: 3px;
+}
+.monster-effect-chip.dot {
+  background: rgba(192,57,43,0.2); color: #ff7070; border: 1px solid rgba(192,57,43,0.35);
+}
+.monster-effect-chip.debuff {
+  background: rgba(155,89,182,0.2); color: #b388e0; border: 1px solid rgba(155,89,182,0.35);
+}
+.effect-dur {
+  font-size: 9px; background: rgba(0,0,0,0.4); padding: 0 4px; border-radius: 6px;
+}
+
+.damage-type-tag.effect { background: rgba(192,57,43,0.25); color: #ff8888; border: 1px solid rgba(192,57,43,0.4); }
 .monster-dmg-btn:active { transform: scale(0.95); }
 
 /* === ADD MONSTER === */
@@ -271,6 +290,7 @@ body {
                 {{ event.ability }} R{{ event.rank }} · Turno {{ event.turn }}
                 <span class="damage-type-tag" :class="event.damageType">{{ event.damageType === 'physical' ? 'Físico' : 'Mágico' }}</span>
                 <span class="damage-type-tag aoe" v-if="event.aoe">AOE</span>
+                <span class="damage-type-tag effect" v-if="event.effects">DoT/Debuff</span>
               </div>
             </div>
             <span class="damage-event-value">{{ event.damage }}</span>
@@ -325,8 +345,14 @@ body {
               <div class="monster-hp-text">{{ monster.currentHP }} / {{ monster.maxHP }}</div>
             </div>
             <div class="monster-stats" v-if="monster.armor !== undefined || monster.magicResist !== undefined">
-              <span class="monster-stat" v-if="monster.armor !== undefined">🛡️ {{ monster.armor }}</span>
-              <span class="monster-stat" v-if="monster.magicResist !== undefined">✨ {{ monster.magicResist }}</span>
+              <span class="monster-stat" v-if="monster.armor !== undefined">🛡️ {{ getEffectiveArmor(monster) }}</span>
+              <span class="monster-stat" v-if="monster.magicResist !== undefined">✨ {{ getEffectiveMagicResist(monster) }}</span>
+            </div>
+            <div class="monster-effects" v-if="monster.effects && monster.effects.length > 0">
+              <span class="monster-effect-chip" v-for="(eff, idx) in monster.effects" :key="idx"
+                    :class="eff.type">
+                {{ eff.type === 'dot' ? '🩸' : '📉' }} {{ eff.name }} {{ eff.value }} <span class="effect-dur">{{ eff.duration }}t</span>
+              </span>
             </div>
             <div class="monster-attacks" v-if="monster.attacks && monster.attacks.length > 0">
               <button v-for="(attack, idx) in monster.attacks" :key="idx"
@@ -430,13 +456,17 @@ createApp({
       let reductionText = this.getReductionText(monster, event);
       damage = this.applyReduction(monster, event, damage);
       monster.currentHP = Math.max(0, monster.currentHP - damage);
+      if (event.effects) {
+        this.applyEffectsToMonster(monster, event.effects);
+      }
       this.markEventAssigned(event);
       this.selectedEventId = null;
       this.saveMonsters();
       if (monster.currentHP <= 0) {
         this.showToast(monster.name + ' derrotado (-' + damage + reductionText + ')');
       } else {
-        this.showToast(damage + ' daño a ' + monster.name + reductionText);
+        let effectText = event.effects ? ' +' + event.effects.length + ' efecto(s)' : '';
+        this.showToast(damage + ' daño a ' + monster.name + reductionText + effectText);
       }
     },
 
@@ -450,6 +480,9 @@ createApp({
       for (const monster of alive) {
         let damage = this.applyReduction(monster, event, event.damage);
         monster.currentHP = Math.max(0, monster.currentHP - damage);
+        if (event.effects) {
+          this.applyEffectsToMonster(monster, event.effects);
+        }
         summary.push(monster.name + ': -' + damage);
       }
       this.markEventAssigned(event);
@@ -458,24 +491,86 @@ createApp({
       this.showToast('AOE: ' + summary.join(' · '));
     },
 
+    applyEffectsToMonster(monster, effects) {
+      if (!monster.effects) monster.effects = [];
+      for (const eff of effects) {
+        monster.effects = monster.effects.filter(e => e.name !== eff.name);
+        monster.effects.push({ ...eff, duration: eff.duration });
+      }
+    },
+
+    getEffectiveArmor(monster) {
+      let armor = monster.armor || 0;
+      if (monster.effects) {
+        for (const eff of monster.effects) {
+          if (eff.type === 'debuff' && eff.stat === 'armor') armor -= eff.value;
+        }
+      }
+      return Math.max(0, armor);
+    },
+
+    getEffectiveMagicResist(monster) {
+      let resist = monster.magicResist || 0;
+      if (monster.effects) {
+        for (const eff of monster.effects) {
+          if (eff.type === 'debuff' && eff.stat === 'magicResist') resist -= eff.value;
+        }
+      }
+      return Math.max(0, resist);
+    },
+
+    processMonsterEffects(monster) {
+      if (!monster.effects || monster.effects.length === 0) return '';
+      let dotTotal = 0;
+      let expired = [];
+      for (const eff of monster.effects) {
+        if (eff.type === 'dot') {
+          dotTotal += eff.value;
+        }
+        eff.duration--;
+        if (eff.duration <= 0) expired.push(eff.name);
+      }
+      if (dotTotal > 0) {
+        monster.currentHP = Math.max(0, monster.currentHP - dotTotal);
+      }
+      monster.effects = monster.effects.filter(e => e.duration > 0);
+      this.saveMonsters();
+      if (dotTotal > 0 && expired.length > 0) {
+        return ' (-' + dotTotal + ' DoT, expiró: ' + expired.join(', ') + ')';
+      } else if (dotTotal > 0) {
+        return ' (-' + dotTotal + ' DoT)';
+      } else if (expired.length > 0) {
+        return ' (expiró: ' + expired.join(', ') + ')';
+      }
+      return '';
+    },
+
     applyReduction(monster, event, damage) {
       const dmgType = event.damageType || 'magical';
-      if (dmgType === 'physical' && monster.armor) {
-        const reduction = Math.min(50, monster.armor * 2);
-        return Math.round(damage * (1 - reduction / 100));
-      } else if (dmgType === 'magical' && monster.magicResist) {
-        const reduction = Math.min(75, monster.magicResist * 3);
-        return Math.round(damage * (1 - reduction / 100));
+      if (dmgType === 'physical') {
+        const armor = this.getEffectiveArmor(monster);
+        if (armor > 0) {
+          const reduction = Math.min(50, armor * 2);
+          return Math.round(damage * (1 - reduction / 100));
+        }
+      } else if (dmgType === 'magical') {
+        const resist = this.getEffectiveMagicResist(monster);
+        if (resist > 0) {
+          const reduction = Math.min(75, resist * 3);
+          return Math.round(damage * (1 - reduction / 100));
+        }
       }
       return damage;
     },
 
     getReductionText(monster, event) {
       const dmgType = event.damageType || 'magical';
-      if (dmgType === 'physical' && monster.armor) {
-        return ' (−' + Math.min(50, monster.armor * 2) + '% armor)';
-      } else if (dmgType === 'magical' && monster.magicResist) {
-        return ' (−' + Math.min(75, monster.magicResist * 3) + '% resist)';
+      if (dmgType === 'physical') {
+        const armor = this.getEffectiveArmor(monster);
+        if (armor > 0) return ' (−' + Math.min(50, armor * 2) + '% armor)';
+      } else if (dmgType === 'magical') {
+        const resist = this.getEffectiveMagicResist(monster);
+        if (resist > 0) return ' (−' + Math.min(75, resist * 3) + '% resist)';
       }
       return '';
     },
@@ -490,7 +585,8 @@ createApp({
 
     rollMonsterAttack(monster, attack) {
       const roll = attack.min + Math.floor(Math.random() * (attack.max - attack.min + 1));
-      this.showToast(monster.name + ' usa ' + attack.name + ': ' + roll + ' daño');
+      let dotText = this.processMonsterEffects(monster);
+      this.showToast(monster.name + ' usa ' + attack.name + ': ' + roll + ' daño' + dotText);
     },
 
     applyManualDamage(monster) {

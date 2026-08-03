@@ -736,6 +736,7 @@ createApp({
           damage: damage,
           damageType: ability.damageType || 'magical',
           aoe: ability.aoe || false,
+          effects: ability.inflictsEffects || null,
           turn: this.turnNumber,
           timestamp: Date.now(),
           assigned: false,
