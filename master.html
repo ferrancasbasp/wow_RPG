@@ -149,6 +149,23 @@ body {
   cursor: pointer; transition: var(--transition);
 }
 .monster-dmg-btn:hover { border-color: #c0392b; color: #ff9090; }
+
+.monster-attacks {
+  display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;
+}
+.monster-attack-btn {
+  padding: 5px 10px; font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600;
+  background: linear-gradient(180deg, #2d2a1a 0%, #1a1810 100%);
+  border: 1px solid #8a7344; border-radius: 4px; color: #c9b27e;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+}
+.monster-attack-btn:hover {
+  border-color: #e8d5a3; color: #e8d5a3; box-shadow: 0 0 8px rgba(201,178,126,0.2);
+  transform: scale(1.03);
+}
+.monster-attack-dmg {
+  font-size: 11px; color: #c0392b; font-weight: 700;
+}
 .monster-dmg-btn:active { transform: scale(0.95); }
 
 /* === ADD MONSTER === */
@@ -300,6 +317,12 @@ body {
               <span class="monster-stat" v-if="monster.armor !== undefined">🛡️ {{ monster.armor }}</span>
               <span class="monster-stat" v-if="monster.magicResist !== undefined">✨ {{ monster.magicResist }}</span>
             </div>
+            <div class="monster-attacks" v-if="monster.attacks && monster.attacks.length > 0">
+              <button v-for="(attack, idx) in monster.attacks" :key="idx"
+                      class="monster-attack-btn" @click.stop="rollMonsterAttack(monster, attack)">
+                {{ attack.name }} <span class="monster-attack-dmg">{{ attack.min }}-{{ attack.max }}</span>
+              </button>
+            </div>
             <div class="monster-hp-controls">
               <input type="number" v-model.number="dmgInput[monster.id]" class="monster-hp-input"
                      placeholder="Daño" min="1" @keyup.enter="applyManualDamage(monster)">
@@ -401,6 +424,11 @@ createApp({
         firebase.database().ref('damageEvents/' + event.id).update({ assigned: true });
       }
       this.pendingEvents = this.pendingEvents.filter(e => e.id !== event.id);
+    },
+
+    rollMonsterAttack(monster, attack) {
+      const roll = attack.min + Math.floor(Math.random() * (attack.max - attack.min + 1));
+      this.showToast(monster.name + ' usa ' + attack.name + ': ' + roll + ' daño');
     },
 
     applyManualDamage(monster) {
