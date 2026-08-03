@@ -187,6 +187,9 @@ body {
 .monster-effect-chip.debuff {
   background: rgba(155,89,182,0.2); color: #b388e0; border: 1px solid rgba(155,89,182,0.35);
 }
+.monster-effect-chip.status {
+  background: rgba(255,156,0,0.2); color: #ffb347; border: 1px solid rgba(255,156,0,0.35);
+}
 .effect-dur {
   font-size: 9px; background: rgba(0,0,0,0.4); padding: 0 4px; border-radius: 6px;
 }
@@ -351,7 +354,7 @@ body {
             <div class="monster-effects" v-if="monster.effects && monster.effects.length > 0">
               <span class="monster-effect-chip" v-for="(eff, idx) in monster.effects" :key="idx"
                     :class="eff.type">
-                {{ eff.type === 'dot' ? '🩸' : '📉' }} {{ eff.name }} {{ eff.value }} <span class="effect-dur">{{ eff.duration }}t</span>
+                {{ eff.type === 'dot' ? '🩸' : eff.type === 'status' ? '⛔' : '📉' }} {{ eff.name }}<span v-if="eff.value > 0"> {{ eff.value }}</span> <span class="effect-dur">{{ eff.duration }}t</span>
               </span>
             </div>
             <div class="monster-attacks" v-if="monster.attacks && monster.attacks.length > 0">

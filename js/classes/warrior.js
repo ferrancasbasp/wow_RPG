@@ -64,5 +64,16 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 4, level: 18, min: 136, max: 184 },
         { rank: 5, level: 24, min: 210, max: 280 },
       ] },
+
+    { id: 'charge', name: 'Carga', icon: '🏃',
+      school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
+      baseDamage: 0, spellPowerRatio: 0, costRage: 0, generatesRage: 10, castType: 'instant', cooldown: 3,
+      description: 'Carga hacia el enemigo, aturdiéndolo y generando ira.',
+      damageRanges: [
+        { rank: 1, level: 1, min: 0, max: 0 },
+      ],
+      inflictsEffects: [
+        { type: 'status', name: 'Aturdido', target: 'stunned', value: 0, duration: 1 },
+      ] },
   ],
 };

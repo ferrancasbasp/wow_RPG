@@ -740,7 +740,8 @@ createApp({
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText);
       } else {
         this.turnDamage += roll;
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText);
+        let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '')) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText);
         this.sendDamageEvent(ability, roll);
       }
     },
