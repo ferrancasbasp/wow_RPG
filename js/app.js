@@ -56,12 +56,14 @@ function createDefaultCharacter(classKey) {
     trainedRanks: {},
     currentCooldowns: {},
     equipment: {
-      head:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
-      chest:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
-      hands:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
-      legs:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
-      feet:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
-      weapon:  { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      head:      { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, defense: 0 },
+      chest:     { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, defense: 0 },
+      hands:     { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      legs:      { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      feet:      { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
+      weapon:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 },
+      offhand:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, defense: 0 },
+      dualwield: { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 },
     },
     activeEffects: [],
   };
@@ -115,12 +117,14 @@ createApp({
       statKeys: STAT_KEYS,
       statIcons: STAT_ICONS,
       equipmentSlots: [
-        { key: 'head',   label: 'Cabeza', icon: '🪖' },
-        { key: 'chest',  label: 'Pecho',  icon: '🛡️' },
-        { key: 'hands',  label: 'Manos',  icon: '🧤' },
-        { key: 'legs',   label: 'Piernas', icon: '👖' },
-        { key: 'feet',   label: 'Pies',   icon: '🥾' },
-        { key: 'weapon', label: 'Arma',   icon: '⚔️' },
+        { key: 'head',      label: 'Cabeza',   icon: '🪖', extraFields: [{ key: 'defense', label: 'Defensa', icon: '🛡️' }] },
+        { key: 'chest',     label: 'Pecho',    icon: '🛡️', extraFields: [{ key: 'defense', label: 'Defensa', icon: '🛡️' }] },
+        { key: 'hands',     label: 'Manos',    icon: '🧤' },
+        { key: 'legs',      label: 'Piernas',  icon: '👖' },
+        { key: 'feet',      label: 'Pies',     icon: '🥾' },
+        { key: 'weapon',    label: 'Arma',     icon: '⚔️', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] },
+        { key: 'offhand',   label: 'Escudo',   icon: '🛡️', extraFields: [{ key: 'defense', label: 'Defensa', icon: '🛡️' }] },
+        { key: 'dualwield', label: 'Dual Wield', icon: '🗡️', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] },
       ],
       showExportModal: false,
       showTalentModal: false,
@@ -802,11 +806,10 @@ createApp({
       }
       const isRage = this.resourceConfig.type === 'rage';
       if (isRage) {
-        this.character.currentRage = Math.max(0, this.resourceActual - 5);
         this.processEffects();
         this.turnNumber++;
         this.turnDamage = 0;
-        this.showToast('Fin de turno ' + (this.turnNumber - 1) + ' · -5 ira');
+        this.showToast('Fin de turno ' + (this.turnNumber - 1));
       } else {
         const regen = Math.round(this.manaRegen * 0.5);
         this.character.currentMana = Math.min(this.maxMana, this.manaActual + regen);
@@ -1016,9 +1019,14 @@ createApp({
 
     defaultEquipment() {
       const emptyBonus = { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 };
-      const slots = ['head', 'chest', 'hands', 'legs', 'feet', 'weapon'];
+      const slots = ['head', 'chest', 'hands', 'legs', 'feet', 'weapon', 'offhand', 'dualwield'];
+      const extraFields = { head: 'defense', chest: 'defense', weapon: 'weaponDamage', offhand: 'defense', dualwield: 'weaponDamage' };
       const eq = {};
-      for (const s of slots) eq[s] = { name: '', bonus: { ...emptyBonus } };
+      for (const s of slots) {
+        const item = { name: '', bonus: { ...emptyBonus } };
+        if (extraFields[s]) item[extraFields[s]] = 0;
+        eq[s] = item;
+      }
       return eq;
     },
 

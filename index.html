@@ -180,7 +180,7 @@
         <div class="resource-bar">
           <div class="resource-label"><span>{{ resourceLabel }}</span><span>{{ resourceActual }} / {{ resourceMax }}</span></div>
           <div class="resource-track">
-            <div class="resource-fill" :class="resourceConfig.type" :style="{ width: resourcePercent + '%', background: resourceConfig.type === 'rage' ? 'linear-gradient(180deg, #e67e22 0%, #b35e0e 100%)' : 'linear-gradient(180deg, #3498db 0%, #2471a3 100%)' }"></div>
+            <div class="resource-fill" :class="resourceConfig.type" :style="{ width: resourcePercent + '%', background: resourceConfig.type === 'rage' ? 'linear-gradient(180deg, #c0392b 0%, #8b2e1e 100%)' : 'linear-gradient(180deg, #3498db 0%, #2471a3 100%)' }"></div>
             <div class="resource-text">{{ resourceActual }} / {{ resourceMax }}</div>
           </div>
         </div>
@@ -316,6 +316,14 @@
             <div class="equip-bonus-cell" v-for="(statKey, statName) in statKeys" :key="statKey">
               <span class="equip-bonus-label">{{ statIcons[statKey] }}</span>
               <input type="number" v-model.number="character.equipment[slot.key].bonus[statKey]"
+                     class="equip-bonus-input" min="0" placeholder="0">
+            </div>
+          </div>
+          <div class="equip-extra-fields" v-if="slot.extraFields">
+            <div class="equip-bonus-cell" v-for="field in slot.extraFields" :key="field.key">
+              <span class="equip-bonus-label">{{ field.icon }}</span>
+              <span class="equip-extra-label">{{ field.label }}</span>
+              <input type="number" v-model.number="character.equipment[slot.key][field.key]"
                      class="equip-bonus-input" min="0" placeholder="0">
             </div>
           </div>

@@ -394,6 +394,11 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   color: var(--success); outline: none;
 }
 .equip-bonus-input:focus { border-bottom-color: var(--gold); }
+.equip-extra-fields {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
+  padding-top: 6px; border-top: 1px dashed rgba(138,115,68,0.15);
+}
+.equip-extra-label { font-size: 11px; color: var(--text-dim); }
 
 /* ================================================================ HABILIDADES */
 .ability-card {

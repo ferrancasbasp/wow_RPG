@@ -23,7 +23,7 @@ window.CLASS_REGISTRY.warrior = {
   resource: {
     type: 'rage',
     label: 'Ira',
-    color: '#e67e22',
+    color: '#c0392b',
     max: 100,
     start: 0,
   },
@@ -32,6 +32,18 @@ window.CLASS_REGISTRY.warrior = {
 
   abilities: [
     { id: 'heroic_strike', name: 'Golpe Heroico', icon: '⚔️',
+      school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
+      baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
+      description: 'Un golpe potente que gasta ira para hacer daño extra.',
+      damageRanges: [
+        { rank: 1, level: 1, min: 32, max: 48 },
+        { rank: 2, level: 6, min: 52, max: 74 },
+        { rank: 3, level: 12, min: 84, max: 116 },
+        { rank: 4, level: 18, min: 136, max: 184 },
+        { rank: 5, level: 24, min: 210, max: 280 },
+      ] },
+
+    { id: 'basic_attack', name: 'Ataque Básico', icon: '👊',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 0, generatesRage: 5, castType: 'instant', cooldown: 0,
       description: 'Un golpe básico que genera ira. El daño depende del arma equipada.',
