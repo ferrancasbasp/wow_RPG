@@ -54,37 +54,48 @@ window.CLASS_REGISTRY.mage = {
      --------------------------------------------------------------- */
 
   talents: [
-    { id: 'ignite', name: 'Ignitar', icon: '🔥', iconImg: 'img/talents/mage/ignite.jpg',
-      description: 'Tus hechizos de Fuego dejan un daño adicional del 4% por punto durante 3 seg.',
+    /* === TIER 1 (nivel 10) === */
+    { id: 'elemental_mastery', name: 'Maestría Elemental', icon: '🔥', iconImg: 'img/talents/mage/ignite.jpg',
+      description: 'Aumenta el daño de todos tus hechizos un 1% por punto.',
       maxRank: 5, tier: 1, requires: null },
 
-    { id: 'frostbite', name: 'Congelación', icon: '❄️', iconImg: 'img/talents/mage/frostbite.jpg',
-      description: 'Tus hechizos de Escarcha tienen un 2% de probabilidad por punto de congelar al objetivo.',
-      maxRank: 3, tier: 1, requires: null },
-
-    { id: 'arcane_concentration', name: 'Concentración Arcana', icon: '✨', iconImg: 'img/talents/mage/arcane_concentration.jpg',
-      description: 'Tus hechizos Arcanos tienen un 2% de probabilidad por punto de ser gratuitos.',
+    { id: 'mana_efficiency', name: 'Eficiencia Arcana', icon: '✨', iconImg: 'img/talents/mage/arcane_concentration.jpg',
+      description: 'Reduce el coste de maná de todos tus hechizos un 2% por punto.',
       maxRank: 5, tier: 1, requires: null },
 
-    { id: 'improved_fireball', name: 'Bola de Fuego Mejorada', icon: '🔥', iconImg: 'img/talents/mage/improved_fireball.jpg',
-      description: 'Aumenta el daño de Bola de Fuego un 5% por punto.',
-      maxRank: 3, tier: 2, requires: { id: 'ignite', points: 2 } },
+    /* === TIER 2 (nivel 15) === */
+    { id: 'improved_arcane_intellect', name: 'Intelecto Arcano Mejorado', icon: '🧠', iconImg: 'img/talents/mage/arcane_mind.jpg',
+      description: 'Aumenta el efecto de Intelecto Arcano un 15% por punto.',
+      maxRank: 2, tier: 2, requires: null },
 
-    { id: 'ice_shards', name: 'Fragmentos de Hielo', icon: '🧊', iconImg: 'img/talents/mage/ice_shards.jpg',
-      description: 'Aumenta el daño crítico de tus hechizos de Escarcha un 10% por punto.',
-      maxRank: 3, tier: 2, requires: { id: 'frostbite', points: 1 } },
+    { id: 'improved_frost_armor', name: 'Armadura Mejorada', icon: '🧊', iconImg: 'img/talents/mage/frostbite.jpg',
+      description: 'Aumenta el efecto de Armadura de Escarcha un 10% por punto.',
+      maxRank: 3, tier: 2, requires: null },
 
-    { id: 'arcane_mind', name: 'Mente Arcana', icon: '🔮', iconImg: 'img/talents/mage/arcane_mind.jpg',
-      description: 'Aumenta tu Intelecto total un 3% por punto.',
-      maxRank: 5, tier: 2, requires: { id: 'arcane_concentration', points: 2 } },
+    { id: 'improved_blink', name: 'Traslación Mejorada', icon: '💨', iconImg: 'img/talents/mage/spell_power.jpg',
+      description: 'Reduce el cooldown de Traslación 1 turno por punto.',
+      maxRank: 2, tier: 2, requires: null },
 
-    { id: 'fire_power', name: 'Poder de Fuego', icon: '🌋', iconImg: 'img/talents/mage/fire_power.jpg',
-      description: 'Aumenta el daño de todos tus hechizos de Fuego un 5% por punto.',
-      maxRank: 3, tier: 3, requires: { id: 'improved_fireball', points: 2 } },
+    { id: 'magic_resistance', name: 'Resistencia Mágica', icon: '🛡️', iconImg: 'img/talents/mage/ice_shards.jpg',
+      description: 'Aumenta tu armadura mágica +1 por punto.',
+      maxRank: 3, tier: 2, requires: null },
 
-    { id: 'spell_power', name: 'Poder Arcano', icon: '💫', iconImg: 'img/talents/mage/spell_power.jpg',
-      description: 'Aumenta tu Poder de Hechizo total un 10% por punto.',
-      maxRank: 2, tier: 3, requires: { id: 'arcane_mind', points: 3 } },
+    /* === TIER 3 (nivel 20) === */
+    { id: 'improved_fire_blast', name: 'Explosión Rápida', icon: '💥', iconImg: 'img/talents/mage/improved_fireball.jpg',
+      description: 'Reduce el cooldown de Explosión de Fuego 1 turno por punto.',
+      maxRank: 2, tier: 3, requires: null },
+
+    { id: 'frost_power', name: 'Poder de Escarcha', icon: '❄️', iconImg: 'img/talents/mage/frostbite.jpg',
+      description: 'Aumenta el daño de tus hechizos de Escarcha un 2% por punto.',
+      maxRank: 3, tier: 3, requires: null },
+
+    { id: 'spell_crit_talent', name: 'Crítico de Hechizos', icon: '🎯', iconImg: 'img/talents/mage/spell_power.jpg',
+      description: 'Aumenta tu probabilidad de crítico con hechizos un 1% por punto.',
+      maxRank: 3, tier: 3, requires: null },
+
+    { id: 'clearcasting', name: 'Claridad Arcana', icon: '🔮', iconImg: 'img/talents/mage/arcane_concentration.jpg',
+      description: 'Tus hechizos tienen un 2% de probabilidad por punto de ser gratuitos al lanzarlos.',
+      maxRank: 5, tier: 3, requires: null },
   ],
 
   /* ---------------------------------------------------------------
@@ -105,7 +116,7 @@ window.CLASS_REGISTRY.mage = {
 
     { id: 'fire_blast', name: 'Explosión de Fuego', icon: '💥', iconImg: 'img/abilities/mage/fire_blast.jpg',
       school: 'Fuego', type: 'damage', requiredLevel: 4,
-      baseDamage: 35, spellPowerRatio: 0.429, costPct: 0.05, castType: 'instant', cooldown: 1,
+      baseDamage: 35, spellPowerRatio: 0.429, costPct: 0.05, castType: 'instant', cooldown: 3,
       description: 'Una explosión instantánea de llamas al objetivo.',
       damageRanges: [
         { rank: 1, level: 4,  min: 16, max: 26 },
@@ -180,5 +191,11 @@ window.CLASS_REGISTRY.mage = {
         { rank: 5, level: 44, value: 13, costPct: 0.30 },
         { rank: 6, level: 54, value: 15, costPct: 0.30 },
       ] },
+
+    { id: 'blink', name: 'Traslación', icon: '💨', iconImg: 'img/abilities/mage/arcane_explosion.jpg',
+      school: 'Arcano', type: 'utility', requiredLevel: 15,
+      costPct: 0.10, castType: 'instant', cooldown: 4,
+      description: 'Te teletransportas instantáneamente, escapando de efectos de control.',
+      buff: null, applySelf: false },
   ],
 };

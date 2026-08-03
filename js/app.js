@@ -206,7 +206,7 @@ createApp({
     spellCrit() {
       const fromInt = this.finalStats.intelecto / 60;
       const fromLevel = this.character.level * 0.02;
-      const fromTalent = this.talentRank('call_of_thunder');
+      const fromTalent = this.talentRank('call_of_thunder') + this.talentRank('spell_crit_talent');
       return (5 + fromInt + fromLevel + fromTalent).toFixed(2);
     },
 
@@ -243,9 +243,10 @@ createApp({
       return total;
     },
 
-    // Armadura mágica: base de clase + buffs activos
+    // Armadura mágica: base de clase + talentos + buffs activos
     magicResistTotal() {
       let total = this.classConfig.magicResist || 0;
+      total += this.talentRank('magic_resistance');
       if (this.character.activeEffects) {
         for (const eff of this.character.activeEffects) {
           if (eff.type === 'buff' && eff.target === 'magicResist') total += eff.value;
@@ -273,7 +274,7 @@ createApp({
 
     // Puntos totales: 1 por nivel desde nivel 10
     totalTalentPoints() {
-      return Math.max(0, this.character.level - 4);
+      return Math.max(0, this.character.level - 9);
     },
 
     // Disponibles = totales − gastados
@@ -339,47 +340,30 @@ createApp({
           }
         }
 
-        // --- Mago: Ignitar (+4% daño Fuego) ---
-        if (ability.school === 'Fuego') {
-          const ig = this.talentRank('ignite');
-          if (ig > 0) {
-            value *= (1 + ig * 0.04);
-            talentNotes.push(`+${ig * 4}% Ignitar`);
-          }
+        // --- Mago Tier 1: Maestría Elemental (+1% daño todos los hechizos) ---
+        const elemMastery = this.talentRank('elemental_mastery');
+        if (elemMastery > 0) {
+          value *= (1 + elemMastery * 0.01);
+          talentNotes.push(`+${elemMastery}% Maestría`);
         }
 
-        // --- Mago: Bola de Fuego Mejorada (+5% Bola de Fuego) ---
-        if (ability.id === 'fireball') {
-          const ifb = this.talentRank('improved_fireball');
-          if (ifb > 0) {
-            value *= (1 + ifb * 0.05);
-            talentNotes.push(`+${ifb * 5}% Bola Fuego`);
-          }
-        }
-
-        // --- Mago: Poder de Fuego (+5% daño Fuego) ---
-        if (ability.school === 'Fuego') {
-          const fp = this.talentRank('fire_power');
-          if (fp > 0) {
-            value *= (1 + fp * 0.05);
-            talentNotes.push(`+${fp * 5}% P. Fuego`);
-          }
-        }
-
-        // --- Mago: Fragmentos de Hielo (+10% daño crítico Escarcha) ---
-        // (afecta al daño base como bonus plano por ahora)
+        // --- Mago Tier 3: Poder de Escarcha (+2% daño Escarcha) ---
         if (ability.school === 'Escarcha') {
-          const is = this.talentRank('ice_shards');
-          if (is > 0) {
-            value *= (1 + is * 0.03);
-            talentNotes.push(`+${is * 3}% Fragmentos`);
+          const fp = this.talentRank('frost_power');
+          if (fp > 0) {
+            value *= (1 + fp * 0.02);
+            talentNotes.push(`+${fp * 2}% Escarcha`);
           }
         }
 
         // === COSTE DE MANÁ (% del maná base) ===
         let cost = (ability.costPct || 0) * this.baseMana;
+        // Chamán: Enfoque Elemental (-2% coste)
         const ef = this.talentRank('elemental_focus');
         if (ef > 0) cost *= (1 - ef * 0.02);
+        // Mago Tier 1: Eficiencia Arcana (-2% coste)
+        const me = this.talentRank('mana_efficiency');
+        if (me > 0) cost *= (1 - me * 0.02);
 
         return {
           ...ability,
@@ -461,6 +445,7 @@ createApp({
             const maxBR = a.buffRanks.filter(br => this.character.level >= br.level).length;
             return maxBR > this.trainedRank(a.id);
           }
+          return this.character.level >= a.requiredLevel && this.trainedRank(a.id) === 0;
         }
         const maxRank = this.maxAvailableRank(a);
         const trained = this.trainedRank(a.id);
@@ -473,6 +458,7 @@ createApp({
       return this.classConfig.abilities.filter(a => {
         if (a.type === 'utility') {
           if (a.buffRanks) return a.buffRanks[0].level > this.character.level;
+          return a.requiredLevel > this.character.level;
         }
         return this.maxAvailableRank(a) === 0;
       });
@@ -566,6 +552,11 @@ createApp({
       return this.classConfig.talents.filter(t => t.tier === tier);
     },
 
+    tierLabel(tier) {
+      const labels = { 1: 'Nv. 10', 2: 'Nv. 15', 3: 'Nv. 20' };
+      return labels[tier] || ('Tier ' + tier);
+    },
+
     branchSpent(branchIdx) {
       const talents = this.classConfig.talents.filter(t => (t.branch || 0) === branchIdx);
       return talents.reduce((sum, t) => sum + this.talentRank(t.id), 0);
@@ -610,21 +601,26 @@ createApp({
       const rank = this.talentRank(talent.id);
       if (rank === 0) return '';
       switch (talent.id) {
+        // --- Chamán ---
         case 'elemental_focus':         return `Coste de maná: −${rank * 2}%`;
         case 'convection':              return `Daño de hechizos: +${rank * 3}%`;
         case 'improved_lightning_bolt': return `Daño Descarga de Rayo: +${rank * 5}%`;
         case 'call_of_thunder':         return `Crítico de hechizos: +${rank}%`;
         case 'lightning_mastery':       return `Daño Naturaleza: +${rank * 5}%`;
         case 'storm_power':             return `Poder de Hechizo: +${rank * 10}%`;
-        // --- Mago ---
-        case 'ignite':                  return `Daño Fuego (DoT): +${rank * 4}%`;
-        case 'frostbite':               return `Prob. congelar: +${rank * 2}%`;
-        case 'arcane_concentration':    return `Hechizo gratuito: +${rank * 2}%`;
-        case 'improved_fireball':       return `Daño Bola de Fuego: +${rank * 5}%`;
-        case 'ice_shards':              return `Daño Escarcha: +${rank * 3}%`;
-        case 'arcane_mind':             return `Intelecto: +${rank * 3}%`;
-        case 'fire_power':              return `Daño Fuego: +${rank * 5}%`;
-        case 'spell_power':             return `Poder de Hechizo: +${rank * 10}%`;
+        // --- Mago Tier 1 ---
+        case 'elemental_mastery':       return `Daño todos los hechizos: +${rank}%`;
+        case 'mana_efficiency':         return `Coste de maná: −${rank * 2}%`;
+        // --- Mago Tier 2 ---
+        case 'improved_arcane_intellect': return `Intelecto Arcano: +${rank * 15}%`;
+        case 'improved_frost_armor':    return `Armadura de Escarcha: +${rank * 10}%`;
+        case 'improved_blink':          return `CD Traslación: −${rank} turno${rank > 1 ? 's' : ''}`;
+        case 'magic_resistance':        return `Armadura mágica: +${rank}`;
+        // --- Mago Tier 3 ---
+        case 'improved_fire_blast':     return `CD Explosión de Fuego: −${rank} turno${rank > 1 ? 's' : ''}`;
+        case 'frost_power':             return `Daño Escarcha: +${rank * 2}%`;
+        case 'spell_crit_talent':       return `Crítico hechizos: +${rank}%`;
+        case 'clearcasting':            return `Prob. hechizo gratuito: ${rank * 2}%`;
         default: return '';
       }
     },
@@ -652,7 +648,10 @@ createApp({
         this.showToast(ability.name + ' está en cooldown (' + this.getCooldown(ability.id) + ' turno' + (this.getCooldown(ability.id) > 1 ? 's' : '') + ')');
         return;
       }
-      this.character.currentMana = this.manaActual - cost;
+      const clearcast = this.checkClearcasting();
+      if (!clearcast) {
+        this.character.currentMana = this.manaActual - cost;
+      }
       const min = ability.currentMin || 0;
       const max = ability.currentMax || 0;
       let roll = min + Math.floor(Math.random() * (max - min + 1));
@@ -662,25 +661,56 @@ createApp({
       ability.lastCrit = isCrit;
       if (ability.cooldown > 0) {
         if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
-        this.character.currentCooldowns[ability.id] = ability.cooldown;
+        this.character.currentCooldowns[ability.id] = this.getEffectiveCooldown(ability);
       }
+      let ccText = clearcast ? ' ¡Claridad Arcana! Maná devuelto.' : '';
       if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : ''));
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText);
       } else {
         this.turnDamage += roll;
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : ''));
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText);
         this.sendDamageEvent(ability, roll);
       }
     },
 
+    checkClearcasting() {
+      const cc = this.talentRank('clearcasting');
+      if (cc <= 0) return false;
+      return Math.random() * 100 < cc * 2;
+    },
+
+    getEffectiveCooldown(ability) {
+      let cd = ability.cooldown;
+      if (ability.id === 'fire_blast') {
+        cd -= this.talentRank('improved_fire_blast');
+      }
+      if (ability.id === 'blink') {
+        cd -= this.talentRank('improved_blink');
+      }
+      return Math.max(0, cd);
+    },
+
     castUtility(ability) {
       const cost = ability.scaledCost;
+      if (this.getCooldown(ability.id) > 0) {
+        this.showToast(ability.name + ' está en cooldown (' + this.getCooldown(ability.id) + ' turno' + (this.getCooldown(ability.id) > 1 ? 's' : '') + ')');
+        return;
+      }
       if (this.manaActual < cost) {
         this.showToast('Maná insuficiente');
         return;
       }
-      this.character.currentMana = this.manaActual - cost;
+      const clearcast = this.checkClearcasting();
+      if (!clearcast) {
+        this.character.currentMana = this.manaActual - cost;
+      }
+      const cd = this.getEffectiveCooldown(ability);
+      if (cd > 0) {
+        if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
+        this.character.currentCooldowns[ability.id] = cd;
+      }
+      let ccText = clearcast ? ' ¡Claridad Arcana! Maná devuelto.' : '';
       if (ability.buff && ability.buff.applySelf) {
         if (!this.character.activeEffects) this.character.activeEffects = [];
         this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== ability.name);
@@ -692,10 +722,12 @@ createApp({
           value: ability.currentBuffValue,
           duration: ability.currentBuffDuration,
         });
-        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + ' ' + ability.currentBuffStat);
-      } else {
+        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ccText);
+      } else if (ability.buff) {
         const buffText = '+' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ' (' + ability.currentBuffDuration + ' turnos)';
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos' + ccText);
+      } else {
+        this.showToast(ability.name + ': Lanzado' + ccText);
       }
     },
 
@@ -879,6 +911,11 @@ createApp({
           const trained = this.trainedRank(ability.id);
           if (maxBR > trained) {
             this.character.trainedRanks[ability.id] = maxBR;
+            count++;
+          }
+        } else if (ability.type === 'utility' && !ability.buffRanks) {
+          if (this.character.level >= ability.requiredLevel && this.trainedRank(ability.id) === 0) {
+            this.character.trainedRanks[ability.id] = 1;
             count++;
           }
         } else {

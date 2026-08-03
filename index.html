@@ -357,6 +357,8 @@
         <div class="talent-modal-tree">
           <div class="wow-talent-list">
             <div class="wow-tier-row" v-for="tier in tiers" :key="tier">
+              <div class="wow-tier-label">{{ tierLabel(tier) }}</div>
+              <div class="wow-tier-nodes">
               <div v-for="talent in talentsByTier(tier)" :key="talent.id"
                    class="wow-node" :class="talentNodeClass(talent)"
                    @click="addTalentPoint(talent.id)"
@@ -369,6 +371,7 @@
                   <span v-if="!talent.iconImg" class="wow-node-emoji">{{ talent.icon }}</span>
                   <span class="wow-node-rank">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
                 </div>
+              </div>
               </div>
             </div>
           </div>
