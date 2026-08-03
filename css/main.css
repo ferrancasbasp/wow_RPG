@@ -425,6 +425,9 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold-light);
   font-weight: 600;
 }
+.ability-roll-text.crit-roll {
+  color: #ff9c00; text-shadow: 0 0 8px rgba(255,156,0,0.5); font-size: 16px;
+}
 .cast-btn {
   padding: 6px 18px; font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600;
   background: linear-gradient(180deg, var(--mana) 0%, var(--mana-dark) 100%);

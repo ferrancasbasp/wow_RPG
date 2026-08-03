@@ -220,17 +220,17 @@
             <div class="ability-desc">{{ ability.description }}</div>
             <div class="ability-stats">
               <span class="ability-stat dmg" v-if="ability.type === 'damage'">
-                Daño {{ ability.scaledDice.count }}d{{ ability.scaledDice.sides }}+{{ ability.scaledDice.bonus }}
+                Daño {{ ability.currentMin }}-{{ ability.currentMax }}
               </span>
               <span class="ability-stat heal" v-if="ability.type === 'heal'">
-                Curación {{ ability.scaledDice.count }}d{{ ability.scaledDice.sides }}+{{ ability.scaledDice.bonus }}
+                Curación {{ ability.currentMin }}-{{ ability.currentMax }}
               </span>
               <span class="ability-stat cost">{{ ability.scaledCost }} maná</span>
               <span class="ability-stat bonus" v-if="ability.talentNote">{{ ability.talentNote }}</span>
             </div>
             <div class="ability-cast-row">
-              <span class="ability-roll-text" v-if="ability.lastRoll !== undefined">
-                {{ ability.type === 'heal' ? 'Curación' : 'Daño' }}: {{ ability.lastRoll }}
+              <span class="ability-roll-text" v-if="ability.lastRoll !== undefined" :class="{ 'crit-roll': ability.lastCrit }">
+                {{ ability.type === 'heal' ? 'Curación' : 'Daño' }}: {{ ability.lastRoll }}{{ ability.lastCrit ? ' ¡CRÍTICO!' : '' }}
               </span>
               <button class="cast-btn" @click="castSpell(ability)"
                       :disabled="manaActual < ability.scaledCost || getCooldown(ability.id) > 0">

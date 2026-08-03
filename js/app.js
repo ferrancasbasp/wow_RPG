@@ -424,14 +424,12 @@ createApp({
     unlockedAbilities() {
       return this.computedAbilities.filter(a => a.type !== 'utility' && this.trainedRank(a.id) > 0).map(a => {
         const rank = this.trainedRank(a.id);
+        const dmgRange = a.damageRanges ? a.damageRanges.find(dr => dr.rank === rank) : null;
         return {
           ...a,
           currentRank: rank,
-          scaledDice: {
-            count: a.dice.count + (rank - 1),
-            sides: a.dice.sides,
-            bonus: a.dice.bonus + (rank - 1) * Math.round(a.dice.bonus * 0.25),
-          },
+          currentMin: dmgRange ? dmgRange.min : 0,
+          currentMax: dmgRange ? dmgRange.max : 0,
           scaledCost: Math.round(a.computedCost * (1 + (rank - 1) * 0.15)),
         };
       });
@@ -502,6 +500,13 @@ createApp({
     /* ==================== RANGOS DE HABILIDADES ==================== */
 
     maxAvailableRank(ability) {
+      if (ability.damageRanges) {
+        let rank = 0;
+        for (const dr of ability.damageRanges) {
+          if (this.character.level >= dr.level) rank = dr.rank;
+        }
+        return rank;
+      }
       const rankLevels = [ability.requiredLevel, ability.requiredLevel + 8, ability.requiredLevel + 16, ability.requiredLevel + 24];
       let rank = 0;
       for (let i = 0; i < rankLevels.length; i++) {
@@ -648,19 +653,23 @@ createApp({
         return;
       }
       this.character.currentMana = this.manaActual - cost;
-      const dice = ability.scaledDice || ability.dice;
-      const roll = this.rollDice(dice.count, dice.sides) + dice.bonus;
+      const min = ability.currentMin || 0;
+      const max = ability.currentMax || 0;
+      let roll = min + Math.floor(Math.random() * (max - min + 1));
+      const isCrit = Math.random() * 100 < parseFloat(this.spellCrit);
+      if (isCrit) roll = Math.round(roll * 1.5);
       ability.lastRoll = roll;
+      ability.lastCrit = isCrit;
       if (ability.cooldown > 0) {
         if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
         this.character.currentCooldowns[ability.id] = ability.cooldown;
       }
       if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación');
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : ''));
       } else {
         this.turnDamage += roll;
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño');
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : ''));
         this.sendDamageEvent(ability, roll);
       }
     },
