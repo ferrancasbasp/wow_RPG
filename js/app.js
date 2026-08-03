@@ -1054,6 +1054,15 @@ createApp({
 
     /* ==================== RESET ==================== */
 
+    fullRest() {
+      this.character.currentHP = this.maxHP;
+      this.character.currentMana = this.maxMana;
+      this.character.currentCooldowns = {};
+      this.turnNumber = 1;
+      this.turnDamage = 0;
+      this.showToast('Full Rest: vida y maná al máximo');
+    },
+
     resetCharacter() {
       if (confirm('¿Reiniciar la ficha? Se perderán los cambios sin guardar.')) {
         this.character = createDefaultCharacter(this.character.classKey);
