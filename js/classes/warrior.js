@@ -28,7 +28,11 @@ window.CLASS_REGISTRY.warrior = {
     start: 0,
   },
 
-  talents: [],
+  talents: [
+    { id: 'master_of_weapons', name: 'Maestría de Armas', icon: '⚔️',
+      description: 'El guerrero es experto en todo tipo de armamento. Puede empuñar un arma a dos manos o combinar un arma de una mano con una off hand, y ambos contribuyen a sus stats y daño.',
+      maxRank: 1, tier: 1, requires: null, passive: true, requiredLevel: 2 },
+  ],
 
   abilities: [
     { id: 'basic_attack', name: 'Ataque Básico', icon: '👊',

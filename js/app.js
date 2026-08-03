@@ -571,6 +571,7 @@ createApp({
 
     // ¿Se puede añadir un punto? (hay puntos, no está al máx, requisitos ok)
     canAddTalent(talent) {
+      if (talent.passive) return false;
       return this.availableTalentPoints > 0 && !this.isMaxed(talent) && this.prereqMet(talent);
     },
 
@@ -667,6 +668,8 @@ createApp({
         case 'frost_power':             return `Daño Escarcha: +${rank * 2}%`;
         case 'spell_crit_talent':       return `Crítico hechizos: +${rank}%`;
         case 'clearcasting':            return `Prob. hechizo gratuito: ${rank * 2}%`;
+        // --- Warrior ---
+        case 'master_of_weapons':       return `Pasiva: armas 1H + off o 2H equipables`;
         default: return '';
       }
     },
@@ -1043,6 +1046,16 @@ createApp({
       return total;
     },
 
+    grantPassiveTalents() {
+      if (!this.classConfig.talents) return;
+      for (const talent of this.classConfig.talents) {
+        if (talent.passive && this.character.level >= (talent.requiredLevel || 1)) {
+          if (!this.character.talents) this.character.talents = {};
+          if (!this.character.talents[talent.id]) this.character.talents[talent.id] = 1;
+        }
+      }
+    },
+
     defaultEquipment() {
       const emptyBonus = { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 };
       const slots = ['head', 'chest', 'hands', 'legs', 'feet', 'mainHand', 'offHand', 'twoHand'];
@@ -1116,6 +1129,7 @@ createApp({
       this.character.currentCooldowns = {};
       this.character.equipment = this.defaultEquipment();
       this.character.activeEffects = [];
+      this.grantPassiveTalents();
       this.turnNumber = 1;
       this.showToast(`Clase cambiada a ${cls.name}`);
     },
@@ -1124,7 +1138,7 @@ createApp({
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character_v6', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v7', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1133,7 +1147,7 @@ createApp({
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character_v6');
+        const data = localStorage.getItem('ttrpg_wow_character_v7');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
@@ -1212,7 +1226,7 @@ createApp({
 
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v6');
+      const saved = localStorage.getItem('ttrpg_wow_character_v7');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
@@ -1237,6 +1251,7 @@ createApp({
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
           if (this.character.level > (window.MAX_LEVEL || 60)) this.character.level = window.MAX_LEVEL || 60;
+          this.grantPassiveTalents();
         }
       }
     } catch (e) {
