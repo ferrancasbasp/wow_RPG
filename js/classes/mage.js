@@ -46,6 +46,9 @@ window.CLASS_REGISTRY.mage = {
   /* Crecimiento de stats por nivel (valores de WoW Classic) */
   statGrowth: { fuerza: 0.05, agilidad: 0.05, intelecto: 1.8, aguante: 0.5, espiritu: 0.9 },
 
+  armor: 0,
+  magicResist: 5,
+
   /* ---------------------------------------------------------------
      TALENTOS — una sola rama
      --------------------------------------------------------------- */

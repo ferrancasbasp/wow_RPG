@@ -29,6 +29,8 @@ const FALLBACK_CLASS = {
   baseStats: { fuerza: 15, agilidad: 10, intelecto: 25, aguante: 20, espiritu: 18 },
   startingLevel: 1,
   statGrowth: { fuerza: 0.5, agilidad: 0.5, intelecto: 0.5, aguante: 0.5, espiritu: 0.5 },
+  armor: 0,
+  magicResist: 0,
   talentBranches: [{ name: 'General', icon: '⭐', color: '#c9b27e' }],
   talents: [],
   abilities: [],
@@ -227,6 +229,27 @@ createApp({
     manaRegen() {
       if (!this.classConfig.formulas.manaRegen) return 0;
       return this.classConfig.formulas.manaRegen(this.finalStats, this.character.level);
+    },
+
+    // Armadura física base de clase (sin equipo por ahora)
+    armorTotal() {
+      return this.classConfig.armor || 0;
+    },
+
+    // Armadura mágica base de clase
+    magicResistTotal() {
+      return this.classConfig.magicResist || 0;
+    },
+
+    // % de reducción de daño físico (armadura / (armadura + 50))
+    // Simplificación: cada punto de armadura reduce 2% del daño, máximo 50%
+    physReduction() {
+      return Math.min(50, this.armorTotal * 2);
+    },
+
+    // % de reducción de daño mágico
+    magicReduction() {
+      return Math.min(75, this.magicResistTotal * 3);
     },
 
     // Puntos de talento gastados (suma de todos los rangos)

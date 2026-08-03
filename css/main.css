@@ -188,21 +188,21 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   display: flex; flex-direction: column; gap: 24px; padding: 16px 4px; align-items: center;
 }
 .wow-tier-row {
-  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+  display: flex; gap: 28px; justify-content: center; flex-wrap: wrap;
 }
 .wow-node {
-  position: relative; width: 48px; height: 48px; cursor: pointer;
+  position: relative; width: 64px; height: 64px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
 .wow-node-icon {
-  width: 44px; height: 44px; border: 2px solid #555; border-radius: 4px;
+  width: 56px; height: 56px; border: 2px solid #555; border-radius: 6px;
   overflow: hidden; position: relative; transition: all 0.2s;
   background: var(--bg-dark);
 }
 .wow-node-icon img { width: 100%; height: 100%; object-fit: cover; }
 .wow-node-emoji {
   display: flex; align-items: center; justify-content: center;
-  width: 100%; height: 100%; font-size: 24px;
+  width: 100%; height: 100%; font-size: 32px;
 }
 .wow-node-rank {
   position: absolute; bottom: -2px; right: -2px;
@@ -239,23 +239,23 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
 /* Tooltip WoW-style */
 .wow-node-tooltip {
-  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
-  width: 240px; padding: 12px 14px;
+  position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
+  width: 320px; padding: 16px 18px;
   background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
-  border: 1px solid var(--gold); border-radius: 6px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 12px var(--gold-glow);
+  border: 1px solid var(--gold); border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.7), 0 0 16px var(--gold-glow);
   z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.15s;
 }
 .wow-node:hover .wow-node-tooltip { opacity: 1; }
 .tooltip-name {
-  font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600; color: var(--gold-light);
-  margin-bottom: 2px;
+  font-family: 'Cinzel', serif; font-size: 16px; font-weight: 600; color: var(--gold-light);
+  margin-bottom: 4px;
 }
-.tooltip-rank { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
-.tooltip-desc { font-size: 12px; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
-.tooltip-effect { font-size: 12px; color: var(--success); margin-bottom: 4px; font-weight: 600; }
-.tooltip-req { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
-.tooltip-hint { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(138,115,68,0.2); }
+.tooltip-rank { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+.tooltip-desc { font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 6px; }
+.tooltip-effect { font-size: 13px; color: var(--success); margin-bottom: 6px; font-weight: 600; }
+.tooltip-req { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+.tooltip-hint { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(138,115,68,0.2); }
 
 /* ================================================================ EFECTOS ACTIVOS */
 .effects-section {
@@ -540,7 +540,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
 /* ================================================================ MODAL TALENTOS */
 .talent-modal {
-  max-width: 420px; max-height: 85vh; display: flex; flex-direction: column;
+  max-width: 680px; max-height: 90vh; display: flex; flex-direction: column;
 }
 .talent-modal-header {
   display: flex; justify-content: space-between; align-items: center;

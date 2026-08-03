@@ -64,8 +64,6 @@
           <input type="number" v-model.number="xpInputAmount" class="xp-input" placeholder="XP" min="1">
           <button class="xp-quick-btn" @click="addXP(xpInputAmount || 0)">Añadir XP</button>
           <div class="xp-quick-btns">
-            <button class="xp-quick-btn" @click="addXP(100)">+100</button>
-            <button class="xp-quick-btn" @click="addXP(500)">+500</button>
             <button class="xp-quick-btn" @click="addXP(1000)">+1k</button>
             <button class="xp-quick-btn" @click="addXP(5000)">+5k</button>
             <button class="xp-quick-btn" @click="addXP(10000)">+10k</button>
@@ -192,6 +190,8 @@
           <div class="derived-row"><span class="derived-label">Poder de Ataque</span><span class="derived-value">{{ attackPower }}</span></div>
           <div class="derived-row"><span class="derived-label">Prob. Crítico Físico</span><span class="derived-value">{{ meleeCrit }}%</span></div>
           <div class="derived-row"><span class="derived-label">Regen. de Maná</span><span class="derived-value">{{ manaRegen }}/5s</span></div>
+          <div class="derived-row"><span class="derived-label">Armadura Física</span><span class="derived-value">{{ armorTotal }} (−{{ physReduction }}%)</span></div>
+          <div class="derived-row"><span class="derived-label">Armadura Mágica</span><span class="derived-value">{{ magicResistTotal }} (−{{ magicReduction }}%)</span></div>
         </div>
       </div>
     </div>
