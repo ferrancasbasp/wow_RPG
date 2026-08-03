@@ -686,7 +686,7 @@ createApp({
       }
       const clearcast = isRage ? false : this.checkClearcasting();
       if (isRage) {
-        this.character.currentRage = Math.min(this.resourceMax, this.resourceActual - cost + (ability.generatesRage || 0));
+        this.character.currentRage = Math.min(this.resourceMax, this.resourceActual - cost);
       } else if (!clearcast) {
         this.character.currentMana = this.manaActual - cost;
       }
@@ -695,6 +695,10 @@ createApp({
       let roll = min + Math.floor(Math.random() * (max - min + 1));
       const isCrit = Math.random() * 100 < parseFloat(isRage ? this.meleeCrit : this.spellCrit);
       if (isCrit) roll = Math.round(roll * 1.5);
+      if (isRage && ability.generatesRage) {
+        const rageGen = isCrit ? ability.generatesRage * 2 : ability.generatesRage;
+        this.character.currentRage = Math.min(this.resourceMax, this.character.currentRage + rageGen);
+      }
       ability.lastRoll = roll;
       ability.lastCrit = isCrit;
       if (ability.cooldown > 0) {
@@ -702,7 +706,11 @@ createApp({
         this.character.currentCooldowns[ability.id] = this.getEffectiveCooldown(ability);
       }
       let ccText = clearcast ? ' · ¡CLARIDAD ARCANA! Maná devuelto' : '';
-      let rageText = isRage && ability.generatesRage ? ' · +' + ability.generatesRage + ' ira' : '';
+      let rageText = '';
+      if (isRage && ability.generatesRage) {
+        const rageGen = isCrit ? ability.generatesRage * 2 : ability.generatesRage;
+        rageText = ' · +' + rageGen + ' ira';
+      }
       if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText);

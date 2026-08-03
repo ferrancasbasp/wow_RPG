@@ -31,18 +31,6 @@ window.CLASS_REGISTRY.warrior = {
   talents: [],
 
   abilities: [
-    { id: 'heroic_strike', name: 'Golpe Heroico', icon: '⚔️',
-      school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
-      baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
-      description: 'Un golpe potente que gasta ira para hacer daño extra.',
-      damageRanges: [
-        { rank: 1, level: 1, min: 32, max: 48 },
-        { rank: 2, level: 6, min: 52, max: 74 },
-        { rank: 3, level: 12, min: 84, max: 116 },
-        { rank: 4, level: 18, min: 136, max: 184 },
-        { rank: 5, level: 24, min: 210, max: 280 },
-      ] },
-
     { id: 'basic_attack', name: 'Ataque Básico', icon: '👊',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 0, generatesRage: 5, castType: 'instant', cooldown: 0,
@@ -53,6 +41,18 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 3, level: 12, min: 48, max: 68 },
         { rank: 4, level: 18, min: 80, max: 110 },
         { rank: 5, level: 24, min: 130, max: 175 },
+      ] },
+
+    { id: 'heroic_strike', name: 'Golpe Heroico', icon: '⚔️',
+      school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
+      baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
+      description: 'Un golpe potente que gasta ira para hacer daño extra.',
+      damageRanges: [
+        { rank: 1, level: 1, min: 32, max: 48 },
+        { rank: 2, level: 6, min: 52, max: 74 },
+        { rank: 3, level: 12, min: 84, max: 116 },
+        { rank: 4, level: 18, min: 136, max: 184 },
+        { rank: 5, level: 24, min: 210, max: 280 },
       ] },
   ],
 };
