@@ -780,6 +780,10 @@ createApp({
         this.showToast(ability.name + ' está en cooldown (' + this.getCooldown(ability.id) + ' turno' + (this.getCooldown(ability.id) > 1 ? 's' : '') + ')');
         return;
       }
+      if (ability.blockedStance && this.warriorStance === ability.blockedStance) {
+        this.showToast(ability.name + ' no se puede usar en esta estancia');
+        return;
+      }
       if (isRage) {
         if (this.resourceActual < cost) {
           this.showToast('Ira insuficiente');
@@ -801,7 +805,14 @@ createApp({
         if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
         this.character.currentCooldowns[ability.id] = cd;
       }
-      if (ability.buff && ability.buff.applySelf) {
+      if (ability.healthCostPct) {
+        const healthLost = Math.round(this.maxHP * ability.healthCostPct);
+        this.character.currentHP = Math.max(1, this.hpActual - healthLost);
+        if (ability.rageGain && isRage) {
+          this.character.currentRage = Math.min(this.resourceMax, this.character.currentRage + ability.rageGain);
+        }
+        this.showToast(ability.name + ': -' + healthLost + ' vida · +' + (ability.rageGain || 0) + ' ira');
+      } else if (ability.buff && ability.buff.applySelf) {
         if (!this.character.activeEffects) this.character.activeEffects = [];
         this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== ability.name);
         this.character.activeEffects.push({

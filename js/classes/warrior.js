@@ -113,5 +113,14 @@ window.CLASS_REGISTRY.warrior = {
       costRage: 0, castType: 'instant', cooldown: 4,
       description: 'Obliga al enemigo a atacarte durante su próximo turno.',
       buff: null, applySelf: false },
+
+    { id: 'bloodrage', name: 'Cólera de Sangre', icon: '🩸',
+      school: 'Físico', type: 'utility', requiredLevel: 2,
+      costRage: 0, castType: 'instant', cooldown: 5,
+      description: 'Pierde 15% de vida máxima y gana 20 de ira. No usable en estancia Defensiva.',
+      buff: null, applySelf: false,
+      blockedStance: 'protection',
+      healthCostPct: 0.15,
+      rageGain: 20 },
   ],
 };
