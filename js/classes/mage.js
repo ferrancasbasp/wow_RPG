@@ -49,6 +49,14 @@ window.CLASS_REGISTRY.mage = {
   armor: 0,
   magicResist: 5,
 
+  resource: {
+    type: 'mana',
+    label: 'Maná',
+    color: '#3498db',
+    max: null,
+    start: 'full',
+  },
+
   /* ---------------------------------------------------------------
      TALENTOS — una sola rama
      --------------------------------------------------------------- */

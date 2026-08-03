@@ -14,6 +14,7 @@
 <script src="js/xp-table.js"></script>
 <script src="js/classes/shaman.js"></script>
 <script src="js/classes/mage.js"></script>
+<script src="js/classes/warrior.js"></script>
 
 <link rel="stylesheet" href="css/main.css">
 </head>
@@ -177,10 +178,10 @@
         </div>
 
         <div class="resource-bar">
-          <div class="resource-label"><span>Maná</span><span>{{ manaActual }} / {{ maxMana }}</span></div>
+          <div class="resource-label"><span>{{ resourceLabel }}</span><span>{{ resourceActual }} / {{ resourceMax }}</span></div>
           <div class="resource-track">
-            <div class="resource-fill mana" :style="{ width: manaPercent + '%' }"></div>
-            <div class="resource-text">{{ manaActual }} / {{ maxMana }}</div>
+            <div class="resource-fill" :class="resourceConfig.type" :style="{ width: resourcePercent + '%', background: resourceConfig.type === 'rage' ? 'linear-gradient(180deg, #e67e22 0%, #b35e0e 100%)' : 'linear-gradient(180deg, #3498db 0%, #2471a3 100%)' }"></div>
+            <div class="resource-text">{{ resourceActual }} / {{ resourceMax }}</div>
           </div>
         </div>
 
@@ -206,36 +207,39 @@
       </div>
       <div class="panel-body">
         <div class="ability-card" v-for="ability in unlockedAbilities" :key="ability.id"
-             :class="{ 'ability-locked': manaActual < ability.scaledCost, 'ability-cd': getCooldown(ability.id) > 0 }">
-          <div class="ability-icon" :class="{ 'on-cooldown': getCooldown(ability.id) > 0 }">
-            <img v-if="ability.iconImg" :src="ability.iconImg" class="ability-icon-img" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='inline'">
-            <span v-if="ability.iconImg" style="display:none">{{ ability.icon }}</span>
-            <span v-if="!ability.iconImg">{{ ability.icon }}</span>
-            <span class="ability-rank-badge" v-if="ability.currentRank > 1">R{{ ability.currentRank }}</span>
-            <span class="ability-cd-badge" v-if="getCooldown(ability.id) > 0">{{ getCooldown(ability.id) }}</span>
-          </div>
-          <div class="ability-info">
-            <div class="ability-name">{{ ability.name }}</div>
-            <div class="ability-school">{{ ability.school }} · {{ ability.castType === 'instant' ? 'Instantáneo' : 'Casteo' }} · Nv. {{ ability.requiredLevel }}</div>
-            <div class="ability-desc">{{ ability.description }}</div>
-            <div class="ability-stats">
-              <span class="ability-stat dmg" v-if="ability.type === 'damage'">
-                Daño {{ ability.currentMin }}-{{ ability.currentMax }}
-              </span>
-              <span class="ability-stat heal" v-if="ability.type === 'heal'">
-                Curación {{ ability.currentMin }}-{{ ability.currentMax }}
-              </span>
-              <span class="ability-stat cost">{{ ability.scaledCost }} maná</span>
-              <span class="ability-stat bonus" v-if="ability.talentNote">{{ ability.talentNote }}</span>
+             :class="{ 'ability-locked': resourceActual < (ability.costRage || ability.scaledCost || 0), 'ability-cd': getCooldown(ability.id) > 0 }">
+            <div class="ability-icon" :class="{ 'on-cooldown': getCooldown(ability.id) > 0 }">
+              <img v-if="ability.iconImg" :src="ability.iconImg" class="ability-icon-img" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='inline'">
+              <span v-if="ability.iconImg" style="display:none">{{ ability.icon }}</span>
+              <span v-if="!ability.iconImg">{{ ability.icon }}</span>
+              <span class="ability-rank-badge" v-if="ability.currentRank > 1">R{{ ability.currentRank }}</span>
+              <span class="ability-cd-badge" v-if="getCooldown(ability.id) > 0">{{ getCooldown(ability.id) }}</span>
             </div>
-            <div class="ability-cast-row">
-              <span class="ability-roll-text" v-if="ability.lastRoll !== undefined" :class="{ 'crit-roll': ability.lastCrit }">
-                {{ ability.type === 'heal' ? 'Curación' : 'Daño' }}: {{ ability.lastRoll }}{{ ability.lastCrit ? ' ¡CRÍTICO!' : '' }}
-              </span>
-              <button class="cast-btn" @click="castSpell(ability)"
-                      :disabled="manaActual < ability.scaledCost || getCooldown(ability.id) > 0">
-                {{ getCooldown(ability.id) > 0 ? 'CD' : 'Lanzar' }}
-              </button>
+            <div class="ability-info">
+              <div class="ability-name">{{ ability.name }}</div>
+              <div class="ability-school">{{ ability.school }} · {{ ability.castType === 'instant' ? 'Instantáneo' : 'Casteo' }} · Nv. {{ ability.requiredLevel }}</div>
+              <div class="ability-desc">{{ ability.description }}</div>
+              <div class="ability-stats">
+                <span class="ability-stat dmg" v-if="ability.type === 'damage'">
+                  Daño {{ ability.currentMin }}-{{ ability.currentMax }}
+                </span>
+                <span class="ability-stat heal" v-if="ability.type === 'heal'">
+                  Curación {{ ability.currentMin }}-{{ ability.currentMax }}
+                </span>
+                <span class="ability-stat cost" v-if="resourceConfig.type === 'rage'">
+                  {{ ability.costRage || 0 }} ira<span v-if="ability.generatesRage"> · +{{ ability.generatesRage }} ira</span>
+                </span>
+                <span class="ability-stat cost" v-else>{{ ability.scaledCost }} maná</span>
+                <span class="ability-stat bonus" v-if="ability.talentNote">{{ ability.talentNote }}</span>
+              </div>
+              <div class="ability-cast-row">
+                <span class="ability-roll-text" v-if="ability.lastRoll !== undefined" :class="{ 'crit-roll': ability.lastCrit }">
+                  {{ ability.type === 'heal' ? 'Curación' : 'Daño' }}: {{ ability.lastRoll }}{{ ability.lastCrit ? ' ¡CRÍTICO!' : '' }}
+                </span>
+                <button class="cast-btn" @click="castSpell(ability)"
+                        :disabled="resourceActual < (ability.costRage || ability.scaledCost || 0) || getCooldown(ability.id) > 0">
+                  {{ getCooldown(ability.id) > 0 ? 'CD' : 'Lanzar' }}
+                </button>
             </div>
           </div>
         </div>
@@ -265,7 +269,7 @@
       <div class="panel-title">Utilidad</div>
       <div class="panel-body">
         <div class="ability-card" v-for="ability in unlockedUtility" :key="ability.id"
-             :class="{ 'ability-locked': manaActual < ability.scaledCost }">
+             :class="{ 'ability-locked': resourceActual < (ability.scaledCost || 0) }">
           <div class="ability-icon">
             <img v-if="ability.iconImg" :src="ability.iconImg" class="ability-icon-img" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='inline'">
             <span v-if="ability.iconImg" style="display:none">{{ ability.icon }}</span>
@@ -282,7 +286,7 @@
             </div>
             <div class="ability-cast-row">
               <button class="cast-btn" @click="castUtility(ability)"
-                      :disabled="manaActual < ability.scaledCost">
+                      :disabled="resourceActual < (ability.scaledCost || 0)">
                 Lanzar
               </button>
             </div>

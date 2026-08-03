@@ -43,6 +43,14 @@ window.CLASS_REGISTRY.shaman = {
   armor: 3,
   magicResist: 3,
 
+  resource: {
+    type: 'mana',
+    label: 'Maná',
+    color: '#3498db',
+    max: null,
+    start: 'full',
+  },
+
   /* ---------------------------------------------------------------
      ÁRBOL DE TALENTOS
      Cada talento:

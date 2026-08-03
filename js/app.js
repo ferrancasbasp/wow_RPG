@@ -31,6 +31,7 @@ const FALLBACK_CLASS = {
   statGrowth: { fuerza: 0.5, agilidad: 0.5, intelecto: 0.5, aguante: 0.5, espiritu: 0.5 },
   armor: 0,
   magicResist: 0,
+  resource: { type: 'mana', label: 'Maná', color: '#3498db', max: null, start: 'full' },
   talentBranches: [{ name: 'General', icon: '⭐', color: '#c9b27e' }],
   talents: [],
   abilities: [],
@@ -51,6 +52,7 @@ function createDefaultCharacter(classKey) {
     currentXP: 0,
     currentHP: null,
     currentMana: null,
+    currentRage: 0,
     trainedRanks: {},
     currentCooldowns: {},
     equipment: {
@@ -398,6 +400,34 @@ createApp({
       return Math.floor((this.manaActual / this.maxMana) * 100);
     },
 
+    // Recurso dinámico (mana o rage según la clase)
+    resourceConfig() {
+      return this.classConfig.resource || { type: 'mana', label: 'Maná', color: '#3498db', max: null, start: 'full' };
+    },
+
+    resourceMax() {
+      const rc = this.resourceConfig;
+      if (rc.type === 'rage') return rc.max || 100;
+      return this.maxMana;
+    },
+
+    resourceActual() {
+      const rc = this.resourceConfig;
+      if (rc.type === 'rage') {
+        return Math.max(0, Math.min(this.resourceMax, this.character.currentRage || 0));
+      }
+      return this.manaActual;
+    },
+
+    resourcePercent() {
+      if (this.resourceMax === 0) return 0;
+      return Math.floor((this.resourceActual / this.resourceMax) * 100);
+    },
+
+    resourceLabel() {
+      return this.resourceConfig.label || 'Maná';
+    },
+
     // Habilidades entrenadas (con dados escalados por rango) — solo damage/heal
     unlockedAbilities() {
       return this.computedAbilities.filter(a => a.type !== 'utility' && this.trainedRank(a.id) > 0).map(a => {
@@ -633,23 +663,33 @@ createApp({
     },
 
     castSpell(ability) {
-      const cost = ability.scaledCost || ability.computedCost;
-      if (this.manaActual < cost) {
-        this.showToast('Maná insuficiente');
-        return;
+      const isRage = this.resourceConfig.type === 'rage';
+      const cost = isRage ? (ability.costRage || 0) : (ability.scaledCost || ability.computedCost);
+      if (isRage) {
+        if (this.resourceActual < cost) {
+          this.showToast('Ira insuficiente');
+          return;
+        }
+      } else {
+        if (this.manaActual < cost) {
+          this.showToast('Maná insuficiente');
+          return;
+        }
       }
       if (this.getCooldown(ability.id) > 0) {
         this.showToast(ability.name + ' está en cooldown (' + this.getCooldown(ability.id) + ' turno' + (this.getCooldown(ability.id) > 1 ? 's' : '') + ')');
         return;
       }
-      const clearcast = this.checkClearcasting();
-      if (!clearcast) {
+      const clearcast = isRage ? false : this.checkClearcasting();
+      if (isRage) {
+        this.character.currentRage = Math.min(this.resourceMax, this.resourceActual - cost + (ability.generatesRage || 0));
+      } else if (!clearcast) {
         this.character.currentMana = this.manaActual - cost;
       }
       const min = ability.currentMin || 0;
       const max = ability.currentMax || 0;
       let roll = min + Math.floor(Math.random() * (max - min + 1));
-      const isCrit = Math.random() * 100 < parseFloat(this.spellCrit);
+      const isCrit = Math.random() * 100 < parseFloat(isRage ? this.meleeCrit : this.spellCrit);
       if (isCrit) roll = Math.round(roll * 1.5);
       ability.lastRoll = roll;
       ability.lastCrit = isCrit;
@@ -658,12 +698,13 @@ createApp({
         this.character.currentCooldowns[ability.id] = this.getEffectiveCooldown(ability);
       }
       let ccText = clearcast ? ' · ¡CLARIDAD ARCANA! Maná devuelto' : '';
+      let rageText = isRage && ability.generatesRage ? ' · +' + ability.generatesRage + ' ira' : '';
       if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText);
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText);
       } else {
         this.turnDamage += roll;
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText);
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText);
         this.sendDamageEvent(ability, roll);
       }
     },
@@ -759,12 +800,21 @@ createApp({
           if (this.character.currentCooldowns[id] <= 0) delete this.character.currentCooldowns[id];
         }
       }
-      const regen = Math.round(this.manaRegen * 0.5);
-      this.character.currentMana = Math.min(this.maxMana, this.manaActual + regen);
-      this.processEffects();
-      this.turnNumber++;
-      this.turnDamage = 0;
-      this.showToast('Fin de turno ' + (this.turnNumber - 1) + ' · +' + regen + ' maná regenerado');
+      const isRage = this.resourceConfig.type === 'rage';
+      if (isRage) {
+        this.character.currentRage = Math.max(0, this.resourceActual - 5);
+        this.processEffects();
+        this.turnNumber++;
+        this.turnDamage = 0;
+        this.showToast('Fin de turno ' + (this.turnNumber - 1) + ' · -5 ira');
+      } else {
+        const regen = Math.round(this.manaRegen * 0.5);
+        this.character.currentMana = Math.min(this.maxMana, this.manaActual + regen);
+        this.processEffects();
+        this.turnNumber++;
+        this.turnDamage = 0;
+        this.showToast('Fin de turno ' + (this.turnNumber - 1) + ' · +' + regen + ' maná regenerado');
+      }
     },
 
     processEffects() {
@@ -1022,6 +1072,7 @@ createApp({
       this.character.currentXP = 0;
       this.character.currentHP = null;
       this.character.currentMana = null;
+      this.character.currentRage = 0;
       this.character.trainedRanks = {};
       this.character.currentCooldowns = {};
       this.character.equipment = this.defaultEquipment();
@@ -1051,6 +1102,7 @@ createApp({
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
           if (this.character.currentHP === undefined) this.character.currentHP = null;
           if (this.character.currentMana === undefined) this.character.currentMana = null;
+          if (this.character.currentRage === undefined) this.character.currentRage = 0;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.baseStats) this.character.baseStats = { ...(CLASS_DATA[this.character.classKey] || FALLBACK_CLASS).baseStats };
@@ -1090,11 +1142,16 @@ createApp({
 
     fullRest() {
       this.character.currentHP = this.maxHP;
-      this.character.currentMana = this.maxMana;
+      if (this.resourceConfig.type === 'rage') {
+        this.character.currentRage = 0;
+        this.showToast('Full Rest: vida al máximo, ira reseteada');
+      } else {
+        this.character.currentMana = this.maxMana;
+        this.showToast('Full Rest: vida y maná al máximo');
+      }
       this.character.currentCooldowns = {};
       this.turnNumber = 1;
       this.turnDamage = 0;
-      this.showToast('Full Rest: vida y maná al máximo');
     },
 
     resetCharacter() {
@@ -1125,6 +1182,7 @@ createApp({
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
           if (this.character.currentHP === undefined) this.character.currentHP = null;
           if (this.character.currentMana === undefined) this.character.currentMana = null;
+          if (this.character.currentRage === undefined) this.character.currentRage = 0;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.equipment) this.character.equipment = this.defaultEquipment();
