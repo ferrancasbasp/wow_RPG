@@ -142,6 +142,8 @@ createApp({
       turnNumber: 1,
       turnDamage: 0,
       hpLossAmount: null,
+      warriorStance: 'battle',
+      warriorWeaponMode: 'twohanded',
     };
   },
 
@@ -451,14 +453,16 @@ createApp({
       });
     },
 
-    // Daño de arma total (weapon + dualwield)
+    // Daño de arma total según modo de arma del warrior
     totalWeaponDamage() {
-      let total = 0;
-      if (this.character.equipment) {
-        if (this.character.equipment.weapon) total += this.character.equipment.weapon.weaponDamage || 0;
-        if (this.character.equipment.dualwield) total += this.character.equipment.dualwield.weaponDamage || 0;
+      if (!this.character.equipment) return 0;
+      if (this.warriorWeaponMode === 'dualwield') {
+        const w = this.character.equipment.weapon ? this.character.equipment.weapon.weaponDamage || 0 : 0;
+        const d = this.character.equipment.dualwield ? this.character.equipment.dualwield.weaponDamage || 0 : 0;
+        return w + d;
+      } else {
+        return this.character.equipment.weapon ? this.character.equipment.weapon.weaponDamage || 0 : 0;
       }
-      return total;
     },
 
     // Habilidades de utilidad (buffs sin dados, no envian daño al master)

@@ -602,6 +602,23 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 .top-side-controls {
   display: flex; flex-direction: column; gap: 10px; align-items: stretch; min-width: 220px;
 }
+
+.warrior-stance-row, .warrior-weapon-row {
+  display: flex; gap: 4px;
+}
+.stance-btn, .weapon-mode-btn {
+  flex: 1; padding: 6px 8px; font-family: 'Cinzel', serif; font-size: 11px; font-weight: 600;
+  background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
+  border: 1px solid var(--gold-dark); border-radius: 4px; color: var(--text-dim);
+  cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 0.03em;
+}
+.stance-btn:hover, .weapon-mode-btn:hover {
+  border-color: var(--gold); color: var(--gold-light);
+}
+.stance-btn.active, .weapon-mode-btn.active {
+  background: linear-gradient(180deg, #2d3a1e 0%, #1a2310 100%);
+  border-color: #6ba83a; color: #a0e060; box-shadow: 0 0 8px rgba(108,168,58,0.3);
+}
 .turn-damage-box {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-dark) 100%);

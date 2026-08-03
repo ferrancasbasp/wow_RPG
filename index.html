@@ -74,6 +74,15 @@
     </div>
 
     <div class="top-side-controls">
+      <div class="warrior-stance-row" v-if="character.classKey === 'warrior'">
+        <button class="stance-btn" :class="{ active: warriorStance === 'battle' }" @click="warriorStance = 'battle'">⚔️ Battle</button>
+        <button class="stance-btn" :class="{ active: warriorStance === 'fury' }" @click="warriorStance = 'fury'">😤 Fury</button>
+        <button class="stance-btn" :class="{ active: warriorStance === 'protection' }" @click="warriorStance = 'protection'">🛡️ Prot</button>
+      </div>
+      <div class="warrior-weapon-row" v-if="character.classKey === 'warrior'">
+        <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'dualwield' }" @click="warriorWeaponMode = 'dualwield'">🗡️ Dual Wield</button>
+        <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'twohanded' }" @click="warriorWeaponMode = 'twohanded'">🔨 Two-Handed</button>
+      </div>
       <div class="turn-damage-box">
         <span class="turn-damage-label">Daño del Turno</span>
         <span class="turn-damage-value">{{ turnDamage }}</span>
