@@ -136,7 +136,7 @@ window.CLASS_REGISTRY.warrior = {
 
     { id: 'bloodrage', name: 'Blood Rage', icon: '🩸',
       school: 'Físico', type: 'utility', requiredLevel: 2,
-      costRage: 0, castType: 'instant', cooldown: 5,
+      costRage: 0, castType: 'instant', cooldown: 10,
       description: 'Pierde 15% de vida máxima y gana 20 de ira. No usable en estancia Defensiva.',
       buff: null, applySelf: false,
       blockedStance: 'protection',
@@ -145,11 +145,20 @@ window.CLASS_REGISTRY.warrior = {
 
     { id: 'last_stand', name: 'Última Esperanza', icon: '🛡️',
       school: 'Físico', type: 'utility', requiredLevel: 18,
-      costRage: 0, castType: 'instant', cooldown: 5,
+      costRage: 0, castType: 'instant', cooldown: 10,
       description: 'Aumenta tu vida máxima un 20% durante 4 turnos. El % de vida actual se mantiene.',
       buff: { stat: 'maxHP', duration: 4, applySelf: true, isPercent: true },
       buffRanks: [
         { rank: 1, level: 18, value: 20, costRage: 0 },
+      ] },
+
+    { id: 'group_last_stand', name: 'Muro de Hierro', icon: '🏰',
+      school: 'Físico', type: 'utility', requiredLevel: 36,
+      costRage: 0, castType: 'instant', cooldown: 8,
+      description: 'Aumenta la vida máxima de todo el grupo un 20% durante 4 turnos. Cada jugador debe aplicarse el buff manualmente.',
+      buff: { stat: 'maxHP', duration: 4, applySelf: false, isPercent: true },
+      buffRanks: [
+        { rank: 1, level: 36, value: 20, costRage: 0 },
       ] },
   ],
 };

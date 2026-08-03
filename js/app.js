@@ -88,6 +88,9 @@ const BUFF_DEBUFF_STATS = [
   { key: 'spellPower', label: 'Poder de Hechizo' },
   { key: 'spellCrit', label: 'Prob. Crítico Hechizos' },
   { key: 'physCrit', label: 'Prob. Crítico Físico' },
+  { key: 'maxHP', label: 'Vida Máxima' },
+  { key: 'armor', label: 'Armadura' },
+  { key: 'magicResist', label: 'Armadura Mágica' },
 ];
 
 const STATUS_OPTIONS = [
