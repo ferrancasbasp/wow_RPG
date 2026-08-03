@@ -88,6 +88,12 @@ body {
   font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: var(--gold-light);
 }
 .damage-event-detail { font-size: 13px; color: var(--text-dim); }
+.damage-type-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px;
+  border-radius: 3px; margin-left: 4px; text-transform: uppercase;
+}
+.damage-type-tag.magical { background: rgba(155,89,182,0.25); color: #b388e0; border: 1px solid rgba(155,89,182,0.4); }
+.damage-type-tag.physical { background: rgba(201,178,126,0.2); color: #c9b27e; border: 1px solid rgba(201,178,126,0.4); }
 .damage-event-value {
   font-size: 24px; font-weight: 700; color: #c0392b; font-family: 'Cinzel', serif;
 }
@@ -257,10 +263,13 @@ body {
                class="damage-event"
                :class="{ selected: selectedEventId === event.id, assigned: event.assigned }"
                @click="selectEvent(event.id)">
-            <span class="damage-event-icon">⚔️</span>
+            <span class="damage-event-icon">{{ event.damageType === 'physical' ? '⚔️' : '✨' }}</span>
             <div class="damage-event-info">
               <div class="damage-event-player">{{ event.player }}</div>
-              <div class="damage-event-detail">{{ event.ability }} R{{ event.rank }} · Turno {{ event.turn }}</div>
+              <div class="damage-event-detail">
+                {{ event.ability }} R{{ event.rank }} · Turno {{ event.turn }}
+                <span class="damage-type-tag" :class="event.damageType">{{ event.damageType === 'physical' ? 'Físico' : 'Mágico' }}</span>
+              </div>
             </div>
             <span class="damage-event-value">{{ event.damage }}</span>
           </div>
@@ -407,14 +416,26 @@ createApp({
       if (this.selectedEventId === null) return;
       const event = this.getEvent(this.selectedEventId);
       if (!event || event.assigned) return;
-      monster.currentHP = Math.max(0, monster.currentHP - event.damage);
+      let damage = event.damage;
+      let reductionText = '';
+      const dmgType = event.damageType || 'magical';
+      if (dmgType === 'physical' && monster.armor) {
+        const reduction = Math.min(50, monster.armor * 2);
+        damage = Math.round(damage * (1 - reduction / 100));
+        reductionText = ' (−' + reduction + '% armor)';
+      } else if (dmgType === 'magical' && monster.magicResist) {
+        const reduction = Math.min(75, monster.magicResist * 3);
+        damage = Math.round(damage * (1 - reduction / 100));
+        reductionText = ' (−' + reduction + '% resist)';
+      }
+      monster.currentHP = Math.max(0, monster.currentHP - damage);
       this.markEventAssigned(event);
       this.selectedEventId = null;
       this.saveMonsters();
       if (monster.currentHP <= 0) {
-        this.showToast(monster.name + ' derrotado (-' + event.damage + ')');
+        this.showToast(monster.name + ' derrotado (-' + damage + reductionText + ')');
       } else {
-        this.showToast(event.damage + ' daño a ' + monster.name);
+        this.showToast(damage + ' daño a ' + monster.name + reductionText);
       }
     },
 

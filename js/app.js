@@ -734,6 +734,7 @@ createApp({
           ability: ability.name,
           rank: ability.currentRank || 1,
           damage: damage,
+          damageType: ability.damageType || 'magical',
           turn: this.turnNumber,
           timestamp: Date.now(),
           assigned: false,
