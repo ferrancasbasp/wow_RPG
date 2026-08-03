@@ -33,25 +33,37 @@ window.CLASS_REGISTRY.warrior = {
       description: 'El guerrero es experto en todo tipo de armamento. Puede empuñar un arma a dos manos o combinar un arma de una mano con una off hand, y ambos contribuyen a sus stats y daño.',
       maxRank: 1, tier: 1, requires: null, passive: true, requiredLevel: 2 },
 
-    { id: 'improved_heroic_strike', name: 'Golpe Heroico Mejorado', icon: '⚔️',
-      description: 'Reduce el coste de ira de Golpe Heroico en 1 por punto.',
+    { id: 'improved_heroic_strike', name: 'Improved Heroic Strike', icon: '⚔️',
+      description: 'Reduce el coste de ira de Heroic Strike en 1 por punto.',
       maxRank: 5, tier: 1, requires: null },
 
-    { id: 'anticipation', name: 'Anticipación', icon: '🛡️',
+    { id: 'anticipation', name: 'Anticipation', icon: '🛡️',
       description: 'Aumenta tu armadura física en 1 por punto.',
       maxRank: 5, tier: 1, requires: null },
 
-    { id: 'improved_bloodrage', name: 'Blood Rage Mejorada', icon: '🩸',
+    { id: 'improved_bloodrage', name: 'Improved Bloodrage', icon: '🩸',
       description: 'Aumenta la ira otorgada por Blood Rage en 3 por punto.',
       maxRank: 2, tier: 2, requires: null },
 
-    { id: 'improved_charge', name: 'Carga Mejorada', icon: '🏃',
-      description: 'Aumenta la ira generada por Carga en 2 por punto.',
+    { id: 'improved_charge', name: 'Improved Charge', icon: '🏃',
+      description: 'Aumenta la ira generada por Charge en 2 por punto.',
       maxRank: 2, tier: 2, requires: null },
 
-    { id: 'cruelty', name: 'Crueldad', icon: '💢',
+    { id: 'cruelty', name: 'Cruelty', icon: '💢',
       description: 'Aumenta tu probabilidad de crítico físico un 1% por punto.',
       maxRank: 5, tier: 2, requires: null },
+
+    { id: 'improved_last_stand', name: 'Improved Last Stand', icon: '🛡️',
+      description: 'Last Stand también te cura un 5% de vida por punto.',
+      maxRank: 2, tier: 3, requires: null },
+
+    { id: 'improved_cleave', name: 'Improved Cleave', icon: '🪓',
+      description: 'Aumenta el daño de Cleave un 20% por punto. Aumenta el coste de ira en 5.',
+      maxRank: 2, tier: 3, requires: null },
+
+    { id: 'improved_battle_shout', name: 'Improved Battle Shout', icon: '📢',
+      description: 'Aumenta el AP otorgado por Battle Shout un 5% y reduce su coste de ira en 1 por punto.',
+      maxRank: 5, tier: 3, requires: null },
   ],
 
   stances: [
@@ -61,7 +73,7 @@ window.CLASS_REGISTRY.warrior = {
   ],
 
   abilities: [
-    { id: 'basic_attack', name: 'Ataque Básico', icon: '👊',
+    { id: 'basic_attack', name: 'Basic Attack', icon: '👊',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 0, generatesRage: 5, castType: 'instant', cooldown: 0,
       description: 'Un golpe básico que genera ira. El daño depende del arma equipada.',
@@ -73,7 +85,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 5, level: 24, min: 130, max: 175 },
       ] },
 
-    { id: 'heroic_strike', name: 'Golpe Heroico', icon: '⚔️',
+    { id: 'heroic_strike', name: 'Heroic Strike', icon: '⚔️',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Un golpe potente que gasta ira para hacer daño extra.',
@@ -85,7 +97,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 5, level: 24, min: 210, max: 280 },
       ] },
 
-    { id: 'charge', name: 'Carga', icon: '🏃',
+    { id: 'charge', name: 'Charge', icon: '🏃',
       school: 'Físico', type: 'damage', requiredLevel: 4, damageType: 'physical',
       baseDamage: 0, spellPowerRatio: 0, costRage: 0, generatesRage: 10, castType: 'instant', cooldown: 3,
       description: 'Carga hacia el enemigo, aturdiéndolo y generando ira.',
@@ -101,7 +113,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 3, level: 36, duration: 3 },
       ] },
 
-    { id: 'rend', name: 'Desgarrar', icon: '🩸',
+    { id: 'rend', name: 'Rend', icon: '🩸',
       school: 'Físico', type: 'damage', requiredLevel: 6, damageType: 'physical',
       baseDamage: 10, spellPowerRatio: 0, costRage: 5, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Causa sangrado al enemigo. No escala con arma, solo con nivel.',
@@ -112,7 +124,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 4, level: 24, min: 28, max: 36 },
       ],
       inflictsEffects: [
-        { type: 'dot', name: 'Desgarrar', value: 8, duration: 5 },
+        { type: 'dot', name: 'Rend', value: 8, duration: 5 },
       ],
       dotScales: true,
       dotRanges: [
@@ -122,7 +134,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 4, level: 24, value: 28, duration: 5 },
       ] },
 
-    { id: 'cleave', name: 'Hender', icon: '🪓',
+    { id: 'cleave', name: 'Cleave', icon: '🪓',
       school: 'Físico', type: 'damage', requiredLevel: 12, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 10, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Golpe a dos enemigos cercanos. Envía dos ataques al master.',
@@ -134,7 +146,7 @@ window.CLASS_REGISTRY.warrior = {
       ],
       multiHit: 2 },
 
-    { id: 'thunder_clap', name: 'Aplastar', icon: '⚡',
+    { id: 'thunder_clap', name: 'Thunder Clap', icon: '⚡',
       school: 'Físico', type: 'damage', requiredLevel: 14, damageType: 'physical',
       baseDamage: 15, spellPowerRatio: 0, costRage: 10, generatesRage: 0, castType: 'instant', cooldown: 2,
       description: 'Daño en área que ralentiza a los enemigos.',
@@ -149,7 +161,7 @@ window.CLASS_REGISTRY.warrior = {
         { type: 'debuff', name: 'Ralentizado', stat: 'speed', value: 1, duration: 2 },
       ] },
 
-    { id: 'shout', name: 'Grito de Batalla', icon: '📢',
+    { id: 'shout', name: 'Battle Shout', icon: '📢',
       school: 'Físico', type: 'utility', requiredLevel: 8,
       costRage: 10, castType: 'instant', cooldown: 0,
       description: 'Aumenta el Poder de Ataque de todo el equipo.',
@@ -160,7 +172,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 3, level: 28, value: 100, costRage: 10 },
       ] },
 
-    { id: 'taunt', name: 'Desafiar', icon: '🗯️',
+    { id: 'taunt', name: 'Taunt', icon: '🗯️',
       school: 'Físico', type: 'utility', requiredLevel: 4,
       costRage: 0, castType: 'instant', cooldown: 4,
       description: 'Obliga al enemigo a atacarte durante su próximo turno.',
@@ -175,7 +187,7 @@ window.CLASS_REGISTRY.warrior = {
       healthCostPct: 0.15,
       rageGain: 20 },
 
-    { id: 'last_stand', name: 'Última Esperanza', icon: '🛡️',
+    { id: 'last_stand', name: 'Last Stand', icon: '🛡️',
       school: 'Físico', type: 'utility', requiredLevel: 18,
       costRage: 0, castType: 'instant', cooldown: 10,
       description: 'Aumenta tu vida máxima un 20% durante 4 turnos. El % de vida actual se mantiene.',
@@ -184,7 +196,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 1, level: 18, value: 20, costRage: 0 },
       ] },
 
-    { id: 'group_last_stand', name: 'Muro de Hierro', icon: '🏰',
+    { id: 'group_last_stand', name: 'Iron Wall', icon: '🏰',
       school: 'Físico', type: 'utility', requiredLevel: 36,
       costRage: 0, castType: 'instant', cooldown: 8,
       description: 'Aumenta la vida máxima de todo el grupo un 20% durante 4 turnos. Cada jugador debe aplicarse el buff manualmente.',

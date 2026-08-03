@@ -468,13 +468,20 @@ createApp({
         const isPhysical = a.damageType === 'physical';
         const noWeaponScaling = a.dotScales || a.baseDamage === 0;
         const dmgBonus = (isPhysical && !noWeaponScaling) ? (weaponDmg + apBonus) : 0;
+        let minVal = dmgRange ? (dmgRange.min + dmgBonus) : 0;
+        let maxVal = dmgRange ? (dmgRange.max + dmgBonus) : 0;
+        if (a.id === 'cleave') {
+          const cleaveBonus = 1 + this.talentRank('improved_cleave') * 0.20;
+          minVal = Math.round(minVal * cleaveBonus);
+          maxVal = Math.round(maxVal * cleaveBonus);
+        }
         const dotRange = a.dotRanges ? a.dotRanges.find(dr => dr.rank === rank) : null;
         const stunRange = a.stunRanks ? a.stunRanks.find(sr => sr.rank === rank) : null;
         return {
           ...a,
           currentRank: rank,
-          currentMin: dmgRange ? (dmgRange.min + dmgBonus) : 0,
-          currentMax: dmgRange ? (dmgRange.max + dmgBonus) : 0,
+          currentMin: minVal,
+          currentMax: maxVal,
           currentDotValue: dotRange ? dotRange.value : (a.inflictsEffects ? a.inflictsEffects[0].value : 0),
           currentDotDuration: dotRange ? dotRange.duration : (a.inflictsEffects ? a.inflictsEffects[0].duration : 0),
           currentStunDuration: stunRange ? stunRange.duration : null,
@@ -638,7 +645,7 @@ createApp({
     },
 
     tierLabel(tier) {
-      const labels = { 1: 'Nv. 10', 2: 'Nv. 15', 3: 'Nv. 20' };
+      const labels = { 1: 'Nv. 10', 2: 'Nv. 15', 3: 'Nv. 20', 4: 'Nv. 25', 5: 'Nv. 30', 6: 'Nv. 35' };
       return labels[tier] || ('Tier ' + tier);
     },
 
@@ -708,11 +715,14 @@ createApp({
         case 'clearcasting':            return `Prob. hechizo gratuito: ${rank * 2}%`;
         // --- Warrior ---
         case 'master_of_weapons':       return `Pasiva: armas 1H + off o 2H equipables`;
-        case 'improved_heroic_strike':  return `Coste Golpe Heroico: −${rank} ira`;
+        case 'improved_heroic_strike':  return `Coste Heroic Strike: −${rank} ira`;
         case 'anticipation':            return `Armadura: +${rank}`;
-        case 'improved_bloodrage':      return `Blood Rage: +${rank * 3} ira`;
-        case 'improved_charge':         return `Carga: +${rank * 2} ira`;
+        case 'improved_bloodrage':      return `Bloodrage: +${rank * 3} ira`;
+        case 'improved_charge':         return `Charge: +${rank * 2} ira`;
         case 'cruelty':                 return `Crítico físico: +${rank}%`;
+        case 'improved_last_stand':     return `Last Stand cura: +${rank * 5}% vida`;
+        case 'improved_cleave':         return `Cleave: +${rank * 20}% daño, +5 ira`;
+        case 'improved_battle_shout':   return `Battle Shout: +${rank * 5}% AP, −${rank} ira`;
         default: return '';
       }
     },
@@ -821,6 +831,12 @@ createApp({
       if (ability.id === 'heroic_strike') {
         cost -= this.talentRank('improved_heroic_strike');
       }
+      if (ability.id === 'cleave') {
+        cost += this.talentRank('improved_cleave') * 5;
+      }
+      if (ability.id === 'shout') {
+        cost -= this.talentRank('improved_battle_shout');
+      }
       return Math.max(0, cost);
     },
 
@@ -886,19 +902,30 @@ createApp({
         if (!this.character.activeEffects) this.character.activeEffects = [];
         this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== ability.name);
         const hpPercentBefore = this.maxHP > 0 ? this.hpActual / this.maxHP : 1;
+        let buffValue = ability.currentBuffValue;
+        if (ability.id === 'shout') {
+          buffValue = Math.round(buffValue * (1 + this.talentRank('improved_battle_shout') * 0.05));
+        }
         this.character.activeEffects.push({
           id: Date.now() + Math.random(),
           type: 'buff',
           name: ability.name,
           target: ability.currentBuffStat,
-          value: ability.currentBuffValue,
+          value: buffValue,
           duration: ability.currentBuffDuration,
           isPercent: ability.buff.isPercent || false,
         });
         if (ability.buff.isPercent && ability.currentBuffStat === 'maxHP') {
           this.character.currentHP = Math.round(this.maxHP * hpPercentBefore);
+          if (ability.id === 'last_stand') {
+            const healPct = this.talentRank('improved_last_stand') * 0.05;
+            if (healPct > 0) {
+              const heal = Math.round(this.maxHP * healPct);
+              this.character.currentHP = Math.min(this.maxHP, this.hpActual + heal);
+            }
+          }
         }
-        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + (ability.buff.isPercent ? '%' : '') + ' ' + ability.currentBuffStat);
+        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + buffValue + (ability.buff.isPercent ? '%' : '') + ' ' + ability.currentBuffStat);
       } else if (ability.buff) {
         const buffText = '+' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ' (' + ability.currentBuffDuration + ' turnos)';
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
