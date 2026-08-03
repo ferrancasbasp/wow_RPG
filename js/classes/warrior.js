@@ -32,6 +32,26 @@ window.CLASS_REGISTRY.warrior = {
     { id: 'master_of_weapons', name: 'Maestría de Armas', icon: '⚔️',
       description: 'El guerrero es experto en todo tipo de armamento. Puede empuñar un arma a dos manos o combinar un arma de una mano con una off hand, y ambos contribuyen a sus stats y daño.',
       maxRank: 1, tier: 1, requires: null, passive: true, requiredLevel: 2 },
+
+    { id: 'improved_heroic_strike', name: 'Golpe Heroico Mejorado', icon: '⚔️',
+      description: 'Reduce el coste de ira de Golpe Heroico en 1 por punto.',
+      maxRank: 5, tier: 1, requires: null },
+
+    { id: 'anticipation', name: 'Anticipación', icon: '🛡️',
+      description: 'Aumenta tu armadura física en 1 por punto.',
+      maxRank: 5, tier: 1, requires: null },
+
+    { id: 'improved_bloodrage', name: 'Blood Rage Mejorada', icon: '🩸',
+      description: 'Aumenta la ira otorgada por Blood Rage en 3 por punto.',
+      maxRank: 2, tier: 2, requires: null },
+
+    { id: 'improved_charge', name: 'Carga Mejorada', icon: '🏃',
+      description: 'Aumenta la ira generada por Carga en 2 por punto.',
+      maxRank: 2, tier: 2, requires: null },
+
+    { id: 'cruelty', name: 'Crueldad', icon: '💢',
+      description: 'Aumenta tu probabilidad de crítico físico un 1% por punto.',
+      maxRank: 5, tier: 2, requires: null },
   ],
 
   stances: [
@@ -114,7 +134,7 @@ window.CLASS_REGISTRY.warrior = {
       description: 'Obliga al enemigo a atacarte durante su próximo turno.',
       buff: null, applySelf: false },
 
-    { id: 'bloodrage', name: 'Cólera de Sangre', icon: '🩸',
+    { id: 'bloodrage', name: 'Blood Rage', icon: '🩸',
       school: 'Físico', type: 'utility', requiredLevel: 2,
       costRage: 0, castType: 'instant', cooldown: 5,
       description: 'Pierde 15% de vida máxima y gana 20 de ira. No usable en estancia Defensiva.',

@@ -236,7 +236,7 @@
                   Curación {{ ability.currentMin }}-{{ ability.currentMax }}
                 </span>
                 <span class="ability-stat cost" v-if="resourceConfig.type === 'rage'">
-                  {{ ability.costRage || 0 }} ira<span v-if="ability.generatesRage"> · +{{ ability.generatesRage }} ira</span>
+                  {{ ability.effectiveRageCost || 0 }} ira<span v-if="ability.effectiveRageGen"> · +{{ ability.effectiveRageGen }} ira</span>
                 </span>
                 <span class="ability-stat cost" v-else>{{ ability.scaledCost }} maná</span>
                 <span class="ability-stat bonus" v-if="ability.talentNote">{{ ability.talentNote }}</span>

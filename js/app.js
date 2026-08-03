@@ -220,8 +220,9 @@ createApp({
       const fromAgi = this.finalStats.agilidad / 20;
       const fromLevel = this.character.level * 0.02;
       const stanceBonus = this.warriorStance === 'fury' ? 5 : 0;
+      const fromTalent = this.talentRank('cruelty');
       const fromBuff = this.effectStatBonus('physCrit');
-      return (5 + fromAgi + fromLevel + stanceBonus + fromBuff).toFixed(2);
+      return (5 + fromAgi + fromLevel + stanceBonus + fromTalent + fromBuff).toFixed(2);
     },
 
     // Poder de Ataque (Fuerza × 2 + Nivel × 2 - 10)
@@ -240,9 +241,10 @@ createApp({
       return this.classConfig.formulas.manaRegen(this.finalStats, this.character.level);
     },
 
-    // Armadura física: base de clase + stance + buffs de armor activos
+    // Armadura física: base de clase + talentos + stance + buffs de armor activos
     armorTotal() {
       let total = this.classConfig.armor || 0;
+      total += this.talentRank('anticipation');
       if (this.warriorStance === 'protection' && this.classConfig.stances) total += 5;
       if (this.character.activeEffects) {
         for (const eff of this.character.activeEffects) {
@@ -460,6 +462,8 @@ createApp({
           currentDotValue: dotRange ? dotRange.value : (a.inflictsEffects ? a.inflictsEffects[0].value : 0),
           currentDotDuration: dotRange ? dotRange.duration : (a.inflictsEffects ? a.inflictsEffects[0].duration : 0),
           scaledCost: Math.round(a.computedCost * (1 + (rank - 1) * 0.15)),
+          effectiveRageCost: this.getEffectiveRageCost(a),
+          effectiveRageGen: this.getEffectiveRageGen(a),
         };
       });
     },
@@ -687,6 +691,11 @@ createApp({
         case 'clearcasting':            return `Prob. hechizo gratuito: ${rank * 2}%`;
         // --- Warrior ---
         case 'master_of_weapons':       return `Pasiva: armas 1H + off o 2H equipables`;
+        case 'improved_heroic_strike':  return `Coste Golpe Heroico: −${rank} ira`;
+        case 'anticipation':            return `Armadura: +${rank}`;
+        case 'improved_bloodrage':      return `Blood Rage: +${rank * 3} ira`;
+        case 'improved_charge':         return `Carga: +${rank * 2} ira`;
+        case 'cruelty':                 return `Crítico físico: +${rank}%`;
         default: return '';
       }
     },
@@ -706,7 +715,7 @@ createApp({
 
     castSpell(ability) {
       const isRage = this.resourceConfig.type === 'rage';
-      const cost = isRage ? (ability.costRage || 0) : (ability.scaledCost || ability.computedCost);
+      const cost = isRage ? this.getEffectiveRageCost(ability) : (ability.scaledCost || ability.computedCost);
       if (isRage) {
         if (this.resourceActual < cost) {
           this.showToast('Ira insuficiente');
@@ -735,7 +744,8 @@ createApp({
       if (isCrit) roll = Math.round(roll * 1.5);
       if (isRage && this.warriorStance === 'battle') roll = Math.round(roll * 1.10);
       if (isRage && ability.generatesRage) {
-        const rageGen = isCrit ? ability.generatesRage * 2 : ability.generatesRage;
+        const baseGen = this.getEffectiveRageGen(ability);
+        const rageGen = isCrit ? baseGen * 2 : baseGen;
         this.character.currentRage = Math.min(this.resourceMax, this.character.currentRage + rageGen);
       }
       ability.lastRoll = roll;
@@ -747,7 +757,8 @@ createApp({
       let ccText = clearcast ? ' · ¡CLARIDAD ARCANA! Maná devuelto' : '';
       let rageText = '';
       if (isRage && ability.generatesRage) {
-        const rageGen = isCrit ? ability.generatesRage * 2 : ability.generatesRage;
+        const baseGen = this.getEffectiveRageGen(ability);
+        const rageGen = isCrit ? baseGen * 2 : baseGen;
         rageText = ' · +' + rageGen + ' ira';
       }
       if (ability.type === 'heal') {
@@ -776,6 +787,30 @@ createApp({
         cd -= this.talentRank('improved_blink');
       }
       return Math.max(0, cd);
+    },
+
+    getEffectiveRageCost(ability) {
+      let cost = ability.costRage || 0;
+      if (ability.id === 'heroic_strike') {
+        cost -= this.talentRank('improved_heroic_strike');
+      }
+      return Math.max(0, cost);
+    },
+
+    getEffectiveRageGen(ability) {
+      let gen = ability.generatesRage || 0;
+      if (ability.id === 'charge') {
+        gen += this.talentRank('improved_charge') * 2;
+      }
+      return gen;
+    },
+
+    getEffectiveRageGain(ability) {
+      let gain = ability.rageGain || 0;
+      if (ability.id === 'bloodrage') {
+        gain += this.talentRank('improved_bloodrage') * 3;
+      }
+      return gain;
     },
 
     castUtility(ability) {
@@ -814,9 +849,12 @@ createApp({
         const healthLost = Math.round(this.maxHP * ability.healthCostPct);
         this.character.currentHP = Math.max(1, this.hpActual - healthLost);
         if (ability.rageGain && isRage) {
-          this.character.currentRage = Math.min(this.resourceMax, this.character.currentRage + ability.rageGain);
+          const rageGain = this.getEffectiveRageGain(ability);
+          this.character.currentRage = Math.min(this.resourceMax, this.character.currentRage + rageGain);
+          this.showToast(ability.name + ': -' + healthLost + ' vida · +' + rageGain + ' ira');
+        } else {
+          this.showToast(ability.name + ': -' + healthLost + ' vida');
         }
-        this.showToast(ability.name + ': -' + healthLost + ' vida · +' + (ability.rageGain || 0) + ' ira');
       } else if (ability.buff && ability.buff.applySelf) {
         if (!this.character.activeEffects) this.character.activeEffects = [];
         this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== ability.name);
