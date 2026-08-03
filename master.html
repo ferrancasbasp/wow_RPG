@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="js/npc-registry.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="js/firebase-config.js"></script>
@@ -169,6 +170,18 @@ body {
 }
 .add-monster-btn:hover { border-color: var(--gold); color: var(--gold-light); box-shadow: 0 0 8px var(--gold-glow); }
 
+.npc-preset-row { margin-bottom: 12px; }
+.monster-level {
+  font-size: 11px; color: var(--text-dim); font-weight: 400; margin-left: 4px;
+}
+.monster-stats {
+  display: flex; gap: 10px; margin-bottom: 6px; font-size: 12px; color: var(--text-dim);
+}
+.monster-stat {
+  background: var(--bg-dark); padding: 2px 8px; border-radius: 3px;
+  border: 1px solid rgba(138,115,68,0.15);
+}
+
 .clear-btn {
   padding: 4px 12px; font-family: 'Cinzel', serif; font-size: 11px; font-weight: 600;
   background: linear-gradient(180deg, #4a1a1a 0%, #2d0e0e 100%);
@@ -253,13 +266,25 @@ body {
           <button class="add-monster-btn" @click="addMonster">Añadir</button>
         </div>
 
+        <div class="npc-preset-row">
+          <select v-model="selectedNpc" class="add-monster-input" @change="addPresetNpc">
+            <option value="">+ Añadir pregenerado...</option>
+            <option v-for="(npc, key) in npcRegistry" :key="key" :value="key">
+              {{ npc.icon }} {{ npc.name }} (Nv. {{ npc.level }})
+            </option>
+          </select>
+        </div>
+
         <div class="monster-list" v-if="monsters.length > 0">
           <div v-for="monster in monsters" :key="monster.id"
                class="monster-card"
                :class="{ targeting: selectedEventId !== null && !getEvent(selectedEventId).assigned, dead: monster.currentHP <= 0 }"
                @click="assignDamageToMonster(monster)">
             <div class="monster-header">
-              <span class="monster-name" :class="{ 'dead-name': monster.currentHP <= 0 }">{{ monster.name }}</span>
+              <span class="monster-name" :class="{ 'dead-name': monster.currentHP <= 0 }">
+                {{ monster.icon ? monster.icon + ' ' : '' }}{{ monster.name }}
+                <span class="monster-level" v-if="monster.level">Nv. {{ monster.level }}</span>
+              </span>
               <div class="monster-actions">
                 <button class="monster-btn" @click.stop="healMonster(monster)" title="Curar">+</button>
                 <button class="monster-btn danger" @click.stop="removeMonster(monster.id)" title="Eliminar">✕</button>
@@ -270,6 +295,10 @@ body {
                    :class="{ low: monsterHPPercent(monster) <= 50 && monsterHPPercent(monster) > 25, critical: monsterHPPercent(monster) <= 25 }"
                    :style="{ width: monsterHPPercent(monster) + '%' }"></div>
               <div class="monster-hp-text">{{ monster.currentHP }} / {{ monster.maxHP }}</div>
+            </div>
+            <div class="monster-stats" v-if="monster.armor !== undefined || monster.magicResist !== undefined">
+              <span class="monster-stat" v-if="monster.armor !== undefined">🛡️ {{ monster.armor }}</span>
+              <span class="monster-stat" v-if="monster.magicResist !== undefined">✨ {{ monster.magicResist }}</span>
             </div>
             <div class="monster-hp-controls">
               <input type="number" v-model.number="dmgInput[monster.id]" class="monster-hp-input"
@@ -304,6 +333,8 @@ createApp({
       toastMessage: '',
       firebaseConnected: false,
       monsterIdCounter: 1,
+      npcRegistry: window.NPC_REGISTRY || {},
+      selectedNpc: '',
     };
   },
 
@@ -398,11 +429,35 @@ createApp({
         name: this.newMonsterName.trim(),
         maxHP: this.newMonsterHP,
         currentHP: this.newMonsterHP,
+        level: null,
+        armor: null,
+        magicResist: null,
+        icon: null,
       });
       this.newMonsterName = '';
       this.newMonsterHP = null;
       this.saveMonsters();
       this.showToast('Monstruo añadido');
+    },
+
+    addPresetNpc() {
+      if (!this.selectedNpc) return;
+      const npc = this.npcRegistry[this.selectedNpc];
+      if (!npc) return;
+      this.monsters.push({
+        id: this.monsterIdCounter++,
+        name: npc.name,
+        icon: npc.icon,
+        level: npc.level,
+        maxHP: npc.hp,
+        currentHP: npc.hp,
+        armor: npc.armor,
+        magicResist: npc.magicResist,
+        attacks: npc.attacks || [],
+      });
+      this.selectedNpc = '';
+      this.saveMonsters();
+      this.showToast(npc.icon + ' ' + npc.name + ' añadido');
     },
 
     removeMonster(id) {
