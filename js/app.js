@@ -157,11 +157,6 @@ createApp({
         result[key] += this.gearStatBonus(key);
         result[key] += this.effectStatBonus(key);
       }
-      // Mago: Mente Arcana (+3% Intelecto por punto)
-      const arcaneMind = this.talentRank('arcane_mind');
-      if (arcaneMind > 0) {
-        result.intelecto = Math.round(result.intelecto * (1 + arcaneMind * 0.03));
-      }
       return result;
     },
 
@@ -195,8 +190,7 @@ createApp({
     spellPower() {
       let sp = this.baseSpellPower;
       const stormPower = this.talentRank('storm_power');
-      const mageSpellPower = this.talentRank('spell_power');
-      sp = Math.round(sp * (1 + stormPower * 0.10 + mageSpellPower * 0.10));
+      sp = Math.round(sp * (1 + stormPower * 0.10));
       return sp;
     },
 
@@ -309,7 +303,7 @@ createApp({
        if/switch aquí siguiendo el patrón existente.
        ============================================================ */
     computedAbilities() {
-      return this.classConfig.abilities.map(ability => {
+      return this.classConfig.abilities.filter(a => a.type !== 'utility').map(ability => {
         // === DAÑO BASE ===
         // Fórmula: dañoBase + (poderHechizo × ratio)
         let value = ability.baseDamage + this.spellPower * ability.spellPowerRatio;
