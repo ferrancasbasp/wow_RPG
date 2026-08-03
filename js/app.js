@@ -1121,7 +1121,7 @@ createApp({
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character_v4', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v5', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1130,7 +1130,7 @@ createApp({
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character_v4');
+        const data = localStorage.getItem('ttrpg_wow_character_v5');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
@@ -1209,7 +1209,7 @@ createApp({
 
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v4');
+      const saved = localStorage.getItem('ttrpg_wow_character_v5');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
@@ -1222,6 +1222,12 @@ createApp({
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.equipment) this.character.equipment = this.defaultEquipment();
+          if (this.character.equipment.weapon && this.character.equipment.weapon.weaponDamage === undefined) {
+            this.character.equipment.weapon.weaponDamage = 15;
+            this.character.equipment.weapon.name = this.character.equipment.weapon.name || 'Arma básica';
+          }
+          if (!this.character.equipment.offhand) this.character.equipment.offhand = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, defense: 0 };
+          if (!this.character.equipment.dualwield) this.character.equipment.dualwield = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 };
           if (!this.character.activeEffects) this.character.activeEffects = [];
           if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
