@@ -352,33 +352,42 @@
           <span class="tp-value">{{ availableTalentPoints }}</span>
         </div>
       </div>
-      <div class="talent-modal-body">
-        <div class="wow-talent-list">
-          <div class="wow-tier-row" v-for="tier in tiers" :key="tier">
-            <div v-for="talent in talentsByTier(tier)" :key="talent.id"
-                 class="wow-node" :class="talentNodeClass(talent)"
-                 @click="addTalentPoint(talent.id)"
-                 @contextmenu.prevent="removeTalentPoint(talent.id)">
-              <div class="wow-node-icon">
-                <img v-if="talent.iconImg" :src="talent.iconImg" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'">
-                <span v-if="talent.iconImg" style="display:none; align-items:center; justify-content:center; width:100%; height:100%; font-size:28px;">{{ talent.icon }}</span>
-                <span v-if="!talent.iconImg" class="wow-node-emoji">{{ talent.icon }}</span>
-                <span class="wow-node-rank">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
-              </div>
-              <div class="wow-node-tooltip">
-                <div class="tooltip-name">{{ talent.name }}</div>
-                <div class="tooltip-rank">Rango {{ talentRank(talent.id) }} de {{ talent.maxRank }}</div>
-                <div class="tooltip-desc">{{ talent.description }}</div>
-                <div class="tooltip-effect" v-if="getTalentEffectText(talent)">{{ getTalentEffectText(talent) }}</div>
-                <div class="tooltip-req" v-if="talent.requires">
-                  Requiere: {{ getTalentName(talent.requires.id) }} ({{ talent.requires.points }} pts)
-                  <span :style="{ color: prereqMet(talent) ? 'var(--success)' : 'var(--danger)' }">
-                    {{ prereqMet(talent) ? '✓' : '✗' }}
-                  </span>
+      <div class="talent-modal-layout">
+        <div class="talent-modal-tree">
+          <div class="wow-talent-list">
+            <div class="wow-tier-row" v-for="tier in tiers" :key="tier">
+              <div v-for="talent in talentsByTier(tier)" :key="talent.id"
+                   class="wow-node" :class="talentNodeClass(talent)"
+                   @click="addTalentPoint(talent.id)"
+                   @contextmenu.prevent="removeTalentPoint(talent.id)"
+                   @mouseenter="hoveredTalent = talent"
+                   @mouseleave="hoveredTalent = null">
+                <div class="wow-node-icon">
+                  <img v-if="talent.iconImg" :src="talent.iconImg" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'">
+                  <span v-if="talent.iconImg" style="display:none; align-items:center; justify-content:center; width:100%; height:100%; font-size:28px;">{{ talent.icon }}</span>
+                  <span v-if="!talent.iconImg" class="wow-node-emoji">{{ talent.icon }}</span>
+                  <span class="wow-node-rank">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
                 </div>
-                <div class="tooltip-hint">Click: añadir · Click derecho: quitar</div>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="talent-info-panel">
+          <template v-if="hoveredTalent">
+            <div class="talent-info-name">{{ hoveredTalent.name }}</div>
+            <div class="talent-info-rank">Rango {{ talentRank(hoveredTalent.id) }} de {{ hoveredTalent.maxRank }}</div>
+            <div class="talent-info-desc">{{ hoveredTalent.description }}</div>
+            <div class="talent-info-effect" v-if="getTalentEffectText(hoveredTalent)">{{ getTalentEffectText(hoveredTalent) }}</div>
+            <div class="talent-info-req" v-if="hoveredTalent.requires">
+              Requiere: {{ getTalentName(hoveredTalent.requires.id) }} ({{ hoveredTalent.requires.points }} pts)
+              <span :style="{ color: prereqMet(hoveredTalent) ? 'var(--success)' : 'var(--danger)' }">
+                {{ prereqMet(hoveredTalent) ? '✓' : '✗' }}
+              </span>
+            </div>
+            <div class="talent-info-hint">Click: añadir · Click derecho: quitar</div>
+          </template>
+          <div class="talent-info-empty" v-else>
+            Pasa el ratón sobre un talento para ver su información.
           </div>
         </div>
       </div>

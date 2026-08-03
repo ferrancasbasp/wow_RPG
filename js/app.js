@@ -122,6 +122,7 @@ createApp({
       ],
       showExportModal: false,
       showTalentModal: false,
+      hoveredTalent: null,
       showEquipment: false,
       showEffectsPanel: false,
       effectTypes: EFFECT_TYPES,
