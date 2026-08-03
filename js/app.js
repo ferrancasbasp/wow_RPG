@@ -1117,7 +1117,7 @@ createApp({
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character_v3', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v4', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1126,7 +1126,7 @@ createApp({
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character_v3');
+        const data = localStorage.getItem('ttrpg_wow_character_v4');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
@@ -1205,7 +1205,7 @@ createApp({
 
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v3');
+      const saved = localStorage.getItem('ttrpg_wow_character_v4');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
