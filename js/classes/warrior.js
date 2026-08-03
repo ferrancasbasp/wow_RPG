@@ -142,5 +142,14 @@ window.CLASS_REGISTRY.warrior = {
       blockedStance: 'protection',
       healthCostPct: 0.15,
       rageGain: 20 },
+
+    { id: 'last_stand', name: 'Última Esperanza', icon: '🛡️',
+      school: 'Físico', type: 'utility', requiredLevel: 18,
+      costRage: 0, castType: 'instant', cooldown: 5,
+      description: 'Aumenta tu vida máxima un 20% durante 4 turnos. El % de vida actual se mantiene.',
+      buff: { stat: 'maxHP', duration: 4, applySelf: true, isPercent: true },
+      buffRanks: [
+        { rank: 1, level: 18, value: 20, costRage: 0 },
+      ] },
   ],
 };

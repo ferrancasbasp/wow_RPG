@@ -168,9 +168,21 @@ createApp({
       return result;
     },
 
-    // Vida máxima — fórmula de clase + Aguante + nivel
+    // Vida máxima — fórmula de clase + Aguante + nivel + buffs
     maxHP() {
-      return Math.round(this.classConfig.formulas.hp(this.finalStats, this.character.level));
+      let hp = Math.round(this.classConfig.formulas.hp(this.finalStats, this.character.level));
+      if (this.character.activeEffects) {
+        for (const eff of this.character.activeEffects) {
+          if (eff.type === 'buff' && eff.target === 'maxHP') {
+            if (eff.isPercent) {
+              hp = Math.round(hp * (1 + eff.value / 100));
+            } else {
+              hp += eff.value;
+            }
+          }
+        }
+      }
+      return hp;
     },
 
     // Maná máximo — fórmula de clase + Intelecto + nivel
@@ -858,6 +870,7 @@ createApp({
       } else if (ability.buff && ability.buff.applySelf) {
         if (!this.character.activeEffects) this.character.activeEffects = [];
         this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== ability.name);
+        const hpPercentBefore = this.maxHP > 0 ? this.hpActual / this.maxHP : 1;
         this.character.activeEffects.push({
           id: Date.now() + Math.random(),
           type: 'buff',
@@ -865,8 +878,12 @@ createApp({
           target: ability.currentBuffStat,
           value: ability.currentBuffValue,
           duration: ability.currentBuffDuration,
+          isPercent: ability.buff.isPercent || false,
         });
-        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + ' ' + ability.currentBuffStat);
+        if (ability.buff.isPercent && ability.currentBuffStat === 'maxHP') {
+          this.character.currentHP = Math.round(this.maxHP * hpPercentBefore);
+        }
+        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + (ability.buff.isPercent ? '%' : '') + ' ' + ability.currentBuffStat);
       } else if (ability.buff) {
         const buffText = '+' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ' (' + ability.currentBuffDuration + ' turnos)';
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
@@ -957,6 +974,9 @@ createApp({
       this.character.activeEffects = this.character.activeEffects.map(e => {
         return { ...e, duration: e.duration - 1 };
       }).filter(e => e.duration > 0);
+      if (this.character.currentHP !== null && this.character.currentHP > this.maxHP) {
+        this.character.currentHP = this.maxHP;
+      }
       if (messages.length > 0) {
         this.showToast(messages.join(' · '));
       }
