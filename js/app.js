@@ -61,7 +61,7 @@ function createDefaultCharacter(classKey) {
       hands:     { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
       legs:      { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
       feet:      { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 } },
-      weapon:    { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 },
+      weapon:    { name: 'Arma básica', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 15 },
       offhand:   { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, defense: 0 },
       dualwield: { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 },
     },
@@ -434,17 +434,31 @@ createApp({
 
     // Habilidades entrenadas (con dados escalados por rango) — solo damage/heal
     unlockedAbilities() {
+      const weaponDmg = this.totalWeaponDamage;
+      const apBonus = Math.round(this.attackPower / 7);
       return this.computedAbilities.filter(a => a.type !== 'utility' && this.trainedRank(a.id) > 0).map(a => {
         const rank = this.trainedRank(a.id);
         const dmgRange = a.damageRanges ? a.damageRanges.find(dr => dr.rank === rank) : null;
+        const isPhysical = a.damageType === 'physical';
+        const dmgBonus = isPhysical ? (weaponDmg + apBonus) : 0;
         return {
           ...a,
           currentRank: rank,
-          currentMin: dmgRange ? dmgRange.min : 0,
-          currentMax: dmgRange ? dmgRange.max : 0,
+          currentMin: dmgRange ? (dmgRange.min + dmgBonus) : 0,
+          currentMax: dmgRange ? (dmgRange.max + dmgBonus) : 0,
           scaledCost: Math.round(a.computedCost * (1 + (rank - 1) * 0.15)),
         };
       });
+    },
+
+    // Daño de arma total (weapon + dualwield)
+    totalWeaponDamage() {
+      let total = 0;
+      if (this.character.equipment) {
+        if (this.character.equipment.weapon) total += this.character.equipment.weapon.weaponDamage || 0;
+        if (this.character.equipment.dualwield) total += this.character.equipment.dualwield.weaponDamage || 0;
+      }
+      return total;
     },
 
     // Habilidades de utilidad (buffs sin dados, no envian daño al master)
@@ -1035,6 +1049,8 @@ createApp({
         if (extraFields[s]) item[extraFields[s]] = 0;
         eq[s] = item;
       }
+      eq.weapon.name = 'Arma básica';
+      eq.weapon.weaponDamage = 15;
       return eq;
     },
 
