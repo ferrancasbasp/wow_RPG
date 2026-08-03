@@ -94,6 +94,7 @@ body {
 }
 .damage-type-tag.magical { background: rgba(155,89,182,0.25); color: #b388e0; border: 1px solid rgba(155,89,182,0.4); }
 .damage-type-tag.physical { background: rgba(201,178,126,0.2); color: #c9b27e; border: 1px solid rgba(201,178,126,0.4); }
+.damage-type-tag.aoe { background: rgba(192,57,43,0.25); color: #ff7070; border: 1px solid rgba(192,57,43,0.4); }
 .damage-event-value {
   font-size: 24px; font-weight: 700; color: #c0392b; font-family: 'Cinzel', serif;
 }
@@ -269,6 +270,7 @@ body {
               <div class="damage-event-detail">
                 {{ event.ability }} R{{ event.rank }} · Turno {{ event.turn }}
                 <span class="damage-type-tag" :class="event.damageType">{{ event.damageType === 'physical' ? 'Físico' : 'Mágico' }}</span>
+                <span class="damage-type-tag aoe" v-if="event.aoe">AOE</span>
               </div>
             </div>
             <span class="damage-event-value">{{ event.damage }}</span>
@@ -416,18 +418,17 @@ createApp({
       if (this.selectedEventId === null) return;
       const event = this.getEvent(this.selectedEventId);
       if (!event || event.assigned) return;
-      let damage = event.damage;
-      let reductionText = '';
-      const dmgType = event.damageType || 'magical';
-      if (dmgType === 'physical' && monster.armor) {
-        const reduction = Math.min(50, monster.armor * 2);
-        damage = Math.round(damage * (1 - reduction / 100));
-        reductionText = ' (−' + reduction + '% armor)';
-      } else if (dmgType === 'magical' && monster.magicResist) {
-        const reduction = Math.min(75, monster.magicResist * 3);
-        damage = Math.round(damage * (1 - reduction / 100));
-        reductionText = ' (−' + reduction + '% resist)';
+      if (event.aoe) {
+        this.applyAoeDamage(event);
+        return;
       }
+      this.applySingleDamage(monster, event);
+    },
+
+    applySingleDamage(monster, event) {
+      let damage = event.damage;
+      let reductionText = this.getReductionText(monster, event);
+      damage = this.applyReduction(monster, event, damage);
       monster.currentHP = Math.max(0, monster.currentHP - damage);
       this.markEventAssigned(event);
       this.selectedEventId = null;
@@ -437,6 +438,46 @@ createApp({
       } else {
         this.showToast(damage + ' daño a ' + monster.name + reductionText);
       }
+    },
+
+    applyAoeDamage(event) {
+      let alive = this.monsters.filter(m => m.currentHP > 0);
+      if (alive.length === 0) {
+        this.showToast('No hay monstruos vivos');
+        return;
+      }
+      let summary = [];
+      for (const monster of alive) {
+        let damage = this.applyReduction(monster, event, event.damage);
+        monster.currentHP = Math.max(0, monster.currentHP - damage);
+        summary.push(monster.name + ': -' + damage);
+      }
+      this.markEventAssigned(event);
+      this.selectedEventId = null;
+      this.saveMonsters();
+      this.showToast('AOE: ' + summary.join(' · '));
+    },
+
+    applyReduction(monster, event, damage) {
+      const dmgType = event.damageType || 'magical';
+      if (dmgType === 'physical' && monster.armor) {
+        const reduction = Math.min(50, monster.armor * 2);
+        return Math.round(damage * (1 - reduction / 100));
+      } else if (dmgType === 'magical' && monster.magicResist) {
+        const reduction = Math.min(75, monster.magicResist * 3);
+        return Math.round(damage * (1 - reduction / 100));
+      }
+      return damage;
+    },
+
+    getReductionText(monster, event) {
+      const dmgType = event.damageType || 'magical';
+      if (dmgType === 'physical' && monster.armor) {
+        return ' (−' + Math.min(50, monster.armor * 2) + '% armor)';
+      } else if (dmgType === 'magical' && monster.magicResist) {
+        return ' (−' + Math.min(75, monster.magicResist * 3) + '% resist)';
+      }
+      return '';
     },
 
     markEventAssigned(event) {

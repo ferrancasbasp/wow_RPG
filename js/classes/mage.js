@@ -157,7 +157,7 @@ window.CLASS_REGISTRY.mage = {
       ] },
 
     { id: 'arcane_explosion', name: 'Explosión Arcana', icon: '🔮', iconImg: 'img/abilities/mage/arcane_explosion.jpg',
-      school: 'Arcano', type: 'damage', requiredLevel: 18,
+      school: 'Arcano', type: 'damage', requiredLevel: 18, aoe: true,
       baseDamage: 30, spellPowerRatio: 0.357, costPct: 0.07, castType: 'instant', cooldown: 2,
       description: 'Estalla energía arcana alrededor del mago dañando a todos los enemigos cercanos.',
       damageRanges: [
