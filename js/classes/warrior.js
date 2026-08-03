@@ -34,6 +34,12 @@ window.CLASS_REGISTRY.warrior = {
       maxRank: 1, tier: 1, requires: null, passive: true, requiredLevel: 2 },
   ],
 
+  stances: [
+    { id: 'battle',      name: 'Battle',     icon: '⚔️', effect: 'damageBonus', value: 0.10 },
+    { id: 'fury',        name: 'Fury',       icon: '😤', effect: 'critBonus',   value: 5 },
+    { id: 'protection',  name: 'Protection', icon: '🛡️', effect: 'armorBonus',  value: 5 },
+  ],
+
   abilities: [
     { id: 'basic_attack', name: 'Ataque Básico', icon: '👊',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',

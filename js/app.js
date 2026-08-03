@@ -217,7 +217,8 @@ createApp({
     meleeCrit() {
       const fromAgi = this.finalStats.agilidad / 20;
       const fromLevel = this.character.level * 0.02;
-      return (5 + fromAgi + fromLevel).toFixed(2);
+      const stanceBonus = this.warriorStance === 'fury' ? 5 : 0;
+      return (5 + fromAgi + fromLevel + stanceBonus).toFixed(2);
     },
 
     // Poder de Ataque (Fuerza × 2 + Nivel × 2 - 10)
@@ -234,9 +235,10 @@ createApp({
       return this.classConfig.formulas.manaRegen(this.finalStats, this.character.level);
     },
 
-    // Armadura física: base de clase + buffs de armor activos
+    // Armadura física: base de clase + stance + buffs de armor activos
     armorTotal() {
       let total = this.classConfig.armor || 0;
+      if (this.warriorStance === 'protection' && this.classConfig.stances) total += 5;
       if (this.character.activeEffects) {
         for (const eff of this.character.activeEffects) {
           if (eff.type === 'buff' && eff.target === 'armor') total += eff.value;
@@ -716,6 +718,7 @@ createApp({
       let roll = min + Math.floor(Math.random() * (max - min + 1));
       const isCrit = Math.random() * 100 < parseFloat(isRage ? this.meleeCrit : this.spellCrit);
       if (isCrit) roll = Math.round(roll * 1.5);
+      if (isRage && this.warriorStance === 'battle') roll = Math.round(roll * 1.10);
       if (isRage && ability.generatesRage) {
         const rageGen = isCrit ? ability.generatesRage * 2 : ability.generatesRage;
         this.character.currentRage = Math.min(this.resourceMax, this.character.currentRage + rageGen);
