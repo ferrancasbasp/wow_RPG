@@ -107,5 +107,11 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 2, level: 18, value: 60, costRage: 10 },
         { rank: 3, level: 28, value: 100, costRage: 10 },
       ] },
+
+    { id: 'taunt', name: 'Desafiar', icon: '🗯️',
+      school: 'Físico', type: 'utility', requiredLevel: 4,
+      costRage: 0, castType: 'instant', cooldown: 4,
+      description: 'Obliga al enemigo a atacarte durante su próximo turno.',
+      buff: null, applySelf: false },
   ],
 };
