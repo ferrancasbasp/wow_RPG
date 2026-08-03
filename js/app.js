@@ -444,12 +444,16 @@ createApp({
         const rank = this.trainedRank(a.id);
         const dmgRange = a.damageRanges ? a.damageRanges.find(dr => dr.rank === rank) : null;
         const isPhysical = a.damageType === 'physical';
-        const dmgBonus = isPhysical ? (weaponDmg + apBonus) : 0;
+        const noWeaponScaling = a.dotScales || a.baseDamage === 0;
+        const dmgBonus = (isPhysical && !noWeaponScaling) ? (weaponDmg + apBonus) : 0;
+        const dotRange = a.dotRanges ? a.dotRanges.find(dr => dr.rank === rank) : null;
         return {
           ...a,
           currentRank: rank,
           currentMin: dmgRange ? (dmgRange.min + dmgBonus) : 0,
           currentMax: dmgRange ? (dmgRange.max + dmgBonus) : 0,
+          currentDotValue: dotRange ? dotRange.value : (a.inflictsEffects ? a.inflictsEffects[0].value : 0),
+          currentDotDuration: dotRange ? dotRange.duration : (a.inflictsEffects ? a.inflictsEffects[0].duration : 0),
           scaledCost: Math.round(a.computedCost * (1 + (rank - 1) * 0.15)),
         };
       });
@@ -469,11 +473,17 @@ createApp({
 
     // Habilidades de utilidad (buffs sin dados, no envian daño al master)
     unlockedUtility() {
+      const isRage = this.resourceConfig.type === 'rage';
       return this.classConfig.abilities.filter(a => a.type === 'utility' && this.trainedRank(a.id) > 0).map(a => {
         const rank = this.trainedRank(a.id);
         const buffRank = a.buffRanks ? a.buffRanks.find(br => br.rank === rank) : null;
-        const costPct = buffRank ? buffRank.costPct : a.costPct;
-        const cost = Math.round(costPct * this.baseMana);
+        let cost;
+        if (isRage) {
+          cost = buffRank ? (buffRank.costRage || 0) : (a.costRage || 0);
+        } else {
+          const costPct = buffRank ? buffRank.costPct : a.costPct;
+          cost = Math.round(costPct * this.baseMana);
+        }
         return {
           ...a,
           currentRank: rank,
@@ -764,25 +774,33 @@ createApp({
     },
 
     castUtility(ability) {
-      const cost = ability.scaledCost;
+      const isRage = this.resourceConfig.type === 'rage';
+      const cost = isRage ? (ability.costRage || 0) : (ability.scaledCost || 0);
       if (this.getCooldown(ability.id) > 0) {
         this.showToast(ability.name + ' está en cooldown (' + this.getCooldown(ability.id) + ' turno' + (this.getCooldown(ability.id) > 1 ? 's' : '') + ')');
         return;
       }
-      if (this.manaActual < cost) {
-        this.showToast('Maná insuficiente');
-        return;
-      }
-      const clearcast = this.checkClearcasting();
-      if (!clearcast) {
-        this.character.currentMana = this.manaActual - cost;
+      if (isRage) {
+        if (this.resourceActual < cost) {
+          this.showToast('Ira insuficiente');
+          return;
+        }
+        this.character.currentRage = Math.min(this.resourceMax, this.resourceActual - cost);
+      } else {
+        if (this.manaActual < cost) {
+          this.showToast('Maná insuficiente');
+          return;
+        }
+        const clearcast = this.checkClearcasting();
+        if (!clearcast) {
+          this.character.currentMana = this.manaActual - cost;
+        }
       }
       const cd = this.getEffectiveCooldown(ability);
       if (cd > 0) {
         if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
         this.character.currentCooldowns[ability.id] = cd;
       }
-      let ccText = clearcast ? ' · ¡CLARIDAD ARCANA! Maná devuelto' : '';
       if (ability.buff && ability.buff.applySelf) {
         if (!this.character.activeEffects) this.character.activeEffects = [];
         this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== ability.name);
@@ -794,12 +812,12 @@ createApp({
           value: ability.currentBuffValue,
           duration: ability.currentBuffDuration,
         });
-        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ccText);
+        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + ' ' + ability.currentBuffStat);
       } else if (ability.buff) {
         const buffText = '+' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ' (' + ability.currentBuffDuration + ' turnos)';
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos' + ccText);
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
       } else {
-        this.showToast(ability.name + ': Lanzado' + ccText);
+        this.showToast(ability.name + ': Lanzado');
       }
     },
 
@@ -807,6 +825,15 @@ createApp({
       try {
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
         const db = firebase.database();
+        let effects = null;
+        if (ability.inflictsEffects) {
+          effects = ability.inflictsEffects.map(eff => {
+            if (eff.type === 'dot' && ability.currentDotValue !== undefined) {
+              return { ...eff, value: ability.currentDotValue, duration: ability.currentDotDuration || eff.duration };
+            }
+            return { ...eff };
+          });
+        }
         db.ref('damageEvents').push({
           player: this.character.name || 'Jugador',
           ability: ability.name,
@@ -814,7 +841,7 @@ createApp({
           damage: damage,
           damageType: ability.damageType || 'magical',
           aoe: ability.aoe || false,
-          effects: ability.inflictsEffects || null,
+          effects: effects,
           turn: this.turnNumber,
           timestamp: Date.now(),
           assigned: false,

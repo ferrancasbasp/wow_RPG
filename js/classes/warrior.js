@@ -75,5 +75,37 @@ window.CLASS_REGISTRY.warrior = {
       inflictsEffects: [
         { type: 'status', name: 'Aturdido', target: 'stunned', value: 0, duration: 1 },
       ] },
+
+    { id: 'rend', name: 'Desgarrar', icon: '🩸',
+      school: 'Físico', type: 'damage', requiredLevel: 6, damageType: 'physical',
+      baseDamage: 10, spellPowerRatio: 0, costRage: 5, generatesRage: 0, castType: 'instant', cooldown: 0,
+      description: 'Causa sangrado al enemigo. No escala con arma, solo con nivel.',
+      damageRanges: [
+        { rank: 1, level: 6,  min: 4,  max: 6 },
+        { rank: 2, level: 12, min: 8,  max: 12 },
+        { rank: 3, level: 18, min: 16, max: 22 },
+        { rank: 4, level: 24, min: 28, max: 36 },
+      ],
+      inflictsEffects: [
+        { type: 'dot', name: 'Desgarrar', value: 8, duration: 5 },
+      ],
+      dotScales: true,
+      dotRanges: [
+        { rank: 1, level: 6,  value: 4,  duration: 5 },
+        { rank: 2, level: 12, value: 8,  duration: 5 },
+        { rank: 3, level: 18, value: 16, duration: 5 },
+        { rank: 4, level: 24, value: 28, duration: 5 },
+      ] },
+
+    { id: 'shout', name: 'Grito de Batalla', icon: '📢',
+      school: 'Físico', type: 'utility', requiredLevel: 8,
+      costRage: 10, castType: 'instant', cooldown: 0,
+      description: 'Aumenta el Poder de Ataque de todo el equipo.',
+      buff: { stat: 'attackPower', duration: 30, applySelf: true },
+      buffRanks: [
+        { rank: 1, level: 8,  value: 10, costRage: 10 },
+        { rank: 2, level: 18, value: 20, costRage: 10 },
+        { rank: 3, level: 28, value: 35, costRage: 10 },
+      ] },
   ],
 };
