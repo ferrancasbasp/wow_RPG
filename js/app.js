@@ -469,6 +469,7 @@ createApp({
         const noWeaponScaling = a.dotScales || a.baseDamage === 0;
         const dmgBonus = (isPhysical && !noWeaponScaling) ? (weaponDmg + apBonus) : 0;
         const dotRange = a.dotRanges ? a.dotRanges.find(dr => dr.rank === rank) : null;
+        const stunRange = a.stunRanks ? a.stunRanks.find(sr => sr.rank === rank) : null;
         return {
           ...a,
           currentRank: rank,
@@ -476,6 +477,7 @@ createApp({
           currentMax: dmgRange ? (dmgRange.max + dmgBonus) : 0,
           currentDotValue: dotRange ? dotRange.value : (a.inflictsEffects ? a.inflictsEffects[0].value : 0),
           currentDotDuration: dotRange ? dotRange.duration : (a.inflictsEffects ? a.inflictsEffects[0].duration : 0),
+          currentStunDuration: stunRange ? stunRange.duration : null,
           scaledCost: Math.round(a.computedCost * (1 + (rank - 1) * 0.15)),
           effectiveRageCost: this.getEffectiveRageCost(a),
           effectiveRageGen: this.getEffectiveRageGen(a),
@@ -904,6 +906,9 @@ createApp({
           effects = ability.inflictsEffects.map(eff => {
             if (eff.type === 'dot' && ability.currentDotValue !== undefined) {
               return { ...eff, value: ability.currentDotValue, duration: ability.currentDotDuration || eff.duration };
+            }
+            if (eff.type === 'status' && ability.currentStunDuration !== null && ability.currentStunDuration !== undefined) {
+              return { ...eff, duration: ability.currentStunDuration };
             }
             return { ...eff };
           });
