@@ -199,6 +199,7 @@ createApp({
       let sp = this.baseSpellPower;
       const stormPower = this.talentRank('storm_power');
       sp = Math.round(sp * (1 + stormPower * 0.10));
+      sp += this.effectStatBonus('spellPower');
       return sp;
     },
 
@@ -209,7 +210,8 @@ createApp({
       const fromInt = this.finalStats.intelecto / 60;
       const fromLevel = this.character.level * 0.02;
       const fromTalent = this.talentRank('call_of_thunder') + this.talentRank('spell_crit_talent');
-      return (5 + fromInt + fromLevel + fromTalent).toFixed(2);
+      const fromBuff = this.effectStatBonus('spellCrit');
+      return (5 + fromInt + fromLevel + fromTalent + fromBuff).toFixed(2);
     },
 
     // Prob. Crítico Físico/Melee (5% base + Agilidad + nivel)
@@ -218,7 +220,8 @@ createApp({
       const fromAgi = this.finalStats.agilidad / 20;
       const fromLevel = this.character.level * 0.02;
       const stanceBonus = this.warriorStance === 'fury' ? 5 : 0;
-      return (5 + fromAgi + fromLevel + stanceBonus).toFixed(2);
+      const fromBuff = this.effectStatBonus('physCrit');
+      return (5 + fromAgi + fromLevel + stanceBonus + fromBuff).toFixed(2);
     },
 
     // Poder de Ataque (Fuerza × 2 + Nivel × 2 - 10)
@@ -226,7 +229,9 @@ createApp({
     attackPower() {
       const base = this.finalStats.fuerza * 2 + this.character.level * 2 - 10;
       const fromFormula = this.classConfig.formulas.attackPower(this.finalStats);
-      return Math.max(base, fromFormula);
+      let total = Math.max(base, fromFormula);
+      total += this.effectStatBonus('attackPower');
+      return total;
     },
 
     // Regen. de Maná desde Espíritu (fórmula de clase)
