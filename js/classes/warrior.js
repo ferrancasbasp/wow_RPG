@@ -101,11 +101,11 @@ window.CLASS_REGISTRY.warrior = {
       school: 'Físico', type: 'utility', requiredLevel: 8,
       costRage: 10, castType: 'instant', cooldown: 0,
       description: 'Aumenta el Poder de Ataque de todo el equipo.',
-      buff: { stat: 'attackPower', duration: 30, applySelf: true },
+      buff: { stat: 'attackPower', duration: 6, applySelf: true },
       buffRanks: [
-        { rank: 1, level: 8,  value: 10, costRage: 10 },
-        { rank: 2, level: 18, value: 20, costRage: 10 },
-        { rank: 3, level: 28, value: 35, costRage: 10 },
+        { rank: 1, level: 8,  value: 30, costRage: 10 },
+        { rank: 2, level: 18, value: 60, costRage: 10 },
+        { rank: 3, level: 28, value: 100, costRage: 10 },
       ] },
   ],
 };
