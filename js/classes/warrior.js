@@ -1,8 +1,9 @@
 window.CLASS_REGISTRY = window.CLASS_REGISTRY || {};
 window.CLASS_REGISTRY.warrior = {
-  name: 'Guerrero',
+  name: 'Warrior',
   color: '#C79C6E',
   icon: '⚔️',
+  iconImg: 'img/classes/warrior.jpg',
 
   formulas: {
     hp:          (s, lvl) => 40 + s.aguante * 10 + lvl * 6,
@@ -49,7 +50,7 @@ window.CLASS_REGISTRY.warrior = {
       description: 'Aumenta la ira generada por Charge en 2 por punto.',
       maxRank: 2, tier: 2, requires: null },
 
-    { id: 'cruelty', name: 'Cruelty', icon: '💢',
+    { id: 'cruelty', name: 'Cruelty', icon: '💢', iconImg: 'img/talents/warrior/cruelty.jpg',
       description: 'Aumenta tu probabilidad de crítico físico un 1% por punto.',
       maxRank: 5, tier: 2, requires: null },
 
@@ -97,7 +98,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 5, level: 24, min: 210, max: 280 },
       ] },
 
-    { id: 'charge', name: 'Charge', icon: '🏃',
+    { id: 'charge', name: 'Charge', icon: '🏃', iconImg: 'img/abilities/warrior/charge.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 4, damageType: 'physical',
       baseDamage: 0, spellPowerRatio: 0, costRage: 0, generatesRage: 10, castType: 'instant', cooldown: 3,
       description: 'Carga hacia el enemigo, aturdiéndolo y generando ira.',
@@ -161,7 +162,7 @@ window.CLASS_REGISTRY.warrior = {
         { type: 'debuff', name: 'Ralentizado', stat: 'speed', value: 1, duration: 2 },
       ] },
 
-    { id: 'shout', name: 'Battle Shout', icon: '📢',
+    { id: 'shout', name: 'Battle Shout', icon: '📢', iconImg: 'img/abilities/warrior/battle_shout.jpg',
       school: 'Físico', type: 'utility', requiredLevel: 8,
       costRage: 10, castType: 'instant', cooldown: 0,
       description: 'Aumenta el Poder de Ataque de todo el equipo.',
@@ -172,13 +173,13 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 3, level: 28, value: 100, costRage: 10 },
       ] },
 
-    { id: 'taunt', name: 'Taunt', icon: '🗯️',
+    { id: 'taunt', name: 'Taunt', icon: '🗯️', iconImg: 'img/abilities/warrior/taunt.jpg',
       school: 'Físico', type: 'utility', requiredLevel: 4,
       costRage: 0, castType: 'instant', cooldown: 4,
       description: 'Obliga al enemigo a atacarte durante su próximo turno.',
       buff: null, applySelf: false },
 
-    { id: 'bloodrage', name: 'Blood Rage', icon: '🩸',
+    { id: 'bloodrage', name: 'Blood Rage', icon: '🩸', iconImg: 'img/abilities/warrior/bloodrage.jpg',
       school: 'Físico', type: 'utility', requiredLevel: 2,
       costRage: 0, castType: 'instant', cooldown: 10,
       description: 'Pierde 15% de vida máxima y gana 20 de ira. No usable en estancia Defensiva.',
@@ -187,7 +188,7 @@ window.CLASS_REGISTRY.warrior = {
       healthCostPct: 0.15,
       rageGain: 20 },
 
-    { id: 'last_stand', name: 'Last Stand', icon: '🛡️',
+    { id: 'last_stand', name: 'Last Stand', icon: '🛡️', iconImg: 'img/abilities/warrior/last_stand.jpg',
       school: 'Físico', type: 'utility', requiredLevel: 18,
       costRage: 0, castType: 'instant', cooldown: 10,
       description: 'Aumenta tu vida máxima un 20% durante 4 turnos. El % de vida actual se mantiene.',
