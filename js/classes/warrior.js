@@ -58,7 +58,7 @@ window.CLASS_REGISTRY.warrior = {
       maxRank: 2, tier: 3, requires: null },
 
     { id: 'improved_cleave', name: 'Improved Cleave', icon: '🪓',
-      description: 'Aumenta el daño de Cleave un 20% por punto. Aumenta el coste de ira en 5.',
+      description: 'Aumenta el daño de Cleave un 20% por punto.',
       maxRank: 2, tier: 3, requires: null },
 
     { id: 'improved_battle_shout', name: 'Improved Battle Shout', icon: '📢',
@@ -136,7 +136,7 @@ window.CLASS_REGISTRY.warrior = {
 
     { id: 'cleave', name: 'Cleave', icon: '🪓',
       school: 'Físico', type: 'damage', requiredLevel: 12, damageType: 'physical',
-      baseDamage: 20, spellPowerRatio: 0, costRage: 10, generatesRage: 0, castType: 'instant', cooldown: 0,
+      baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Golpe a dos enemigos cercanos. Envía dos ataques al master.',
       damageRanges: [
         { rank: 1, level: 12, min: 20, max: 30 },

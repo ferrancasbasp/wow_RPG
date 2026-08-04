@@ -721,7 +721,7 @@ createApp({
         case 'improved_charge':         return `Charge: +${rank * 2} ira`;
         case 'cruelty':                 return `Crítico físico: +${rank}%`;
         case 'improved_last_stand':     return `Last Stand cura: +${rank * 5}% vida`;
-        case 'improved_cleave':         return `Cleave: +${rank * 20}% daño, +5 ira`;
+        case 'improved_cleave':         return `Cleave: +${rank * 20}% daño`;
         case 'improved_battle_shout':   return `Battle Shout: +${rank * 5}% AP, −${rank} ira`;
         default: return '';
       }
@@ -830,9 +830,6 @@ createApp({
       let cost = ability.costRage || 0;
       if (ability.id === 'heroic_strike') {
         cost -= this.talentRank('improved_heroic_strike');
-      }
-      if (ability.id === 'cleave') {
-        cost += this.talentRank('improved_cleave') * 5;
       }
       if (ability.id === 'shout') {
         cost -= this.talentRank('improved_battle_shout');
