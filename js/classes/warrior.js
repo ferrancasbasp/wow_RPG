@@ -74,7 +74,7 @@ window.CLASS_REGISTRY.warrior = {
   ],
 
   abilities: [
-    { id: 'basic_attack', name: 'Basic Attack', icon: '👊',
+    { id: 'basic_attack', name: 'Basic Attack', icon: '👊', iconImg: 'img/abilities/warrior/basic_attack.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 0, generatesRage: 5, castType: 'instant', cooldown: 0,
       description: 'Un golpe básico que genera ira. El daño depende del arma equipada.',
@@ -114,7 +114,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 3, level: 36, duration: 3 },
       ] },
 
-    { id: 'rend', name: 'Rend', icon: '🩸',
+    { id: 'rend', name: 'Rend', icon: '🩸', iconImg: 'img/abilities/warrior/rend.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 6, damageType: 'physical',
       baseDamage: 10, spellPowerRatio: 0, costRage: 5, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Causa sangrado al enemigo. No escala con arma, solo con nivel.',
@@ -135,7 +135,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 4, level: 24, value: 28, duration: 5 },
       ] },
 
-    { id: 'cleave', name: 'Cleave', icon: '🪓',
+    { id: 'cleave', name: 'Cleave', icon: '🪓', iconImg: 'img/abilities/warrior/cleave.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 12, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Golpe a dos enemigos cercanos. Envía dos ataques al master.',
@@ -147,7 +147,7 @@ window.CLASS_REGISTRY.warrior = {
       ],
       multiHit: 2 },
 
-    { id: 'thunder_clap', name: 'Thunder Clap', icon: '⚡',
+    { id: 'thunder_clap', name: 'Thunder Clap', icon: '⚡', iconImg: 'img/abilities/warrior/thunder_clap.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 14, damageType: 'physical',
       baseDamage: 15, spellPowerRatio: 0, costRage: 10, generatesRage: 0, castType: 'instant', cooldown: 2,
       description: 'Daño en área que ralentiza a los enemigos.',
