@@ -16,7 +16,7 @@
 window.CLASS_REGISTRY = window.CLASS_REGISTRY || {};
 window.CLASS_REGISTRY.shaman = {
   name: 'Chamán',
-  color: '#0070DD',
+  color: '#0070DE',
   icon: '⚡',
 
   /* ---------------------------------------------------------------

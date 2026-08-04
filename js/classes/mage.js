@@ -23,7 +23,7 @@ window.CLASS_REGISTRY = window.CLASS_REGISTRY || {};
 window.CLASS_REGISTRY.mage = {
   /* --- METADATOS --- */
   name: 'Mago',
-  color: '#69CCF0',
+  color: '#3FC7EB',
   icon: '🔥',
   iconImg: 'img/classes/mage.jpg',
 
