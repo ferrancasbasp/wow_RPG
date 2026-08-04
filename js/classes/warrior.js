@@ -42,7 +42,7 @@ window.CLASS_REGISTRY.warrior = {
       description: 'Aumenta tu armadura física en 1 por punto.',
       maxRank: 5, tier: 1, requires: null },
 
-    { id: 'improved_bloodrage', name: 'Improved Bloodrage', icon: '🩸',
+    { id: 'improved_bloodrage', name: 'Improved Bloodrage', icon: '🩸', iconImg: 'img/abilities/warrior/bloodrage.jpg',
       description: 'Aumenta la ira otorgada por Blood Rage en 3 por punto.',
       maxRank: 2, tier: 2, requires: null },
 
@@ -68,9 +68,9 @@ window.CLASS_REGISTRY.warrior = {
   ],
 
   stances: [
-    { id: 'battle',      name: 'Battle',     icon: '⚔️', effect: 'damageBonus', value: 0.10 },
+    { id: 'battle',      name: 'Battle',     icon: '⚔️', iconImg: 'img/talents/warrior/battle_stance.jpg', effect: 'damageBonus', value: 0.10 },
     { id: 'fury',        name: 'Fury',       icon: '😤', effect: 'critBonus',   value: 5 },
-    { id: 'protection',  name: 'Protection', icon: '🛡️', effect: 'armorBonus',  value: 5 },
+    { id: 'protection',  name: 'Protection', icon: '🛡️', iconImg: 'img/talents/warrior/protection_stance.jpg', effect: 'armorBonus',  value: 5 },
   ],
 
   abilities: [
