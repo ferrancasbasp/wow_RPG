@@ -75,9 +75,13 @@
 
     <div class="top-side-controls">
       <div class="warrior-stance-row" v-if="character.classKey === 'warrior'">
-        <button class="stance-btn" :class="{ active: warriorStance === 'battle' }" @click="warriorStance = 'battle'">⚔️ Battle</button>
+        <button class="stance-btn" :class="{ active: warriorStance === 'battle' }" @click="warriorStance = 'battle'">
+          <img src="img/talents/warrior/battle_stance.jpg" class="stance-icon" @error="$event.target.style.display='none'"> Battle
+        </button>
         <button class="stance-btn" :class="{ active: warriorStance === 'fury' }" @click="warriorStance = 'fury'">😤 Fury</button>
-        <button class="stance-btn" :class="{ active: warriorStance === 'protection' }" @click="warriorStance = 'protection'">🛡️ Prot</button>
+        <button class="stance-btn" :class="{ active: warriorStance === 'protection' }" @click="warriorStance = 'protection'">
+          <img src="img/talents/warrior/protection_stance.jpg" class="stance-icon" @error="$event.target.style.display='none'"> Prot
+        </button>
       </div>
       <div class="warrior-weapon-row" v-if="character.classKey === 'warrior'">
         <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'dualwield' }" @click="warriorWeaponMode = 'dualwield'">🗡️ 1H + Off</button>
