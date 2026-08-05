@@ -21,8 +21,6 @@
   --hp-dark: #2d6b1f;
   --mana: #3b7fe0;
   --mana-dark: #1d4ba0;
-  --class-color: #C79C6E;
-  --class-glow: rgba(199, 156, 110, 0.3);
   --danger: #c45151;
   --success: #5fa85f;
   --radius: 6px;
@@ -59,15 +57,15 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 }
 .app-header::before {
   content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--class-color), transparent);
+  background: linear-gradient(90deg, transparent, var(--class-color, #C79C6E), transparent);
   opacity: 0.6;
 }
 
 .class-icon {
   width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
   font-size: 28px; background: radial-gradient(circle, var(--bg-input) 60%, var(--bg-dark));
-  border: 2px solid var(--class-color); border-radius: 50%;
-  box-shadow: 0 0 12px var(--class-glow); flex-shrink: 0; overflow: hidden;
+  border: 2px solid var(--class-color, #C79C6E); border-radius: 50%;
+  box-shadow: 0 0 12px var(--class-glow, rgba(199,156,110,0.3)); flex-shrink: 0; overflow: hidden;
 }
 .class-icon-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
@@ -94,7 +92,7 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
 
 .class-select {
   background: var(--bg-input); border: 1px solid var(--gold-dark); border-radius: 3px;
-  color: var(--class-color); padding: 3px 8px; font-family: 'Cinzel', serif;
+  color: var(--class-color, #C79C6E); padding: 3px 8px; font-family: 'Cinzel', serif;
   font-size: 14px; outline: none; cursor: pointer;
 }
 

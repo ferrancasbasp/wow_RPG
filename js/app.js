@@ -1380,6 +1380,13 @@ createApp({
 
     /* ==================== TOAST ==================== */
 
+    updateClassColor() {
+      const color = this.classConfig.color || '#C79C6E';
+      const root = document.documentElement;
+      root.style.setProperty('--class-color', color);
+      root.style.setProperty('--class-glow', color + '4D');
+    },
+
     showToast(msg) {
       this.toastMessage = msg;
       clearTimeout(this._toastTimer);
@@ -1420,5 +1427,12 @@ createApp({
     } catch (e) {
       console.error('Error loading saved character:', e);
     }
+    this.updateClassColor();
+  },
+
+  watch: {
+    'character.classKey'() {
+      this.updateClassColor();
+    },
   },
 }).mount('#app');
