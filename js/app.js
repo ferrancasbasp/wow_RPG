@@ -1232,6 +1232,11 @@ createApp({
           this.showToast('¡Esquivado!' + rageText);
           return;
         }
+        const reduction = this.physReduction;
+        amount = Math.round(amount * (1 - reduction / 100));
+      } else {
+        const reduction = this.magicReduction;
+        amount = Math.round(amount * (1 - reduction / 100));
       }
       this.character.currentHP = Math.max(0, this.hpActual - amount);
       this.hpLossAmount = null;
