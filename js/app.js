@@ -1400,6 +1400,7 @@ createApp({
 
     fullRest() {
       this.character.currentHP = this.maxHP;
+      this.character.comboPoints = 0;
       if (this.resourceConfig.type === 'rage') {
         this.character.currentRage = 0;
         this.showToast('Full Rest: vida al máximo, ira reseteada');
