@@ -9,6 +9,13 @@ window.APP_METHODS = {
         }
         return rank;
       }
+      if (ability.rankLevels) {
+        let rank = 0;
+        for (let i = 0; i < ability.rankLevels.length; i++) {
+          if (this.character.level >= ability.rankLevels[i]) rank = i + 1;
+        }
+        return rank;
+      }
       const rankLevels = [ability.requiredLevel, ability.requiredLevel + 8, ability.requiredLevel + 16, ability.requiredLevel + 24];
       let rank = 0;
       for (let i = 0; i < rankLevels.length; i++) {

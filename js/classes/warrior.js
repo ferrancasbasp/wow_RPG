@@ -85,13 +85,9 @@ window.CLASS_REGISTRY.warrior = {
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Un golpe potente que gasta ira para hacer daño extra.',
-      damageRanges: [
-        { rank: 1, level: 1, min: 32, max: 48 },
-        { rank: 2, level: 6, min: 52, max: 74 },
-        { rank: 3, level: 12, min: 84, max: 116 },
-        { rank: 4, level: 18, min: 136, max: 184 },
-        { rank: 5, level: 24, min: 210, max: 280 },
-      ] },
+      weaponMultiplier: 1.0,
+      bonusPerRank: [11, 25, 44, 63, 92],
+    },
 
     { id: 'charge', name: 'Charge', icon: '🏃', iconImg: 'img/abilities/warrior/charge.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 4, damageType: 'physical',
@@ -134,12 +130,9 @@ window.CLASS_REGISTRY.warrior = {
       school: 'Físico', type: 'damage', requiredLevel: 12, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Golpe a dos enemigos cercanos. Envía dos ataques al master.',
-      damageRanges: [
-        { rank: 1, level: 12, min: 20, max: 30 },
-        { rank: 2, level: 18, min: 36, max: 50 },
-        { rank: 3, level: 24, min: 60, max: 82 },
-        { rank: 4, level: 30, min: 92, max: 122 },
-      ],
+      weaponMultiplier: 1.0,
+      bonusPerRank: [10, 18, 30, 45],
+      rankLevels: [12, 18, 24, 30],
       multiHit: 2 },
 
     { id: 'thunder_clap', name: 'Thunder Clap', icon: '⚡', iconImg: 'img/abilities/warrior/thunder_clap.jpg',

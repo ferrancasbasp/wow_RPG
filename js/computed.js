@@ -342,6 +342,12 @@ window.APP_COMPUTED = {
           const base = weaponDmg + apBonus;
           minVal = Math.round(base * 0.85);
           maxVal = Math.round(base * 1.15);
+        } else if (a.bonusPerRank) {
+          const mult = a.weaponMultiplier || 1.0;
+          const bonus = a.bonusPerRank[rank - 1] || 0;
+          const base = Math.round(weaponDmg * mult) + apBonus + bonus;
+          minVal = Math.round(base * 0.85);
+          maxVal = Math.round(base * 1.15);
         } else {
           minVal = dmgRange ? (dmgRange.min + dmgBonus) : 0;
           maxVal = dmgRange ? (dmgRange.max + dmgBonus) : 0;
