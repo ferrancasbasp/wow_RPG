@@ -97,12 +97,9 @@ window.APP_COMPUTED = {
       return (5 + fromAgi + fromLevel + stanceBonus + fromTalent + fromBuff).toFixed(2);
     },
 
-    // Poder de Ataque (Fuerza × 2 + Nivel × 2 - 10)
-    // WoW Classic: melee AP = STR×2 + level×2 - 10
+    // Poder de Ataque — fórmula de clase + buffs
     attackPower() {
-      const base = this.finalStats.fuerza * 2 + this.character.level * 2 - 10;
-      const fromFormula = this.classConfig.formulas.attackPower(this.finalStats);
-      let total = Math.max(base, fromFormula);
+      let total = this.classConfig.formulas.attackPower(this.finalStats);
       total += this.effectStatBonus('attackPower');
       return total;
     },

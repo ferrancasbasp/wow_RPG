@@ -8,7 +8,7 @@ window.CLASS_REGISTRY.rogue = {
     hp:          (s, lvl) => 35 + s.aguante * 9 + lvl * 5,
     mana:        () => 0,
     spellPower:  () => 0,
-    attackPower: (s) => s.fuerza * 2 + s.agilidad * 2 + 10,
+    attackPower: (s) => s.fuerza * 2 + s.agilidad,
     manaRegen:   () => 0,
   },
 
