@@ -93,6 +93,7 @@ const BUFF_DEBUFF_STATS = [
   { key: 'maxHP', label: 'Vida Máxima' },
   { key: 'armor', label: 'Armadura' },
   { key: 'magicResist', label: 'Armadura Mágica' },
+  { key: 'poisonDamage', label: 'Daño de Veneno' },
 ];
 
 const STATUS_OPTIONS = [
@@ -521,16 +522,20 @@ createApp({
 
     // Habilidades de utilidad (buffs sin dados, no envian daño al master)
     unlockedUtility() {
-      const isRage = this.resourceConfig.type === 'rage';
+      const resType = this.resourceConfig.type;
+      const isRage = resType === 'rage';
+      const isEnergy = resType === 'energy';
       return this.classConfig.abilities.filter(a => a.type === 'utility' && this.trainedRank(a.id) > 0).map(a => {
         const rank = this.trainedRank(a.id);
         const buffRank = a.buffRanks ? a.buffRanks.find(br => br.rank === rank) : null;
         let cost;
         if (isRage) {
           cost = buffRank ? (buffRank.costRage || 0) : (a.costRage || 0);
+        } else if (isEnergy) {
+          cost = buffRank ? (buffRank.costEnergy || 0) : (a.costEnergy || 0);
         } else {
           const costPct = buffRank ? buffRank.costPct : a.costPct;
-          cost = Math.round(costPct * this.baseMana);
+          cost = Math.round((costPct || 0) * this.baseMana);
         }
         return {
           ...a,
@@ -832,8 +837,13 @@ createApp({
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText + comboText);
       } else {
+        const poisonDmg = this.getPoisonDamage();
+        if (poisonDmg > 0 && ability.damageType === 'physical') {
+          roll += poisonDmg;
+        }
         this.turnDamage += roll;
-        let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '')) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
+        let poisonText = poisonDmg > 0 && ability.damageType === 'physical' ? ' (+' + poisonDmg + ' veneno)' : '';
+        let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + poisonText) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText + comboText);
         const hits = ability.multiHit || 1;
         for (let h = 0; h < hits; h++) {
@@ -842,11 +852,24 @@ createApp({
             hitRoll = (ability.currentMin || 0) + Math.floor(Math.random() * ((ability.currentMax || 0) - (ability.currentMin || 0) + 1));
             if (isCrit) hitRoll = Math.round(hitRoll * 1.5);
             if (isRage && this.warriorStance === 'battle') hitRoll = Math.round(hitRoll * 1.10);
+            if (poisonDmg > 0 && ability.damageType === 'physical') hitRoll += poisonDmg;
             this.turnDamage += hitRoll;
           }
           this.sendDamageEvent(ability, hitRoll, h + 1, hits);
         }
       }
+    },
+
+    getPoisonDamage() {
+      if (!this.character.activeEffects) return 0;
+      for (const eff of this.character.activeEffects) {
+        if (eff.type === 'buff' && eff.target === 'poisonDamage') return eff.value;
+      }
+      return 0;
+    },
+
+    hasPoison() {
+      return this.getPoisonDamage() > 0;
     },
 
     checkClearcasting() {
@@ -894,8 +917,17 @@ createApp({
     },
 
     castUtility(ability) {
-      const isRage = this.resourceConfig.type === 'rage';
-      const cost = isRage ? (ability.costRage || 0) : (ability.scaledCost || 0);
+      const resType = this.resourceConfig.type;
+      const isRage = resType === 'rage';
+      const isEnergy = resType === 'energy';
+      let cost;
+      if (isRage) {
+        cost = ability.costRage || 0;
+      } else if (isEnergy) {
+        cost = ability.costEnergy || 0;
+      } else {
+        cost = ability.scaledCost || 0;
+      }
       if (this.getCooldown(ability.id) > 0) {
         this.showToast(ability.name + ' está en cooldown (' + this.getCooldown(ability.id) + ' turno' + (this.getCooldown(ability.id) > 1 ? 's' : '') + ')');
         return;
@@ -910,6 +942,12 @@ createApp({
           return;
         }
         this.character.currentRage = Math.min(this.resourceMax, this.resourceActual - cost);
+      } else if (isEnergy) {
+        if (this.resourceActual < cost) {
+          this.showToast('Energía insuficiente');
+          return;
+        }
+        this.character.currentEnergy = Math.max(0, this.resourceActual - cost);
       } else {
         if (this.manaActual < cost) {
           this.showToast('Maná insuficiente');
@@ -993,7 +1031,7 @@ createApp({
           ability: abilityName,
           rank: ability.currentRank || 1,
           damage: damage,
-          damageType: ability.damageType || 'magical',
+          damageType: this.hasPoison() && ability.damageType === 'physical' ? 'magical' : (ability.damageType || 'magical'),
           aoe: ability.aoe || false,
           effects: effects,
           turn: this.turnNumber,

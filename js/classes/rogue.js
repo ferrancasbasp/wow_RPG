@@ -124,5 +124,23 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 4, level: 24, min: 115, max: 145 },
         { rank: 5, level: 32, min: 175, max: 215 },
       ] },
+
+    { id: 'sprint', name: 'Sprint', icon: '🏃',
+      school: 'Físico', type: 'utility', requiredLevel: 1,
+      costEnergy: 0, castType: 'instant', cooldown: 6,
+      description: 'Acción gratuita que te permite moverte en el turno.',
+      buff: null, applySelf: false },
+
+    { id: 'poison_weapon', name: 'Veneno Mortal', icon: '🧪',
+      school: 'Físico', type: 'utility', requiredLevel: 1,
+      costEnergy: 0, castType: 'instant', cooldown: 0,
+      description: 'Envenena tu arma. Los ataques hacen daño extra y pasan a ser de tipo mágico.',
+      buff: { stat: 'poisonDamage', duration: 30, applySelf: true },
+      buffRanks: [
+        { rank: 1, level: 1,  value: 8,  costEnergy: 0 },
+        { rank: 2, level: 10, value: 16, costEnergy: 0 },
+        { rank: 3, level: 20, value: 28, costEnergy: 0 },
+        { rank: 4, level: 30, value: 44, costEnergy: 0 },
+      ] },
   ],
 };

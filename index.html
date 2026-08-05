@@ -308,6 +308,7 @@
             <div class="ability-stats">
               <span class="ability-stat bonus" v-if="ability.currentBuffValue">+{{ ability.currentBuffValue }} {{ ability.currentBuffStat }} · {{ ability.currentBuffDuration }} turnos</span>
               <span class="ability-stat cost" v-if="resourceConfig.type === 'rage'">{{ ability.scaledCost }} ira</span>
+              <span class="ability-stat cost" v-else-if="resourceConfig.type === 'energy'">{{ ability.scaledCost }} energía</span>
               <span class="ability-stat cost" v-else>{{ ability.scaledCost }} maná</span>
             </div>
             <div class="ability-cast-row">
