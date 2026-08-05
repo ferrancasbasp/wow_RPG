@@ -31,11 +31,11 @@ window.CLASS_REGISTRY.rogue = {
   },
 
   talents: [
-    { id: 'vitality', name: 'Vitality', icon: '⚡',
+    { id: 'vitality', name: 'Vitality', icon: '⚡', iconImg: 'img/talents/rogue/vitality.jpg',
       description: 'Aumenta la regeneración de energía al final del turno un 10% por punto.',
       maxRank: 5, tier: 1, requires: null },
 
-    { id: 'ruthlessness', name: 'Ruthlessness', icon: '🎯',
+    { id: 'ruthlessness', name: 'Ruthlessness', icon: '🎯', iconImg: 'img/talents/rogue/ruthlessness.jpg',
       description: 'Reduce el coste de energía de tus finishers en 2 por punto.',
       maxRank: 5, tier: 1, requires: null },
 
@@ -55,7 +55,7 @@ window.CLASS_REGISTRY.rogue = {
       description: 'Reduce el cooldown de Evasión y Sprint en 1 turno por punto.',
       maxRank: 2, tier: 3, requires: null },
 
-    { id: 'initiative', name: 'Initiative', icon: '⚡',
+    { id: 'initiative', name: 'Initiative', icon: '⚡', iconImg: 'img/talents/rogue/initiative.jpg',
       description: 'Sinister Strike y Basic Attack tienen un 15% de probabilidad por punto de generar un punto de combo extra.',
       maxRank: 3, tier: 3, requires: null },
 
@@ -77,7 +77,7 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 5, level: 24, min: 88, max: 116 },
       ] },
 
-    { id: 'sinister_strike', name: 'Sinister Strike', icon: '🗡️', iconImg: 'img/abilities/rogue/basic_attack.jpg',
+    { id: 'sinister_strike', name: 'Sinister Strike', icon: '🗡️', iconImg: 'img/abilities/rogue/sinister_strike.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costEnergy: 40, castType: 'instant', cooldown: 0,
       description: 'Un golpe rápido que gasta energía y genera 1 punto de combo.',
@@ -170,7 +170,7 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 4, level: 44, value: 44, costEnergy: 0 },
       ] },
 
-    { id: 'evasion', name: 'Evasión', icon: '💨',
+    { id: 'evasion', name: 'Evasión', icon: '💨', iconImg: 'img/abilities/rogue/evasion.jpg',
       school: 'Físico', type: 'utility', requiredLevel: 8,
       costEnergy: 0, castType: 'instant', cooldown: 10,
       description: 'Aumenta tu probabilidad de esquivar ataques físicos temporalmente.',
