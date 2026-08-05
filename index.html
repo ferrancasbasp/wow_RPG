@@ -239,7 +239,7 @@
             </div>
             <div class="ability-info">
               <div class="ability-name">{{ ability.name }}</div>
-              <div class="ability-school">{{ ability.school }} · {{ ability.castType === 'instant' ? 'Instantáneo' : 'Casteo' }} · Nv. {{ ability.requiredLevel }}</div>
+              <div class="ability-school">{{ ability.school }} · {{ ability.castType === 'instant' ? 'Instantáneo' : 'Casteo' }} · Nv. {{ ability.requiredLevel }}<span v-if="ability.requiresStealth" class="ability-req-tag"> · Sigilo</span><span v-if="ability.requiresBehind" class="ability-req-tag"> · Por detrás</span></div>
               <div class="ability-desc">{{ ability.description }}</div>
               <div class="ability-stats">
                 <span class="ability-stat dmg" v-if="ability.type === 'damage'">
