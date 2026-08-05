@@ -53,6 +53,7 @@ function createDefaultCharacter(classKey) {
     currentHP: null,
     currentMana: null,
     currentRage: 0,
+    currentEnergy: 100,
     trainedRanks: {},
     currentCooldowns: {},
     equipment: {
@@ -455,6 +456,9 @@ createApp({
       if (rc.type === 'rage') {
         return Math.max(0, Math.min(this.resourceMax, this.character.currentRage || 0));
       }
+      if (rc.type === 'energy') {
+        return Math.max(0, Math.min(this.resourceMax, this.character.currentEnergy ?? 100));
+      }
       return this.manaActual;
     },
 
@@ -750,35 +754,39 @@ createApp({
     },
 
     castSpell(ability) {
-      const isRage = this.resourceConfig.type === 'rage';
-      const cost = isRage ? this.getEffectiveRageCost(ability) : (ability.scaledCost || ability.computedCost);
+      const resType = this.resourceConfig.type;
+      const isRage = resType === 'rage';
+      const isEnergy = resType === 'energy';
+      let cost;
       if (isRage) {
-        if (this.resourceActual < cost) {
-          this.showToast('Ira insuficiente');
-          return;
-        }
+        cost = this.getEffectiveRageCost(ability);
+      } else if (isEnergy) {
+        cost = ability.costEnergy || 0;
       } else {
-        if (this.manaActual < cost) {
-          this.showToast('Maná insuficiente');
-          return;
-        }
+        cost = ability.scaledCost || ability.computedCost;
+      }
+      if (this.resourceActual < cost) {
+        this.showToast(this.resourceLabel + ' insuficiente');
+        return;
       }
       if (this.getCooldown(ability.id) > 0) {
         this.showToast(ability.name + ' está en cooldown (' + this.getCooldown(ability.id) + ' turno' + (this.getCooldown(ability.id) > 1 ? 's' : '') + ')');
         return;
       }
-      const clearcast = isRage ? false : this.checkClearcasting();
+      const clearcast = (isRage || isEnergy) ? false : this.checkClearcasting();
       if (isRage) {
         this.character.currentRage = Math.min(this.resourceMax, this.resourceActual - cost);
+      } else if (isEnergy) {
+        this.character.currentEnergy = Math.max(0, this.resourceActual - cost);
       } else if (!clearcast) {
         this.character.currentMana = this.manaActual - cost;
       }
       const min = ability.currentMin || 0;
       const max = ability.currentMax || 0;
       let roll = min + Math.floor(Math.random() * (max - min + 1));
-      const isCrit = Math.random() * 100 < parseFloat(isRage ? this.meleeCrit : this.spellCrit);
+      const isCrit = Math.random() * 100 < parseFloat((isRage || isEnergy) ? this.meleeCrit : this.spellCrit);
       if (isCrit) roll = Math.round(roll * 1.5);
-      if (isRage && this.warriorStance === 'battle') roll = Math.round(roll * 1.10);
+      if ((isRage || isEnergy) && this.warriorStance === 'battle') roll = Math.round(roll * 1.10);
       if (isRage && ability.generatesRage) {
         const baseGen = this.getEffectiveRageGen(ability);
         const rageGen = isCrit ? baseGen * 2 : baseGen;
@@ -987,12 +995,19 @@ createApp({
           if (this.character.currentCooldowns[id] <= 0) delete this.character.currentCooldowns[id];
         }
       }
-      const isRage = this.resourceConfig.type === 'rage';
-      if (isRage) {
+      const resType = this.resourceConfig.type;
+      if (resType === 'rage') {
         this.processEffects();
         this.turnNumber++;
         this.turnDamage = 0;
         this.showToast('Fin de turno ' + (this.turnNumber - 1));
+      } else if (resType === 'energy') {
+        const regen = this.resourceConfig.regen || 20;
+        this.character.currentEnergy = Math.min(this.resourceMax, this.resourceActual + regen);
+        this.processEffects();
+        this.turnNumber++;
+        this.turnDamage = 0;
+        this.showToast('Fin de turno ' + (this.turnNumber - 1) + ' · +' + regen + ' energía');
       } else {
         const regen = Math.round(this.manaRegen * 0.5);
         this.character.currentMana = Math.min(this.maxMana, this.manaActual + regen);
@@ -1288,6 +1303,7 @@ createApp({
       this.character.currentHP = null;
       this.character.currentMana = null;
       this.character.currentRage = 0;
+      this.character.currentEnergy = 100;
       this.character.trainedRanks = {};
       this.character.currentCooldowns = {};
       this.character.equipment = this.defaultEquipment();
@@ -1301,7 +1317,7 @@ createApp({
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character_v8', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v9', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1310,7 +1326,7 @@ createApp({
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character_v8');
+        const data = localStorage.getItem('ttrpg_wow_character_v9');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
@@ -1319,6 +1335,7 @@ createApp({
           if (this.character.currentHP === undefined) this.character.currentHP = null;
           if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (this.character.currentRage === undefined) this.character.currentRage = 0;
+          if (this.character.currentEnergy === undefined) this.character.currentEnergy = 100;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.baseStats) this.character.baseStats = { ...(CLASS_DATA[this.character.classKey] || FALLBACK_CLASS).baseStats };
@@ -1361,6 +1378,9 @@ createApp({
       if (this.resourceConfig.type === 'rage') {
         this.character.currentRage = 0;
         this.showToast('Full Rest: vida al máximo, ira reseteada');
+      } else if (this.resourceConfig.type === 'energy') {
+        this.character.currentEnergy = this.resourceMax;
+        this.showToast('Full Rest: vida y energía al máximo');
       } else {
         this.character.currentMana = this.maxMana;
         this.showToast('Full Rest: vida y maná al máximo');
@@ -1396,7 +1416,7 @@ createApp({
 
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v8');
+      const saved = localStorage.getItem('ttrpg_wow_character_v9');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
@@ -1406,6 +1426,7 @@ createApp({
           if (this.character.currentHP === undefined) this.character.currentHP = null;
           if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (this.character.currentRage === undefined) this.character.currentRage = 0;
+          if (this.character.currentEnergy === undefined) this.character.currentEnergy = 100;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.equipment) this.character.equipment = this.defaultEquipment();

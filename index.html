@@ -15,6 +15,7 @@
 <script src="js/classes/shaman.js"></script>
 <script src="js/classes/mage.js"></script>
 <script src="js/classes/warrior.js"></script>
+<script src="js/classes/rogue.js"></script>
 
 <link rel="stylesheet" href="css/main.css">
 </head>
@@ -193,7 +194,7 @@
         <div class="resource-bar">
           <div class="resource-label"><span>{{ resourceLabel }}</span><span>{{ resourceActual }} / {{ resourceMax }}</span></div>
           <div class="resource-track">
-            <div class="resource-fill" :class="resourceConfig.type" :style="{ width: resourcePercent + '%', background: resourceConfig.type === 'rage' ? 'linear-gradient(180deg, #c0392b 0%, #8b2e1e 100%)' : 'linear-gradient(180deg, #3498db 0%, #2471a3 100%)' }"></div>
+            <div class="resource-fill" :class="resourceConfig.type" :style="{ width: resourcePercent + '%', background: resourceConfig.type === 'rage' ? 'linear-gradient(180deg, #c0392b 0%, #8b2e1e 100%)' : resourceConfig.type === 'energy' ? 'linear-gradient(180deg, #f1c40f 0%, #b7950b 100%)' : 'linear-gradient(180deg, #3498db 0%, #2471a3 100%)' }"></div>
             <div class="resource-text">{{ resourceActual }} / {{ resourceMax }}</div>
           </div>
         </div>
@@ -241,6 +242,9 @@
                 </span>
                 <span class="ability-stat cost" v-if="resourceConfig.type === 'rage'">
                   {{ ability.effectiveRageCost || 0 }} ira<span v-if="ability.effectiveRageGen"> · +{{ ability.effectiveRageGen }} ira</span>
+                </span>
+                <span class="ability-stat cost" v-else-if="resourceConfig.type === 'energy'">
+                  {{ ability.costEnergy || 0 }} energía
                 </span>
                 <span class="ability-stat cost" v-else>{{ ability.scaledCost }} maná</span>
                 <span class="ability-stat bonus" v-if="ability.talentNote">{{ ability.talentNote }}</span>
