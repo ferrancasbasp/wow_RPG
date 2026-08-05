@@ -86,7 +86,7 @@ window.CLASS_REGISTRY.warrior = {
         { rank: 5, level: 24, min: 130, max: 175 },
       ] },
 
-    { id: 'heroic_strike', name: 'Heroic Strike', icon: '⚔️',
+    { id: 'heroic_strike', name: 'Heroic Strike', icon: '⚔️', iconImg: 'img/abilities/rogue/ambush.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costRage: 15, generatesRage: 0, castType: 'instant', cooldown: 0,
       description: 'Un golpe potente que gasta ira para hacer daño extra.',
