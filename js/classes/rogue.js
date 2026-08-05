@@ -39,7 +39,7 @@ window.CLASS_REGISTRY.rogue = {
       description: 'Reduce el coste de energía de tus finishers en 2 por punto.',
       maxRank: 5, tier: 1, requires: null },
 
-    { id: 'improved_backstab', name: 'Improved Backstab', icon: '🔪',
+    { id: 'improved_backstab', name: 'Improved Backstab', icon: '🔪', iconImg: 'img/abilities/rogue/backstab.jpg',
       description: 'Reduce el coste de energía de Backstab en 3 por punto.',
       maxRank: 3, tier: 2, requires: null },
 
