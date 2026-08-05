@@ -64,11 +64,11 @@ window.CLASS_REGISTRY.rogue = {
       spendsCombo: true,
       noWeaponScaling: true,
       damageRanges: [
-        { rank: 1, level: 1,  min: 15,  max: 22 },
-        { rank: 2, level: 8,  min: 27,  max: 38 },
-        { rank: 3, level: 16, min: 45,  max: 60 },
-        { rank: 4, level: 24, min: 68,  max: 88 },
-        { rank: 5, level: 32, min: 102, max: 128 },
+        { rank: 1, level: 1,  min: 10, max: 14 },
+        { rank: 2, level: 8,  min: 18, max: 24 },
+        { rank: 3, level: 16, min: 30, max: 40 },
+        { rank: 4, level: 24, min: 48, max: 60 },
+        { rank: 5, level: 32, min: 72, max: 90 },
       ] },
   ],
 };
