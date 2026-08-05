@@ -148,6 +148,9 @@ window.APP_METHODS = {
         case 'improved_last_stand':     return `Last Stand cura: +${rank * 5}% vida`;
         case 'improved_cleave':         return `Cleave: +${rank * 20}% daño`;
         case 'improved_battle_shout':   return `Battle Shout: +${rank * 5}% AP, −${rank} ira`;
+        // --- Rogue ---
+        case 'vitality':                return `Regen energía: +${rank * 10}%`;
+        case 'ruthlessness':            return `Coste finishers: −${rank * 2} energía`;
         default: return '';
       }
     },
@@ -173,7 +176,7 @@ window.APP_METHODS = {
       if (isRage) {
         cost = this.getEffectiveRageCost(ability);
       } else if (isEnergy) {
-        cost = ability.costEnergy || 0;
+        cost = this.getEffectiveEnergyCost(ability);
       } else {
         cost = ability.scaledCost || ability.computedCost;
       }
@@ -305,6 +308,14 @@ window.APP_METHODS = {
       return Math.max(0, cost);
     },
 
+    getEffectiveEnergyCost(ability) {
+      let cost = ability.costEnergy || 0;
+      if (ability.spendsCombo) {
+        cost -= this.talentRank('ruthlessness') * 2;
+      }
+      return Math.max(0, cost);
+    },
+
     getEffectiveRageGen(ability) {
       let gen = ability.generatesRage || 0;
       if (ability.id === 'charge') {
@@ -329,7 +340,7 @@ window.APP_METHODS = {
       if (isRage) {
         cost = ability.costRage || 0;
       } else if (isEnergy) {
-        cost = ability.costEnergy || 0;
+        cost = this.getEffectiveEnergyCost(ability);
       } else {
         cost = ability.scaledCost || 0;
       }
@@ -468,7 +479,9 @@ window.APP_METHODS = {
         this.turnDamage = 0;
         this.showToast('Fin de turno ' + (this.turnNumber - 1));
       } else if (resType === 'energy') {
-        const regen = this.resourceConfig.regen || 20;
+        const baseRegen = this.resourceConfig.regen || 20;
+        const vitalityBonus = 1 + this.talentRank('vitality') * 0.10;
+        const regen = Math.round(baseRegen * vitalityBonus);
         this.character.currentEnergy = Math.min(this.resourceMax, this.resourceActual + regen);
         this.processEffects();
         this.turnNumber++;

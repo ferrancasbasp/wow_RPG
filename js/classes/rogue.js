@@ -29,7 +29,15 @@ window.CLASS_REGISTRY.rogue = {
     regen: 20,
   },
 
-  talents: [],
+  talents: [
+    { id: 'vitality', name: 'Vitality', icon: '⚡',
+      description: 'Aumenta la regeneración de energía al final del turno un 10% por punto.',
+      maxRank: 5, tier: 1, requires: null },
+
+    { id: 'ruthlessness', name: 'Ruthlessness', icon: '🎯',
+      description: 'Reduce el coste de energía de tus finishers en 2 por punto.',
+      maxRank: 5, tier: 1, requires: null },
+  ],
 
   abilities: [
     { id: 'basic_attack', name: 'Basic Attack', icon: '👊', iconImg: 'img/abilities/rogue/basic_attack.jpg',
