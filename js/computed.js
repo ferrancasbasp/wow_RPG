@@ -142,15 +142,19 @@ window.APP_COMPUTED = {
       return total;
     },
 
-    // % de reducción de daño físico (armadura / (armadura + 50))
-    // Simplificación: cada punto de armadura reduce 2% del daño, máximo 50%
+    // Reducción de daño físico (fórmula WoW Classic simplificada)
+    // armor / (armor + 50 + 5*nivel)
     physReduction() {
-      return Math.min(50, this.armorTotal * 2);
+      const armor = this.armorTotal;
+      const lvl = this.character.level;
+      return Math.round((armor / (armor + 50 + 5 * lvl)) * 100);
     },
 
-    // % de reducción de daño mágico
+    // Reducción de daño mágico (misma fórmula)
     magicReduction() {
-      return Math.min(75, this.magicResistTotal * 3);
+      const resist = this.magicResistTotal;
+      const lvl = this.character.level;
+      return Math.round((resist / (resist + 50 + 5 * lvl)) * 100);
     },
 
     // Puntos de talento gastados (suma de todos los rangos)
@@ -326,13 +330,13 @@ window.APP_COMPUTED = {
     // Habilidades entrenadas (con dados escalados por rango) — solo damage/heal
     unlockedAbilities() {
       const weaponDmg = this.totalWeaponDamage;
-      const apBonus = Math.round(this.attackPower / 7);
+      const apBonus = Math.round(this.attackPower / 14);
       return this.computedAbilities.filter(a => a.type !== 'utility' && this.trainedRank(a.id) > 0).map(a => {
         const rank = this.trainedRank(a.id);
         const dmgRange = a.damageRanges ? a.damageRanges.find(dr => dr.rank === rank) : null;
         const isPhysical = a.damageType === 'physical';
         const noWeaponScaling = a.dotScales || a.baseDamage === 0 || a.noWeaponScaling;
-        const dmgBonus = (isPhysical && !noWeaponScaling) ? (weaponDmg + apBonus) : 0;
+        const dmgBonus = (isPhysical && !noWeaponScaling) ? (Math.round(weaponDmg * 0.5) + apBonus) : 0;
         let minVal = dmgRange ? (dmgRange.min + dmgBonus) : 0;
         let maxVal = dmgRange ? (dmgRange.max + dmgBonus) : 0;
         if (a.id === 'cleave') {

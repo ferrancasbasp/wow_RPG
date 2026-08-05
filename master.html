@@ -550,16 +550,17 @@ createApp({
 
     applyReduction(monster, event, damage) {
       const dmgType = event.damageType || 'magical';
+      const lvl = monster.level || 1;
       if (dmgType === 'physical') {
         const armor = this.getEffectiveArmor(monster);
         if (armor > 0) {
-          const reduction = Math.min(50, armor * 2);
+          const reduction = Math.round((armor / (armor + 50 + 5 * lvl)) * 100);
           return Math.round(damage * (1 - reduction / 100));
         }
       } else if (dmgType === 'magical') {
         const resist = this.getEffectiveMagicResist(monster);
         if (resist > 0) {
-          const reduction = Math.min(75, resist * 3);
+          const reduction = Math.round((resist / (resist + 50 + 5 * lvl)) * 100);
           return Math.round(damage * (1 - reduction / 100));
         }
       }
@@ -568,12 +569,13 @@ createApp({
 
     getReductionText(monster, event) {
       const dmgType = event.damageType || 'magical';
+      const lvl = monster.level || 1;
       if (dmgType === 'physical') {
         const armor = this.getEffectiveArmor(monster);
-        if (armor > 0) return ' (−' + Math.min(50, armor * 2) + '% armor)';
+        if (armor > 0) return ' (−' + Math.round((armor / (armor + 50 + 5 * lvl)) * 100) + '% armor)';
       } else if (dmgType === 'magical') {
         const resist = this.getEffectiveMagicResist(monster);
-        if (resist > 0) return ' (−' + Math.min(75, resist * 3) + '% resist)';
+        if (resist > 0) return ' (−' + Math.round((resist / (resist + 50 + 5 * lvl)) * 100) + '% resist)';
       }
       return '';
     },
