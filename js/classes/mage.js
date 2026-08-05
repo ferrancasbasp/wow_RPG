@@ -115,9 +115,9 @@ window.CLASS_REGISTRY.mage = {
       baseDamage: 60, spellPowerRatio: 1.0, costPct: 0.09, castType: 'cast', cooldown: 0,
       description: 'Lanza una bola de fuego que explota al impactar.',
       damageRanges: [
-        { rank: 1, level: 1,  min: 23,  max: 37 },
-        { rank: 2, level: 6,  min: 36,  max: 56 },
-        { rank: 3, level: 12, min: 62,  max: 98 },
+        { rank: 1, level: 1,  min: 14, max: 22 },
+        { rank: 2, level: 6,  min: 31, max: 45 },
+        { rank: 3, level: 12, min: 53, max: 73 },
         { rank: 4, level: 18, min: 104, max: 166 },
         { rank: 5, level: 24, min: 165, max: 265 },
       ] },
