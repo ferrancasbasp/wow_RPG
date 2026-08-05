@@ -156,6 +156,15 @@ createApp({
       return CLASS_DATA[this.character.classKey] || CLASS_DATA.shaman || FALLBACK_CLASS;
     },
 
+    // Style binding para CSS variables de color de clase
+    appStyle() {
+      const color = this.classConfig.color || '#C79C6E';
+      return {
+        '--class-color': color,
+        '--class-glow': color + '4D',
+      };
+    },
+
     // Atributos finales = base + crecimiento por nivel + equipo + efectos
     // + talentos que modifican atributos
     finalStats() {
