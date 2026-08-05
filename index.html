@@ -100,6 +100,14 @@
     </div>
   </div>
 
+  <!-- ============================== COMBO POINTS ============================== -->
+  <div class="combo-bar" v-if="resourceConfig.type === 'energy'">
+    <span class="combo-label">Combo Points</span>
+    <div class="combo-points">
+      <div class="combo-point" v-for="n in 5" :key="n" :class="{ active: n <= (character.comboPoints || 0) }"></div>
+    </div>
+  </div>
+
   <!-- ============================== EFECTOS ACTIVOS ============================== -->
   <div class="effects-section">
     <div class="effects-header" @click="showEffectsPanel = !showEffectsPanel" style="cursor: pointer;">
