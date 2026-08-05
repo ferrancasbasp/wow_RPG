@@ -273,6 +273,28 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   display: flex; align-items: center; justify-content: center; height: 100%; text-align: center;
 }
 
+/* ================================================================ COMBO POINTS */
+.combo-bar {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 8px 16px;
+  background: var(--bg-panel); border: 1px solid var(--gold-dark); border-radius: var(--radius);
+}
+.combo-label {
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--gold);
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.combo-points {
+  display: flex; gap: 6px;
+}
+.combo-point {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.15);
+  transition: all 0.2s;
+}
+.combo-point.active {
+  background: #ff3838; border-color: #ff6666;
+  box-shadow: 0 0 8px rgba(255,56,56,0.6);
+}
+
 /* ================================================================ EFECTOS ACTIVOS */
 .effects-section {
   margin-bottom: 20px; background: var(--bg-panel); border: 1px solid var(--gold-dark);

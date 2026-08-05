@@ -400,8 +400,16 @@
                   <span v-if="talent.iconImg" style="display:none; align-items:center; justify-content:center; width:100%; height:100%; font-size:28px;">{{ talent.icon }}</span>
                   <span v-if="!talent.iconImg" class="wow-node-emoji">{{ talent.icon }}</span>
                   <span class="wow-node-rank">{{ talentRank(talent.id) }}/{{ talent.maxRank }}</span>
-                </div>
-              </div>
+    </div>
+  </div>
+
+  <!-- ============================== COMBO POINTS ============================== -->
+  <div class="combo-bar" v-if="resourceConfig.type === 'energy'">
+    <span class="combo-label">Combo</span>
+    <div class="combo-points">
+      <div class="combo-point" v-for="n in 5" :key="n" :class="{ active: n <= (character.comboPoints || 0) }"></div>
+    </div>
+  </div>
               </div>
             </div>
           </div>

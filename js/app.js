@@ -54,6 +54,7 @@ function createDefaultCharacter(classKey) {
     currentMana: null,
     currentRage: 0,
     currentEnergy: 100,
+    comboPoints: 0,
     trainedRanks: {},
     currentCooldowns: {},
     equipment: {
@@ -448,6 +449,7 @@ createApp({
     resourceMax() {
       const rc = this.resourceConfig;
       if (rc.type === 'rage') return rc.max || 100;
+      if (rc.type === 'energy') return rc.max || 100;
       return this.maxMana;
     },
 
@@ -479,7 +481,7 @@ createApp({
         const rank = this.trainedRank(a.id);
         const dmgRange = a.damageRanges ? a.damageRanges.find(dr => dr.rank === rank) : null;
         const isPhysical = a.damageType === 'physical';
-        const noWeaponScaling = a.dotScales || a.baseDamage === 0;
+        const noWeaponScaling = a.dotScales || a.baseDamage === 0 || a.noWeaponScaling;
         const dmgBonus = (isPhysical && !noWeaponScaling) ? (weaponDmg + apBonus) : 0;
         let minVal = dmgRange ? (dmgRange.min + dmgBonus) : 0;
         let maxVal = dmgRange ? (dmgRange.max + dmgBonus) : 0;
@@ -787,6 +789,19 @@ createApp({
       const isCrit = Math.random() * 100 < parseFloat((isRage || isEnergy) ? this.meleeCrit : this.spellCrit);
       if (isCrit) roll = Math.round(roll * 1.5);
       if ((isRage || isEnergy) && this.warriorStance === 'battle') roll = Math.round(roll * 1.10);
+
+      let comboSpent = 0;
+      if (ability.spendsCombo) {
+        comboSpent = this.character.comboPoints || 0;
+        if (comboSpent === 0) {
+          this.showToast('Sin puntos de combo');
+          if (isEnergy) this.character.currentEnergy = Math.min(this.resourceMax, this.resourceActual + (ability.costEnergy || 0));
+          return;
+        }
+        roll = roll * comboSpent;
+        this.character.comboPoints = 0;
+      }
+
       if (isRage && ability.generatesRage) {
         const baseGen = this.getEffectiveRageGen(ability);
         const rageGen = isCrit ? baseGen * 2 : baseGen;
@@ -805,13 +820,21 @@ createApp({
         const rageGen = isCrit ? baseGen * 2 : baseGen;
         rageText = ' · +' + rageGen + ' ira';
       }
+      let comboText = '';
+      if (ability.generatesCombo) {
+        this.character.comboPoints = Math.min(5, (this.character.comboPoints || 0) + ability.generatesCombo);
+        comboText = ' · ' + this.character.comboPoints + ' combo';
+      }
+      if (ability.spendsCombo) {
+        comboText = ' · ' + comboSpent + ' combo gastados';
+      }
       if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText);
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText + comboText);
       } else {
         this.turnDamage += roll;
         let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '')) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText);
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText + comboText);
         const hits = ability.multiHit || 1;
         for (let h = 0; h < hits; h++) {
           let hitRoll = roll;
@@ -1304,6 +1327,7 @@ createApp({
       this.character.currentMana = null;
       this.character.currentRage = 0;
       this.character.currentEnergy = 100;
+      this.character.comboPoints = 0;
       this.character.trainedRanks = {};
       this.character.currentCooldowns = {};
       this.character.equipment = this.defaultEquipment();
@@ -1317,7 +1341,7 @@ createApp({
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character_v9', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v10', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1326,7 +1350,7 @@ createApp({
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character_v9');
+        const data = localStorage.getItem('ttrpg_wow_character_v10');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
@@ -1336,6 +1360,7 @@ createApp({
           if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (this.character.currentRage === undefined) this.character.currentRage = 0;
           if (this.character.currentEnergy === undefined) this.character.currentEnergy = 100;
+          if (this.character.comboPoints === undefined) this.character.comboPoints = 0;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.baseStats) this.character.baseStats = { ...(CLASS_DATA[this.character.classKey] || FALLBACK_CLASS).baseStats };
@@ -1416,7 +1441,7 @@ createApp({
 
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v9');
+      const saved = localStorage.getItem('ttrpg_wow_character_v10');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
@@ -1427,6 +1452,7 @@ createApp({
           if (this.character.currentMana === undefined) this.character.currentMana = null;
           if (this.character.currentRage === undefined) this.character.currentRage = 0;
           if (this.character.currentEnergy === undefined) this.character.currentEnergy = 100;
+          if (this.character.comboPoints === undefined) this.character.comboPoints = 0;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
           if (!this.character.equipment) this.character.equipment = this.defaultEquipment();
