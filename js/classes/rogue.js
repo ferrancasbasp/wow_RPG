@@ -37,6 +37,30 @@ window.CLASS_REGISTRY.rogue = {
     { id: 'ruthlessness', name: 'Ruthlessness', icon: '🎯',
       description: 'Reduce el coste de energía de tus finishers en 2 por punto.',
       maxRank: 5, tier: 1, requires: null },
+
+    { id: 'improved_backstab', name: 'Improved Backstab', icon: '🔪',
+      description: 'Reduce el coste de energía de Backstab en 3 por punto.',
+      maxRank: 3, tier: 2, requires: null },
+
+    { id: 'opportunity', name: 'Opportunity', icon: '🗡️',
+      description: 'Aumenta el daño de Backstab, Garrote y Ambush un 4% por punto.',
+      maxRank: 5, tier: 2, requires: null },
+
+    { id: 'precision', name: 'Precision', icon: '🎯',
+      description: 'Aumenta tu probabilidad de crítico físico un 1% por punto.',
+      maxRank: 5, tier: 2, requires: null },
+
+    { id: 'endurance', name: 'Endurance', icon: '💨',
+      description: 'Reduce el cooldown de Evasión y Sprint en 1 turno por punto.',
+      maxRank: 2, tier: 3, requires: null },
+
+    { id: 'initiative', name: 'Initiative', icon: '⚡',
+      description: 'Sinister Strike y Basic Attack tienen un 15% de probabilidad por punto de generar un punto de combo extra.',
+      maxRank: 3, tier: 3, requires: null },
+
+    { id: 'energetic', name: 'Energetic', icon: '🔋',
+      description: 'Aumenta tu energía máxima en 4 por punto.',
+      maxRank: 5, tier: 3, requires: null },
   ],
 
   abilities: [

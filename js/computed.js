@@ -92,7 +92,7 @@ window.APP_COMPUTED = {
       const fromAgi = this.finalStats.agilidad / 20;
       const fromLevel = this.character.level * 0.02;
       const stanceBonus = this.warriorStance === 'fury' ? 5 : 0;
-      const fromTalent = this.talentRank('cruelty');
+      const fromTalent = this.talentRank('cruelty') + this.talentRank('precision');
       const fromBuff = this.effectStatBonus('physCrit');
       return (5 + fromAgi + fromLevel + stanceBonus + fromTalent + fromBuff).toFixed(2);
     },
@@ -299,7 +299,7 @@ window.APP_COMPUTED = {
     resourceMax() {
       const rc = this.resourceConfig;
       if (rc.type === 'rage') return rc.max || 100;
-      if (rc.type === 'energy') return rc.max || 100;
+      if (rc.type === 'energy') return (rc.max || 100) + this.talentRank('energetic') * 4;
       return this.maxMana;
     },
 
@@ -339,6 +339,11 @@ window.APP_COMPUTED = {
           const cleaveBonus = 1 + this.talentRank('improved_cleave') * 0.20;
           minVal = Math.round(minVal * cleaveBonus);
           maxVal = Math.round(maxVal * cleaveBonus);
+        }
+        if (['backstab', 'garrote', 'ambush'].includes(a.id)) {
+          const oppBonus = 1 + this.talentRank('opportunity') * 0.04;
+          minVal = Math.round(minVal * oppBonus);
+          maxVal = Math.round(maxVal * oppBonus);
         }
         const dotRange = a.dotRanges ? a.dotRanges.find(dr => dr.rank === rank) : null;
         const stunRange = a.stunRanks ? a.stunRanks.find(sr => sr.rank === rank) : null;

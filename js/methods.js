@@ -151,6 +151,12 @@ window.APP_METHODS = {
         // --- Rogue ---
         case 'vitality':                return `Regen energía: +${rank * 10}%`;
         case 'ruthlessness':            return `Coste finishers: −${rank * 2} energía`;
+        case 'improved_backstab':       return `Coste Backstab: −${rank * 3} energía`;
+        case 'opportunity':             return `Daño Backstab/Garrote/Ambush: +${rank * 4}%`;
+        case 'precision':               return `Crítico físico: +${rank}%`;
+        case 'endurance':               return `CD Evasión/Sprint: −${rank} turno${rank > 1 ? 's' : ''}`;
+        case 'initiative':              return `Combo extra: ${rank * 15}% prob`;
+        case 'energetic':               return `Energía máxima: +${rank * 4}`;
         default: return '';
       }
     },
@@ -235,7 +241,12 @@ window.APP_METHODS = {
       }
       let comboText = '';
       if (ability.generatesCombo) {
-        this.character.comboPoints = Math.min(5, (this.character.comboPoints || 0) + ability.generatesCombo);
+        let comboGen = ability.generatesCombo;
+        if (['sinister_strike', 'basic_attack'].includes(ability.id)) {
+          const initChance = this.talentRank('initiative') * 15;
+          if (Math.random() * 100 < initChance) comboGen += 1;
+        }
+        this.character.comboPoints = Math.min(5, (this.character.comboPoints || 0) + comboGen);
         comboText = ' · ' + this.character.comboPoints + ' combo';
       }
       if (ability.spendsCombo) {
@@ -294,6 +305,9 @@ window.APP_METHODS = {
       if (ability.id === 'blink') {
         cd -= this.talentRank('improved_blink');
       }
+      if (['evasion', 'sprint'].includes(ability.id)) {
+        cd -= this.talentRank('endurance');
+      }
       return Math.max(0, cd);
     },
 
@@ -312,6 +326,9 @@ window.APP_METHODS = {
       let cost = ability.costEnergy || 0;
       if (ability.spendsCombo) {
         cost -= this.talentRank('ruthlessness') * 2;
+      }
+      if (ability.id === 'backstab') {
+        cost -= this.talentRank('improved_backstab') * 3;
       }
       return Math.max(0, cost);
     },
