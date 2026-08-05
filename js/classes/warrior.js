@@ -9,7 +9,7 @@ window.CLASS_REGISTRY.warrior = {
     hp:          (s, lvl) => 40 + s.aguante * 10 + lvl * 6,
     mana:        () => 0,
     spellPower:  () => 0,
-    attackPower: (s) => s.fuerza * 2,
+    attackPower: (s) => s.fuerza * 2 - 20,
     manaRegen:   () => 0,
   },
 
@@ -76,15 +76,10 @@ window.CLASS_REGISTRY.warrior = {
   abilities: [
     { id: 'basic_attack', name: 'Basic Attack', icon: '👊', iconImg: 'img/abilities/warrior/basic_attack.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
-      baseDamage: 20, spellPowerRatio: 0, costRage: 0, generatesRage: 5, castType: 'instant', cooldown: 0,
+      baseDamage: 0, spellPowerRatio: 0, costRage: 0, generatesRage: 5, castType: 'instant', cooldown: 0,
       description: 'Un golpe básico que genera ira. El daño depende del arma equipada.',
-      damageRanges: [
-        { rank: 1, level: 1, min: 16, max: 24 },
-        { rank: 2, level: 6, min: 28, max: 40 },
-        { rank: 3, level: 12, min: 48, max: 68 },
-        { rank: 4, level: 18, min: 80, max: 110 },
-        { rank: 5, level: 24, min: 130, max: 175 },
-      ] },
+      usesWeaponDamage: true,
+    },
 
     { id: 'heroic_strike', name: 'Heroic Strike', icon: '⚔️', iconImg: 'img/abilities/rogue/ambush.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',

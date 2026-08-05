@@ -337,8 +337,15 @@ window.APP_COMPUTED = {
         const isPhysical = a.damageType === 'physical';
         const noWeaponScaling = a.dotScales || a.baseDamage === 0 || a.noWeaponScaling;
         const dmgBonus = (isPhysical && !noWeaponScaling) ? (Math.round(weaponDmg * 0.5) + apBonus) : 0;
-        let minVal = dmgRange ? (dmgRange.min + dmgBonus) : 0;
-        let maxVal = dmgRange ? (dmgRange.max + dmgBonus) : 0;
+        let minVal, maxVal;
+        if (a.usesWeaponDamage) {
+          const base = weaponDmg + Math.round(this.attackPower / 7);
+          minVal = Math.round(base * 0.85);
+          maxVal = Math.round(base * 1.15);
+        } else {
+          minVal = dmgRange ? (dmgRange.min + dmgBonus) : 0;
+          maxVal = dmgRange ? (dmgRange.max + dmgBonus) : 0;
+        }
         if (a.id === 'cleave') {
           const cleaveBonus = 1 + this.talentRank('improved_cleave') * 0.20;
           minVal = Math.round(minVal * cleaveBonus);

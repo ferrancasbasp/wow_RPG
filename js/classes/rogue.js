@@ -67,15 +67,10 @@ window.CLASS_REGISTRY.rogue = {
   abilities: [
     { id: 'basic_attack', name: 'Basic Attack', icon: '👊', iconImg: 'img/abilities/rogue/basic_attack.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
-      baseDamage: 15, spellPowerRatio: 0, costEnergy: 0, castType: 'instant', cooldown: 0,
+      baseDamage: 0, spellPowerRatio: 0, costEnergy: 0, castType: 'instant', cooldown: 0,
       description: 'Un golpe básico que no gasta energía.',
-      damageRanges: [
-        { rank: 1, level: 1,  min: 10, max: 16 },
-        { rank: 2, level: 6,  min: 18, max: 26 },
-        { rank: 3, level: 12, min: 32, max: 44 },
-        { rank: 4, level: 18, min: 54, max: 72 },
-        { rank: 5, level: 24, min: 88, max: 116 },
-      ] },
+      usesWeaponDamage: true,
+    },
 
     { id: 'sinister_strike', name: 'Sinister Strike', icon: '🗡️', iconImg: 'img/abilities/rogue/sinister_strike.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
