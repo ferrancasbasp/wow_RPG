@@ -3,6 +3,7 @@ window.CLASS_REGISTRY.rogue = {
   name: 'Rogue',
   color: '#FFF569',
   icon: '🗡️',
+  iconImg: 'img/classes/rogue.jpg',
 
   formulas: {
     hp:          (s, lvl) => 35 + s.aguante * 9 + lvl * 5,
@@ -42,15 +43,15 @@ window.CLASS_REGISTRY.rogue = {
       description: 'Reduce el coste de energía de Backstab en 3 por punto.',
       maxRank: 3, tier: 2, requires: null },
 
-    { id: 'opportunity', name: 'Opportunity', icon: '🗡️',
+    { id: 'opportunity', name: 'Opportunity', icon: '🗡️', iconImg: 'img/talents/rogue/opportunity.jpg',
       description: 'Aumenta el daño de Backstab, Garrote y Ambush un 4% por punto.',
       maxRank: 5, tier: 2, requires: null },
 
-    { id: 'precision', name: 'Precision', icon: '🎯',
+    { id: 'precision', name: 'Precision', icon: '🎯', iconImg: 'img/talents/rogue/precision.jpg',
       description: 'Aumenta tu probabilidad de crítico físico un 1% por punto.',
       maxRank: 5, tier: 2, requires: null },
 
-    { id: 'endurance', name: 'Endurance', icon: '💨',
+    { id: 'endurance', name: 'Endurance', icon: '💨', iconImg: 'img/talents/rogue/endurance.jpg',
       description: 'Reduce el cooldown de Evasión y Sprint en 1 turno por punto.',
       maxRank: 2, tier: 3, requires: null },
 
@@ -58,7 +59,7 @@ window.CLASS_REGISTRY.rogue = {
       description: 'Sinister Strike y Basic Attack tienen un 15% de probabilidad por punto de generar un punto de combo extra.',
       maxRank: 3, tier: 3, requires: null },
 
-    { id: 'energetic', name: 'Energetic', icon: '🔋',
+    { id: 'energetic', name: 'Energetic', icon: '🔋', iconImg: 'img/talents/rogue/energetic.jpg',
       description: 'Aumenta tu energía máxima en 4 por punto.',
       maxRank: 5, tier: 3, requires: null },
   ],
@@ -76,7 +77,7 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 5, level: 24, min: 88, max: 116 },
       ] },
 
-    { id: 'sinister_strike', name: 'Sinister Strike', icon: '🗡️',
+    { id: 'sinister_strike', name: 'Sinister Strike', icon: '🗡️', iconImg: 'img/abilities/rogue/basic_attack.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 20, spellPowerRatio: 0, costEnergy: 40, castType: 'instant', cooldown: 0,
       description: 'Un golpe rápido que gasta energía y genera 1 punto de combo.',
@@ -89,7 +90,7 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 5, level: 24, min: 132, max: 172 },
       ] },
 
-    { id: 'eviscerate', name: 'Eviscerate', icon: '🩸',
+    { id: 'eviscerate', name: 'Eviscerate', icon: '🩸', iconImg: 'img/abilities/rogue/eviscerate.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 0, spellPowerRatio: 0, costEnergy: 35, castType: 'instant', cooldown: 0,
       description: 'Termina el combo. Gasta todos los puntos de combo. Más puntos = más daño.',
@@ -103,7 +104,7 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 5, level: 32, min: 72, max: 90 },
       ] },
 
-    { id: 'ambush', name: 'Ambush', icon: '🗡️',
+    { id: 'ambush', name: 'Ambush', icon: '🗡️', iconImg: 'img/abilities/rogue/ambush.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 18, damageType: 'physical',
       baseDamage: 40, spellPowerRatio: 0, costEnergy: 60, castType: 'instant', cooldown: 0,
       description: 'Requiere estar en sigilo. Ataque sorpresa que genera 2 puntos de combo.',
@@ -115,7 +116,7 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 3, level: 34, min: 210, max: 255 },
       ] },
 
-    { id: 'garrote', name: 'Garrote', icon: '🩹',
+    { id: 'garrote', name: 'Garrote', icon: '🩹', iconImg: 'img/abilities/rogue/garrote.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 14, damageType: 'physical',
       baseDamage: 10, spellPowerRatio: 0, costEnergy: 45, castType: 'instant', cooldown: 0,
       description: 'Requiere estar en sigilo. Estrangula al enemigo causando sangrado prolongado.',
@@ -137,7 +138,7 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 3, level: 30, value: 54, duration: 6 },
       ] },
 
-    { id: 'backstab', name: 'Backstab', icon: '🔪',
+    { id: 'backstab', name: 'Backstab', icon: '🔪', iconImg: 'img/abilities/rogue/backstab.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 4, damageType: 'physical',
       baseDamage: 30, spellPowerRatio: 0, costEnergy: 60, castType: 'instant', cooldown: 0,
       description: 'Requiere estar detrás del enemigo. Daño elevado que genera 1 punto de combo.',
@@ -151,13 +152,13 @@ window.CLASS_REGISTRY.rogue = {
         { rank: 5, level: 34, min: 175, max: 215 },
       ] },
 
-    { id: 'sprint', name: 'Sprint', icon: '🏃',
+    { id: 'sprint', name: 'Sprint', icon: '🏃', iconImg: 'img/abilities/rogue/sprint.jpg',
       school: 'Físico', type: 'utility', requiredLevel: 10,
       costEnergy: 0, castType: 'instant', cooldown: 6,
       description: 'Acción gratuita que te permite moverte en el turno.',
       buff: null, applySelf: false },
 
-    { id: 'poison_weapon', name: 'Veneno Mortal', icon: '🧪',
+    { id: 'poison_weapon', name: 'Veneno Mortal', icon: '🧪', iconImg: 'img/abilities/rogue/poison_weapon.jpg',
       school: 'Físico', type: 'utility', requiredLevel: 20,
       costEnergy: 0, castType: 'instant', cooldown: 0,
       description: 'Envenena tu arma. Los ataques hacen daño extra y pasan a ser de tipo mágico.',
