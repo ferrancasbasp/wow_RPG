@@ -330,16 +330,16 @@ window.APP_COMPUTED = {
     // Habilidades entrenadas (con dados escalados por rango) — solo damage/heal
     unlockedAbilities() {
       const weaponDmg = this.totalWeaponDamage;
-      const apBonus = Math.round(this.attackPower / 14);
+      const apBonus = Math.round(this.attackPower / 7);
       return this.computedAbilities.filter(a => a.type !== 'utility' && this.trainedRank(a.id) > 0).map(a => {
         const rank = this.trainedRank(a.id);
         const dmgRange = a.damageRanges ? a.damageRanges.find(dr => dr.rank === rank) : null;
         const isPhysical = a.damageType === 'physical';
         const noWeaponScaling = a.dotScales || a.baseDamage === 0 || a.noWeaponScaling;
-        const dmgBonus = (isPhysical && !noWeaponScaling) ? (Math.round(weaponDmg * 0.5) + apBonus) : 0;
+        const dmgBonus = (isPhysical && !noWeaponScaling) ? (weaponDmg + apBonus) : 0;
         let minVal, maxVal;
         if (a.usesWeaponDamage) {
-          const base = weaponDmg + Math.round(this.attackPower / 7);
+          const base = weaponDmg + apBonus;
           minVal = Math.round(base * 0.85);
           maxVal = Math.round(base * 1.15);
         } else {
