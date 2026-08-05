@@ -94,6 +94,7 @@ const BUFF_DEBUFF_STATS = [
   { key: 'armor', label: 'Armadura' },
   { key: 'magicResist', label: 'Armadura Mágica' },
   { key: 'poisonDamage', label: 'Daño de Veneno' },
+  { key: 'evasion', label: 'Evasión' },
 ];
 
 const STATUS_OPTIONS = [
@@ -148,6 +149,7 @@ createApp({
       turnNumber: 1,
       turnDamage: 0,
       hpLossAmount: null,
+      hpLossType: 'magical',
       warriorStance: 'battle',
       warriorWeaponMode: 'twohanded',
     };
@@ -260,6 +262,13 @@ createApp({
       let total = Math.max(base, fromFormula);
       total += this.effectStatBonus('attackPower');
       return total;
+    },
+
+    // Prob. Evasión (base 5% + buffs de evasion)
+    evasion() {
+      let total = 5;
+      total += this.effectStatBonus('evasion');
+      return Math.min(95, total);
     },
 
     // Regen. de Maná desde Espíritu (fórmula de clase)
@@ -1207,8 +1216,23 @@ createApp({
       return '';
     },
 
-    takeDamage(amount) {
+    takeDamage(amount, dmgType) {
       if (amount <= 0) return;
+      const type = dmgType || 'magical';
+      if (type === 'physical') {
+        const evadeChance = this.evasion;
+        if (Math.random() * 100 < evadeChance) {
+          let rageText = '';
+          if (this.resourceConfig.type === 'rage') {
+            const rageGain = 2 + Math.floor(Math.random() * 3);
+            this.character.currentRage = Math.min(this.resourceMax, this.resourceActual + rageGain);
+            rageText = ' · +' + rageGain + ' ira';
+          }
+          this.hpLossAmount = null;
+          this.showToast('¡Esquivado!' + rageText);
+          return;
+        }
+      }
       this.character.currentHP = Math.max(0, this.hpActual - amount);
       this.hpLossAmount = null;
       let rageText = '';

@@ -135,12 +135,23 @@ window.CLASS_REGISTRY.rogue = {
       school: 'Físico', type: 'utility', requiredLevel: 1,
       costEnergy: 0, castType: 'instant', cooldown: 0,
       description: 'Envenena tu arma. Los ataques hacen daño extra y pasan a ser de tipo mágico.',
-      buff: { stat: 'poisonDamage', duration: 30, applySelf: true },
+      buff: { stat: 'poisonDamage', duration: 5, applySelf: true },
       buffRanks: [
         { rank: 1, level: 1,  value: 8,  costEnergy: 0 },
         { rank: 2, level: 10, value: 16, costEnergy: 0 },
         { rank: 3, level: 20, value: 28, costEnergy: 0 },
         { rank: 4, level: 30, value: 44, costEnergy: 0 },
+      ] },
+
+    { id: 'evasion', name: 'Evasión', icon: '💨',
+      school: 'Físico', type: 'utility', requiredLevel: 8,
+      costEnergy: 0, castType: 'instant', cooldown: 10,
+      description: 'Aumenta tu probabilidad de esquivar ataques físicos temporalmente.',
+      buff: { stat: 'evasion', duration: 3, applySelf: true },
+      buffRanks: [
+        { rank: 1, level: 8,  value: 50, costEnergy: 0 },
+        { rank: 2, level: 18, value: 70, costEnergy: 0 },
+        { rank: 3, level: 28, value: 90, costEnergy: 0 },
       ] },
   ],
 };

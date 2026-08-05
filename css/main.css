@@ -666,6 +666,11 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   color: var(--text); outline: none;
 }
 .hp-loss-input:focus { border-color: var(--gold); }
+.hp-loss-type {
+  padding: 8px 6px; background: var(--bg-dark); border: 1px solid var(--gold-dark);
+  border-radius: var(--radius); color: var(--text); font-size: 13px; outline: none; cursor: pointer;
+}
+.hp-loss-type option { background: var(--bg-dark); }
 .hp-loss-btn {
   padding: 8px 12px; font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600;
   background: linear-gradient(180deg, #4a1a1a 0%, #2d0e0e 100%);
