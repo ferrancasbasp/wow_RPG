@@ -421,11 +421,12 @@ window.APP_METHODS = {
         if (ability.id === 'shout') {
           buffValue = Math.round(buffValue * (1 + this.talentRank('improved_battle_shout') * 0.05));
         }
+        const effectType = ability.buff.isHot ? 'hot' : 'buff';
         this.character.activeEffects.push({
           id: Date.now() + Math.random(),
-          type: 'buff',
+          type: effectType,
           name: ability.name,
-          target: ability.currentBuffStat,
+          target: ability.buff.isHot ? 'hp' : ability.currentBuffStat,
           value: buffValue,
           duration: ability.currentBuffDuration,
           isPercent: ability.buff.isPercent || false,
