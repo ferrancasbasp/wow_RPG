@@ -30,7 +30,7 @@ window.APP_DATA = function() {
     turnNumber: 1,
     turnDamage: 0,
     hpLossAmount: null,
-    hpLossType: 'magical',
+    hpActionType: 'magical',
     warriorStance: 'battle',
     warriorWeaponMode: 'twohanded',
   };

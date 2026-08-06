@@ -652,9 +652,33 @@ window.APP_METHODS = {
       return '';
     },
 
-    takeDamage(amount, dmgType) {
+    hpAction(amount, actionType) {
       if (amount <= 0) return;
-      const type = dmgType || 'magical';
+      const type = actionType || 'magical';
+      this.hpLossAmount = null;
+
+      if (type === 'heal') {
+        this.character.currentHP = Math.min(this.maxHP, this.hpActual + amount);
+        this.showToast('+' + amount + ' vida');
+        return;
+      }
+
+      if (type === 'shield') {
+        if (!this.character.activeEffects) this.character.activeEffects = [];
+        this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== 'Escudo');
+        this.character.activeEffects.push({
+          id: Date.now() + Math.random(),
+          type: 'buff',
+          name: 'Escudo',
+          target: 'shield',
+          value: amount,
+          duration: 999,
+        });
+        this.showToast('🛡️ Escudo: ' + amount + ' absorción');
+        return;
+      }
+
+      // Daño físico o mágico
       if (type === 'physical') {
         const evadeChance = this.evasion;
         if (Math.random() * 100 < evadeChance) {
@@ -664,7 +688,6 @@ window.APP_METHODS = {
             this.character.currentRage = Math.min(this.resourceMax, this.resourceActual + rageGain);
             rageText = ' · +' + rageGain + ' ira';
           }
-          this.hpLossAmount = null;
           this.showToast('¡Esquivado!' + rageText);
           return;
         }
@@ -674,15 +697,43 @@ window.APP_METHODS = {
         const reduction = this.magicReduction;
         amount = Math.round(amount * (1 - reduction / 100));
       }
-      this.character.currentHP = Math.max(0, this.hpActual - amount);
-      this.hpLossAmount = null;
-      let rageText = '';
-      if (this.resourceConfig.type === 'rage') {
-        const rageGain = 2 + Math.floor(Math.random() * 3);
-        this.character.currentRage = Math.min(this.resourceMax, this.resourceActual + rageGain);
-        rageText = ' · +' + rageGain + ' ira';
+
+      // Escudo absorbe primero
+      let remaining = amount;
+      if (this.character.activeEffects) {
+        const shield = this.character.activeEffects.find(e => e.target === 'shield');
+        if (shield) {
+          if (shield.value >= remaining) {
+            shield.value -= remaining;
+            remaining = 0;
+            if (shield.value <= 0) {
+              this.character.activeEffects = this.character.activeEffects.filter(e => e !== shield);
+              this.showToast('🛡️ Escudo absorbido por completo');
+            } else {
+              this.showToast('🛡️ Escudo absorbe ' + amount + ' (quedan ' + shield.value + ')');
+            }
+          } else {
+            remaining -= shield.value;
+            this.character.activeEffects = this.character.activeEffects.filter(e => e !== shield);
+            this.showToast('🛡️ Escudo absorbe ' + shield.value + ', -' + remaining + ' vida');
+          }
+        }
       }
-      this.showToast('-' + amount + ' vida' + rageText);
+
+      if (remaining > 0) {
+        this.character.currentHP = Math.max(0, this.hpActual - remaining);
+        let rageText = '';
+        if (this.resourceConfig.type === 'rage') {
+          const rageGain = 2 + Math.floor(Math.random() * 3);
+          this.character.currentRage = Math.min(this.resourceMax, this.resourceActual + rageGain);
+          rageText = ' · +' + rageGain + ' ira';
+        }
+        if (remaining < amount) {
+          this.showToast('-' + remaining + ' vida' + rageText);
+        } else {
+          this.showToast('-' + amount + ' vida' + rageText);
+        }
+      }
     },
 
     trainAll() {

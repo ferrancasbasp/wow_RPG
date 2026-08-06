@@ -681,6 +681,14 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   background: linear-gradient(180deg, #5e2222 0%, #3d1414 100%);
   border-color: #c0392b; color: #ff9090; box-shadow: 0 0 10px rgba(192,57,43,0.3);
 }
+.hp-loss-btn.heal-btn {
+  background: linear-gradient(180deg, #1e4a2d 0%, #102d10 100%);
+  border-color: #4a8e3a; color: #7cc44a;
+}
+.hp-loss-btn.heal-btn:hover {
+  background: linear-gradient(180deg, #2a5e3a 0%, #1a3a1a 100%);
+  border-color: #6ba83a; color: #a0e060; box-shadow: 0 0 10px rgba(108,168,58,0.3);
+}
 .hp-loss-btn:active { transform: scale(0.97); }
 .xp-bar-wrapper {
   background: linear-gradient(170deg, var(--bg-panel) 0%, var(--bg-dark) 100%);

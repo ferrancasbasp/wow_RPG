@@ -94,13 +94,17 @@
         <span class="turn-damage-value">{{ turnDamage }}</span>
       </div>
       <button class="action-btn end-turn-btn" @click="endTurn">Fin de Turno ({{ turnNumber }})</button>
-      <div class="hp-loss-row">
-        <select v-model="hpLossType" class="hp-loss-type">
+      <div class="hp-action-row">
+        <select v-model="hpActionType" class="hp-loss-type">
           <option value="magical">✨ Mágico</option>
           <option value="physical">⚔️ Físico</option>
+          <option value="heal">💚 Curar</option>
+          <option value="shield">🛡️ Escudo</option>
         </select>
         <input type="number" v-model.number="hpLossAmount" class="hp-loss-input" placeholder="—" min="1">
-        <button class="hp-loss-btn" @click="takeDamage(hpLossAmount || 0, hpLossType)">Recibir Daño</button>
+        <button class="hp-loss-btn" @click="hpAction(hpLossAmount || 0, hpActionType)" :class="{ 'heal-btn': hpActionType === 'heal' || hpActionType === 'shield' }">
+          {{ hpActionType === 'heal' ? 'Curar' : hpActionType === 'shield' ? 'Escudo' : 'Recibir Daño' }}
+        </button>
       </div>
     </div>
   </div>
