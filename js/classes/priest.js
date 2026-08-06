@@ -32,7 +32,7 @@ window.CLASS_REGISTRY.priest = {
 
   abilities: [
     { id: 'smite', name: 'Smite', icon: '✨',
-      school: 'Sagrado', type: 'damage', requiredLevel: 1, damageType: 'magical',
+      school: 'Sagrado', category: 'holy', type: 'damage', requiredLevel: 1, damageType: 'magical',
       baseDamage: 15, spellPowerRatio: 0.571, costPct: 0.08, castType: 'cast', cooldown: 0,
       description: 'Daño sagrado al enemigo.',
       damageRanges: [
@@ -44,7 +44,7 @@ window.CLASS_REGISTRY.priest = {
       ] },
 
     { id: 'power_word_shield', name: 'Power Word: Shield', icon: '🛡️',
-      school: 'Sagrado', type: 'heal', requiredLevel: 6,
+      school: 'Sagrado', category: 'discipline', type: 'heal', requiredLevel: 6,
       baseDamage: 50, spellPowerRatio: 0.5, costPct: 0.09, castType: 'instant', cooldown: 4,
       description: 'Absorbe daño. Se aplica como curación temporal.',
       damageRanges: [
@@ -55,7 +55,7 @@ window.CLASS_REGISTRY.priest = {
       ] },
 
     { id: 'heal', name: 'Heal', icon: '💚',
-      school: 'Sagrado', type: 'heal', requiredLevel: 1,
+      school: 'Sagrado', category: 'holy', type: 'heal', requiredLevel: 1,
       baseDamage: 40, spellPowerRatio: 0.857, costPct: 0.10, castType: 'cast', cooldown: 0,
       description: 'Cura al objetivo una cantidad moderada.',
       damageRanges: [
@@ -67,20 +67,21 @@ window.CLASS_REGISTRY.priest = {
       ] },
 
     { id: 'renew', name: 'Renew', icon: '🌿',
-      school: 'Sagrado', type: 'utility', requiredLevel: 4,
-      costPct: 0.07, castType: 'instant', cooldown: 0,
-      description: 'HoT que cura cada turno durante 5 turnos.',
-      buff: { stat: 'hot_hp', duration: 5, applySelf: true, isHot: true },
-      buffRanks: [
-        { rank: 1, level: 4,  value: 15, costPct: 0.07 },
-        { rank: 2, level: 10, value: 25, costPct: 0.07 },
-        { rank: 3, level: 16, value: 40, costPct: 0.07 },
-        { rank: 4, level: 22, value: 60, costPct: 0.07 },
-        { rank: 5, level: 28, value: 85, costPct: 0.07 },
+      school: 'Sagrado', category: 'holy', type: 'heal', requiredLevel: 4,
+      baseDamage: 100, spellPowerRatio: 1.0, costPct: 0.07, castType: 'instant', cooldown: 0,
+      description: 'HoT que cura cada turno. Aplicar manualmente en Efectos.',
+      isHot: true,
+      hotDuration: 5,
+      damageRanges: [
+        { rank: 1, level: 4,  min: 75, max: 75 },
+        { rank: 2, level: 10, min: 140, max: 140 },
+        { rank: 3, level: 16, min: 220, max: 220 },
+        { rank: 4, level: 22, min: 320, max: 320 },
+        { rank: 5, level: 28, min: 450, max: 450 },
       ] },
 
     { id: 'power_word_fortitude', name: 'Power Word: Fortitude', icon: '💪',
-      school: 'Sagrado', type: 'utility', requiredLevel: 1,
+      school: 'Sagrado', category: 'discipline', type: 'utility', requiredLevel: 1,
       costPct: 0.06, castType: 'instant', cooldown: 0,
       description: 'Aumenta la Aguante del objetivo. Aplicar manualmente.',
       buff: { stat: 'aguante', duration: 30 },

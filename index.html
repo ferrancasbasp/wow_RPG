@@ -251,8 +251,11 @@
                 <span class="ability-stat dmg" v-if="ability.type === 'damage'">
                   Daño {{ ability.currentMin }}-{{ ability.currentMax }}
                 </span>
-                <span class="ability-stat heal" v-if="ability.type === 'heal'">
+                <span class="ability-stat heal" v-if="ability.type === 'heal' && !ability.isHot">
                   Curación {{ ability.currentMin }}-{{ ability.currentMax }}
+                </span>
+                <span class="ability-stat heal" v-if="ability.isHot">
+                  HoT {{ ability.hotTick }}/turno · {{ ability.hotDuration }}t ({{ ability.hotTotal }} total)
                 </span>
                 <span class="ability-stat cost" v-if="resourceConfig.type === 'rage'">
                   {{ ability.effectiveRageCost || 0 }} ira<span v-if="ability.effectiveRageGen"> · +{{ ability.effectiveRageGen }} ira</span>

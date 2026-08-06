@@ -364,6 +364,13 @@ window.APP_COMPUTED = {
         }
         const dotRange = a.dotRanges ? a.dotRanges.find(dr => dr.rank === rank) : null;
         const stunRange = a.stunRanks ? a.stunRanks.find(sr => sr.rank === rank) : null;
+        let hotTick = 0, hotDuration = 0, hotTotal = 0;
+        if (a.isHot) {
+          const baseDuration = a.hotDuration;
+          hotDuration = baseDuration + this.talentRank('improved_renew');
+          hotTick = Math.round((minVal + this.spellPower) / baseDuration);
+          hotTotal = hotTick * hotDuration;
+        }
         return {
           ...a,
           currentRank: rank,
@@ -372,6 +379,9 @@ window.APP_COMPUTED = {
           currentDotValue: dotRange ? dotRange.value : (a.inflictsEffects ? a.inflictsEffects[0].value : 0),
           currentDotDuration: dotRange ? dotRange.duration : (a.inflictsEffects ? a.inflictsEffects[0].duration : 0),
           currentStunDuration: stunRange ? stunRange.duration : null,
+          hotTick: hotTick,
+          hotDuration: hotDuration,
+          hotTotal: hotTotal,
           scaledCost: Math.round(a.computedCost * (1 + (rank - 1) * 0.15)),
           effectiveRageCost: this.getEffectiveRageCost(a),
           effectiveRageGen: this.getEffectiveRageGen(a),

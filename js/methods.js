@@ -259,7 +259,9 @@ window.APP_METHODS = {
       if (ability.spendsCombo) {
         comboText = ' · ' + comboSpent + ' combo gastados';
       }
-      if (ability.type === 'heal') {
+      if (ability.isHot) {
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.hotTick + '/turno · ' + ability.hotDuration + 't (' + ability.hotTotal + ' total) — aplícalo manualmente en Efectos');
+      } else if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText + comboText);
       } else {
