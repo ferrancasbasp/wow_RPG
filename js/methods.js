@@ -261,6 +261,9 @@ window.APP_METHODS = {
       }
       if (ability.isHot) {
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.hotTick + '/turno · ' + ability.hotDuration + 't (' + ability.hotTotal + ' total) — aplícalo manualmente en Efectos');
+      } else if (ability.isDot) {
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.dotTick + '/turno · ' + ability.dotDuration + 't (' + ability.dotTotal + ' total) — aplícalo al enemigo');
+        this.sendDamageEvent(ability, 0, 1, 1);
       } else if (ability.type === 'heal') {
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText + comboText);
@@ -457,7 +460,9 @@ window.APP_METHODS = {
         if (typeof firebase === 'undefined' || !firebase.apps.length) return;
         const db = firebase.database();
         let effects = null;
-        if (ability.inflictsEffects) {
+        if (ability.isDot) {
+          effects = [{ type: 'dot', name: ability.name, value: ability.dotTick, duration: ability.dotDuration }];
+        } else if (ability.inflictsEffects) {
           effects = ability.inflictsEffects.map(eff => {
             if (eff.type === 'dot' && ability.currentDotValue !== undefined) {
               return { ...eff, value: ability.currentDotValue, duration: ability.currentDotDuration || eff.duration };

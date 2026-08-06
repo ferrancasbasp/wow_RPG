@@ -256,8 +256,11 @@
               <div class="ability-school">{{ ability.school }} · {{ ability.castType === 'instant' ? 'Instantáneo' : 'Casteo' }} · Nv. {{ ability.requiredLevel }}<span v-if="ability.requiresStealth" class="ability-req-tag"> · Sigilo</span><span v-if="ability.requiresBehind" class="ability-req-tag"> · Por detrás</span></div>
               <div class="ability-desc">{{ ability.description }}</div>
               <div class="ability-stats">
-                <span class="ability-stat dmg" v-if="ability.type === 'damage'">
+                <span class="ability-stat dmg" v-if="ability.type === 'damage' && !ability.isDot">
                   Daño {{ ability.currentMin }}-{{ ability.currentMax }}
+                </span>
+                <span class="ability-stat dmg" v-if="ability.isDot">
+                  DoT {{ ability.dotTick }}/turno · {{ ability.dotDuration }}t ({{ ability.dotTotal }} total)
                 </span>
                 <span class="ability-stat heal" v-if="ability.type === 'heal' && !ability.isHot">
                   Curación {{ ability.currentMin }}-{{ ability.currentMax }}

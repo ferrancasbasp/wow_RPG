@@ -382,6 +382,12 @@ window.APP_COMPUTED = {
           hotTick = Math.round((minVal + this.spellPower) / baseDuration);
           hotTotal = hotTick * hotDuration;
         }
+        let dotTick = 0, dotDuration = 0, dotTotal = 0;
+        if (a.isDot) {
+          dotDuration = a.dotDuration;
+          dotTotal = minVal + this.spellPower;
+          dotTick = Math.round(dotTotal / dotDuration);
+        }
         return {
           ...a,
           currentRank: rank,
@@ -393,6 +399,9 @@ window.APP_COMPUTED = {
           hotTick: hotTick,
           hotDuration: hotDuration,
           hotTotal: hotTotal,
+          dotTick: dotTick,
+          dotDuration: dotDuration,
+          dotTotal: dotTotal,
           scaledCost: Math.round(a.computedCost * (1 + (rank - 1) * 0.15)),
           effectiveRageCost: this.getEffectiveRageCost(a),
           effectiveRageGen: this.getEffectiveRageGen(a),
