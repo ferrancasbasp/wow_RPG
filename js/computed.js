@@ -290,6 +290,17 @@ window.APP_COMPUTED = {
       return Math.floor((this.hpActual / this.maxHP) * 100);
     },
 
+    shieldValue() {
+      if (!this.character.activeEffects) return 0;
+      const shield = this.character.activeEffects.find(e => e.target === 'shield');
+      return shield ? shield.value : 0;
+    },
+
+    shieldPercent() {
+      if (this.maxHP === 0) return 0;
+      return Math.min(100, Math.floor((this.shieldValue / this.maxHP) * 100));
+    },
+
     manaPercent() {
       if (this.maxMana === 0) return 0;
       return Math.floor((this.manaActual / this.maxMana) * 100);

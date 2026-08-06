@@ -201,10 +201,14 @@
         </div>
 
         <div class="resource-bar">
-          <div class="resource-label"><span>Vida</span><span>{{ hpActual }} / {{ maxHP }}</span></div>
+          <div class="resource-label">
+            <span>Vida<span v-if="shieldValue > 0" class="shield-text"> 🛡️{{ shieldValue }}</span></span>
+            <span>{{ hpActual }} / {{ maxHP }}</span>
+          </div>
           <div class="resource-track">
             <div class="resource-fill hp" :style="{ width: hpPercent + '%' }"></div>
-            <div class="resource-text">{{ hpActual }} / {{ maxHP }}</div>
+            <div class="resource-fill shield" v-if="shieldValue > 0" :style="{ width: shieldPercent + '%' }"></div>
+            <div class="resource-text">{{ hpActual }} / {{ maxHP }}<span v-if="shieldValue > 0"> +{{ shieldValue }}</span></div>
           </div>
         </div>
 

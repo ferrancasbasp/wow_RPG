@@ -691,14 +691,9 @@ window.APP_METHODS = {
           this.showToast('¡Esquivado!' + rageText);
           return;
         }
-        const reduction = this.physReduction;
-        amount = Math.round(amount * (1 - reduction / 100));
-      } else {
-        const reduction = this.magicReduction;
-        amount = Math.round(amount * (1 - reduction / 100));
       }
 
-      // Escudo absorbe primero
+      // Escudo absorbe primero (sin reduccion de armadura)
       let remaining = amount;
       if (this.character.activeEffects) {
         const shield = this.character.activeEffects.find(e => e.target === 'shield');
@@ -715,8 +710,18 @@ window.APP_METHODS = {
           } else {
             remaining -= shield.value;
             this.character.activeEffects = this.character.activeEffects.filter(e => e !== shield);
-            this.showToast('🛡️ Escudo absorbe ' + shield.value + ', -' + remaining + ' vida');
           }
+        }
+      }
+
+      // Lo que pasa del escudo se reduce por armadura
+      if (remaining > 0) {
+        if (type === 'physical') {
+          const reduction = this.physReduction;
+          remaining = Math.round(remaining * (1 - reduction / 100));
+        } else {
+          const reduction = this.magicReduction;
+          remaining = Math.round(remaining * (1 - reduction / 100));
         }
       }
 
