@@ -3,6 +3,7 @@ window.CLASS_REGISTRY.priest = {
   name: 'Priest',
   color: '#FFFFFF',
   icon: '✨',
+  iconImg: 'img/classes/priest.jpg',
 
   formulas: {
     hp:          (s, lvl) => 30 + s.aguante * 8 + lvl * 4,
@@ -31,7 +32,7 @@ window.CLASS_REGISTRY.priest = {
   talents: [],
 
   abilities: [
-    { id: 'smite', name: 'Smite', icon: '✨',
+    { id: 'smite', name: 'Smite', icon: '✨', iconImg: 'img/abilities/priest/smite.jpg',
       school: 'Sagrado', category: 'holy', type: 'damage', requiredLevel: 1, damageType: 'magical',
       baseDamage: 15, spellPowerRatio: 0.571, costPct: 0.08, castType: 'cast', cooldown: 0,
       description: 'Daño sagrado al enemigo.',
@@ -43,7 +44,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 5, level: 24, min: 88, max: 112 },
       ] },
 
-    { id: 'power_word_shield', name: 'Power Word: Shield', icon: '🛡️',
+    { id: 'power_word_shield', name: 'Power Word: Shield', icon: '🛡️', iconImg: 'img/abilities/priest/power_word_shield.jpg',
       school: 'Sagrado', category: 'discipline', type: 'heal', requiredLevel: 6,
       baseDamage: 50, spellPowerRatio: 0.5, costPct: 0.09, castType: 'instant', cooldown: 4,
       description: 'Absorbe daño. Se aplica como curación temporal.',
@@ -54,7 +55,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 4, level: 24, min: 200, max: 200 },
       ] },
 
-    { id: 'heal', name: 'Heal', icon: '💚',
+    { id: 'heal', name: 'Heal', icon: '💚', iconImg: 'img/abilities/priest/heal.jpg',
       school: 'Sagrado', category: 'holy', type: 'heal', requiredLevel: 1,
       baseDamage: 40, spellPowerRatio: 0.857, costPct: 0.10, castType: 'cast', cooldown: 0,
       description: 'Cura al objetivo una cantidad moderada.',
@@ -66,7 +67,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 5, level: 24, min: 260, max: 312 },
       ] },
 
-    { id: 'renew', name: 'Renew', icon: '🌿',
+    { id: 'renew', name: 'Renew', icon: '🌿', iconImg: 'img/abilities/priest/renew.jpg',
       school: 'Sagrado', category: 'holy', type: 'heal', requiredLevel: 4,
       baseDamage: 100, spellPowerRatio: 1.0, costPct: 0.07, castType: 'instant', cooldown: 0,
       description: 'HoT que cura cada turno. Aplicar manualmente en Efectos.',
@@ -80,7 +81,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 5, level: 28, min: 450, max: 450 },
       ] },
 
-    { id: 'power_word_fortitude', name: 'Power Word: Fortitude', icon: '💪',
+    { id: 'power_word_fortitude', name: 'Power Word: Fortitude', icon: '💪', iconImg: 'img/abilities/priest/power_word_fortitude.jpg',
       school: 'Sagrado', category: 'discipline', type: 'utility', requiredLevel: 1,
       costPct: 0.06, castType: 'instant', cooldown: 0,
       description: 'Aumenta la Aguante del objetivo. Aplicar manualmente.',
@@ -104,7 +105,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 5, level: 34, min: 232, max: 276 },
       ] },
 
-    { id: 'mind_spike', name: 'Mind Spike', icon: '🔮',
+    { id: 'mind_spike', name: 'Mind Spike', icon: '🔮', iconImg: 'img/abilities/priest/mind_spike.jpg',
       school: 'Sombra', category: 'shadow', type: 'damage', requiredLevel: 20, damageType: 'magical',
       baseDamage: 40, spellPowerRatio: 0.571, costPct: 0.06, castType: 'cast', cooldown: 0,
       description: 'Lanza de sombra rápida. Daño moderado sin cooldown.',
@@ -115,7 +116,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 4, level: 38, min: 184, max: 224 },
       ] },
 
-    { id: 'shadow_word_pain', name: 'Shadow Word: Pain', icon: '🩸',
+    { id: 'shadow_word_pain', name: 'Shadow Word: Pain', icon: '🩸', iconImg: 'img/abilities/priest/shadow_word_pain.jpg',
       school: 'Sombra', category: 'shadow', type: 'damage', requiredLevel: 4, damageType: 'magical',
       baseDamage: 20, spellPowerRatio: 0.183, costPct: 0.05, castType: 'instant', cooldown: 0,
       description: 'DoT de sombra. Aplicar manualmente en Efectos.',
@@ -129,7 +130,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 5, level: 28, min: 380, max: 380 },
       ] },
 
-    { id: 'flash_heal', name: 'Flash Heal', icon: '⚡',
+    { id: 'flash_heal', name: 'Flash Heal', icon: '⚡', iconImg: 'img/abilities/priest/flash_heal.jpg',
       school: 'Sagrado', category: 'holy', type: 'heal', requiredLevel: 14,
       baseDamage: 30, spellPowerRatio: 0.714, costPct: 0.12, castType: 'cast', cooldown: 0,
       description: 'Curación rápida. Más rápida pero menos eficiente que Heal.',
@@ -140,7 +141,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 4, level: 32, min: 290, max: 338 },
       ] },
 
-    { id: 'greater_heal', name: 'Greater Heal', icon: '💚',
+    { id: 'greater_heal', name: 'Greater Heal', icon: '💚', iconImg: 'img/abilities/priest/heal.jpg',
       school: 'Sagrado', category: 'holy', type: 'heal', requiredLevel: 16,
       baseDamage: 60, spellPowerRatio: 1.0, costPct: 0.15, castType: 'cast', cooldown: 0,
       description: 'Curación potente. Lenta pero muy eficiente.',
