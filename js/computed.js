@@ -391,6 +391,9 @@ window.APP_COMPUTED = {
         if (a.isDot) {
           dotDuration = a.dotDuration;
           dotTotal = minVal + this.spellPower;
+          if (a.id === 'shadow_word_pain') {
+            dotTotal = Math.round(dotTotal * (1 + this.talentRank('improved_pain') * 0.10));
+          }
           dotTick = Math.round(dotTotal / dotDuration);
         }
         return {

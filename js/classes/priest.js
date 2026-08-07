@@ -41,6 +41,22 @@ window.CLASS_REGISTRY.priest = {
     { id: 'beligerance', name: 'Beligerance', icon: '⚔️', iconImg: 'img/talents/priest/beligerance.jpg',
       description: 'Los ataques básicos del sacerdote hacen daño sagrado equivalente al 7% del daño de Smite por punto.',
       maxRank: 5, tier: 1, requires: null },
+
+    { id: 'evangelism', name: 'Evangelism', icon: '✨', iconImg: 'img/talents/priest/evangelism.jpg',
+      description: 'Tras lanzar un hechizo sagrado, tu próximo hechizo de sombra se potencia un 3% por punto, y viceversa. Se trackea como buff.',
+      maxRank: 5, tier: 2, requires: null },
+
+    { id: 'improved_shield', name: 'Improved Power Word: Shield', icon: '🛡️', iconImg: 'img/talents/priest/improved_shield.jpg',
+      description: 'Aumenta la absorción de Power Word: Shield un 10% por punto.',
+      maxRank: 3, tier: 2, requires: null },
+
+    { id: 'improved_fortitude', name: 'Improved Fortitude', icon: '💪', iconImg: 'img/talents/priest/improved_fortitude.jpg',
+      description: 'Aumenta el bonus de Aguante de Power Word: Fortitude un 15% por punto.',
+      maxRank: 2, tier: 2, requires: null },
+
+    { id: 'improved_pain', name: 'Improved Pain', icon: '🩸', iconImg: 'img/talents/priest/improved_pain.jpg',
+      description: 'Aumenta el daño de Shadow Word: Pain un 10% por punto.',
+      maxRank: 3, tier: 2, requires: null },
   ],
 
   abilities: [

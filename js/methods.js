@@ -168,6 +168,10 @@ window.APP_METHODS = {
         case 'healing_focus':           return `Curación: +${rank * 2}%`;
         case 'shadow_ally':             return `Daño sombra: +${rank * 3}%`;
         case 'beligerance':             return `Basic Attack: +${rank * 7}% Smite como sagrado`;
+        case 'evangelism':              return `Swap holy/shadow: +${rank * 3}% siguiente spell`;
+        case 'improved_shield':         return `PW: Shield: +${rank * 10}% absorción`;
+        case 'improved_fortitude':      return `PW: Fortitude: +${rank * 15}% Aguante`;
+        case 'improved_pain':           return `SW: Pain: +${rank * 10}% daño`;
         default: return '';
       }
     },
@@ -245,6 +249,43 @@ window.APP_METHODS = {
       }
       let ccText = clearcast ? ' · ¡CLARIDAD ARCANA! Maná devuelto' : '';
       let rageText = '';
+      let evText = '';
+
+      // Evangelism: buff de swap holy/shadow
+      const evRank = this.talentRank('evangelism');
+      if (evRank > 0 && ability.category) {
+        const isHoly = ability.category === 'holy';
+        const isShadow = ability.category === 'shadow';
+        if (isHoly || isShadow) {
+          // Comprobar si hay buff de Evangelism del tipo opuesto
+          if (this.character.activeEffects) {
+            const evBuff = this.character.activeEffects.find(e => e.name === 'Evangelism');
+            if (evBuff) {
+              const buffMatches = (isShadow && evBuff.target === 'shadow_boost') || (isHoly && evBuff.target === 'holy_boost');
+              if (buffMatches) {
+                const boost = 1 + evRank * 0.03;
+                roll = Math.round(roll * boost);
+                evText = ' · Evangelism +' + Math.round(evRank * 3) + '%';
+                // Consumir el buff
+                this.character.activeEffects = this.character.activeEffects.filter(e => e !== evBuff);
+              }
+            }
+          }
+          // Crear buff para el siguiente spell del tipo opuesto
+          if (!this.character.activeEffects) this.character.activeEffects = [];
+          this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== 'Evangelism');
+          this.character.activeEffects.push({
+            id: Date.now() + Math.random(),
+            type: 'buff',
+            name: 'Evangelism',
+            target: isHoly ? 'shadow_boost' : 'holy_boost',
+            value: evRank * 3,
+            duration: 1,
+          });
+        }
+      }
+
+      let rageText_old = '';
       if (isRage && ability.generatesRage) {
         const baseGen = this.getEffectiveRageGen(ability);
         const rageGen = isCrit ? baseGen * 2 : baseGen;
@@ -269,10 +310,27 @@ window.APP_METHODS = {
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.dotTick + '/turno · ' + ability.dotDuration + 't (' + ability.dotTotal + ' total) — aplícalo al enemigo');
         this.sendDamageEvent(ability, 0, 1, 1);
       } else if (ability.type === 'heal' && !ability.isHot) {
-        const healBonus = 1 + this.talentRank('healing_focus') * 0.02;
-        roll = Math.round(roll * healBonus);
-        this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText + comboText);
+        let healBonus = 1 + this.talentRank('healing_focus') * 0.02;
+        if (ability.id === 'power_word_shield') {
+          healBonus *= (1 + this.talentRank('improved_shield') * 0.10);
+          roll = Math.round(roll * healBonus);
+          // Crear escudo en vez de curar
+          if (!this.character.activeEffects) this.character.activeEffects = [];
+          this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== 'Escudo');
+          this.character.activeEffects.push({
+            id: Date.now() + Math.random(),
+            type: 'buff',
+            name: 'Escudo',
+            target: 'shield',
+            value: roll,
+            duration: 999,
+          });
+          this.showToast(ability.name + ' R' + ability.currentRank + ': 🛡️' + roll + ' escudo' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText);
+        } else {
+          roll = Math.round(roll * healBonus);
+          this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
+          this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText + comboText + evText);
+        }
       } else {
         const poisonDmg = this.getPoisonDamage();
         if (poisonDmg > 0 && ability.damageType === 'physical') {
@@ -295,7 +353,7 @@ window.APP_METHODS = {
         this.turnDamage += roll;
         let poisonText = poisonDmg > 0 && ability.damageType === 'physical' ? ' (+' + poisonDmg + ' veneno)' : '';
         let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + poisonText + holyText) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText + comboText);
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText + comboText + evText);
         const hits = ability.multiHit || 1;
         for (let h = 0; h < hits; h++) {
           let hitRoll = roll;
@@ -445,6 +503,12 @@ window.APP_METHODS = {
         let buffValue = ability.currentBuffValue;
         if (ability.id === 'shout') {
           buffValue = Math.round(buffValue * (1 + this.talentRank('improved_battle_shout') * 0.05));
+        }
+        if (ability.id === 'power_word_shield') {
+          buffValue = Math.round(buffValue * (1 + this.talentRank('improved_shield') * 0.10));
+        }
+        if (ability.id === 'power_word_fortitude') {
+          buffValue = Math.round(buffValue * (1 + this.talentRank('improved_fortitude') * 0.15));
         }
         const effectType = ability.buff.isHot ? 'hot' : 'buff';
         this.character.activeEffects.push({
