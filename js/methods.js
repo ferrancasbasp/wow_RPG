@@ -323,17 +323,8 @@ window.APP_METHODS = {
         if (ability.id === 'power_word_shield') {
           healBonus *= (1 + this.talentRank('improved_shield') * 0.10);
           roll = Math.round(roll * healBonus);
-          if (!this.character.activeEffects) this.character.activeEffects = [];
-          this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== 'Escudo');
-          this.character.activeEffects.push({
-            id: Date.now() + Math.random(),
-            type: 'buff',
-            name: 'Escudo',
-            target: 'shield',
-            value: roll,
-            duration: 4,
-          });
-          this.showToast(ability.name + ' R' + ability.currentRank + ': 🛡️ Escudo aplicado' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText);
+          this.showToast(ability.name + ' R' + ability.currentRank + ': 🛡️ ' + roll + ' absorción' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText + ' — aplícalo al objetivo');
+          this.sendHealEvent(ability, roll);
         } else {
           roll = Math.round(roll * healBonus);
           this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText + ' — aplícalo al objetivo');
