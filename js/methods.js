@@ -1100,6 +1100,14 @@ window.APP_METHODS = {
       root.style.setProperty('--class-glow', color + '4D');
     },
 
+    resetTalents() {
+      if (confirm('¿Resetear todos los talentos? Los puntos serán devueltos.')) {
+        this.character.talents = {};
+        this.grantPassiveTalents();
+        this.showToast('Talentos reseteados');
+      }
+    },
+
     showToast(msg) {
       this.toastMessage = msg;
       clearTimeout(this._toastTimer);
