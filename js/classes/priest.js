@@ -76,7 +76,7 @@ window.CLASS_REGISTRY.priest = {
   ],
 
   abilities: [
-    { id: 'basic_attack', name: 'Basic Attack', icon: '👊',
+    { id: 'basic_attack', name: 'Basic Attack', icon: '⚔️', iconImg: 'img/talents/priest/beligerance.jpg',
       school: 'Físico', category: 'holy', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 0, spellPowerRatio: 0, costPct: 0, castType: 'instant', cooldown: 0,
       description: 'Un golpe básico.',
