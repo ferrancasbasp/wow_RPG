@@ -424,12 +424,16 @@ window.APP_COMPUTED = {
     // Daño de arma total según modo del warrior
     totalWeaponDamage() {
       if (!this.character.equipment) return 0;
-      if (this.warriorWeaponMode === 'dualwield') {
-        const main = this.character.equipment.mainHand ? this.character.equipment.mainHand.weaponDamage || 0 : 0;
-        const off = this.character.equipment.offHand ? this.character.equipment.offHand.weaponDamage || 0 : 0;
-        return main + off;
+      if (this.character.classKey === 'warrior') {
+        if (this.warriorWeaponMode === 'dualwield') {
+          const main = this.character.equipment.mainHand ? this.character.equipment.mainHand.weaponDamage || 0 : 0;
+          const off = this.character.equipment.offHand ? this.character.equipment.offHand.weaponDamage || 0 : 0;
+          return main + off;
+        } else {
+          return this.character.equipment.twoHand ? this.character.equipment.twoHand.weaponDamage || 0 : 0;
+        }
       } else {
-        return this.character.equipment.twoHand ? this.character.equipment.twoHand.weaponDamage || 0 : 0;
+        return this.character.equipment.mainHand ? this.character.equipment.mainHand.weaponDamage || 0 : 0;
       }
     },
 
