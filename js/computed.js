@@ -387,7 +387,8 @@ window.APP_COMPUTED = {
         if (a.isHot) {
           const baseDuration = a.hotDuration;
           hotDuration = baseDuration + this.talentRank('improved_renew');
-          hotTick = Math.round((minVal + this.spellPower) / baseDuration);
+          const healBonus = 1 + this.talentRank('healing_focus') * 0.02;
+          hotTick = Math.round((minVal + this.spellPower) * healBonus / baseDuration);
           hotTotal = hotTick * hotDuration;
         }
         let dotTick = 0, dotDuration = 0, dotTotal = 0;
