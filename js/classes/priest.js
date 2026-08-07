@@ -50,7 +50,7 @@ window.CLASS_REGISTRY.priest = {
       description: 'Aumenta la absorción de Power Word: Shield un 10% por punto.',
       maxRank: 3, tier: 2, requires: null },
 
-    { id: 'improved_fortitude', name: 'Improved Fortitude', icon: '💪', iconImg: 'img/talents/priest/improved_fortitude.jpg',
+    { id: 'improved_fortitude', name: 'Improved Fortitude', icon: '💪', iconImg: 'img/abilities/priest/power_word_fortitude.jpg',
       description: 'Aumenta el bonus de Aguante de Power Word: Fortitude un 15% por punto.',
       maxRank: 2, tier: 2, requires: null },
 
@@ -70,7 +70,7 @@ window.CLASS_REGISTRY.priest = {
       description: 'Aumenta la probabilidad de crítico de Mind Blast un 10% por punto.',
       maxRank: 3, tier: 3, requires: null },
 
-    { id: 'improved_renew', name: 'Improved Renew', icon: '🌿', iconImg: 'img/talents/priest/improved_renew.jpg',
+    { id: 'improved_renew', name: 'Improved Renew', icon: '🌿', iconImg: 'img/abilities/priest/renew.jpg',
       description: 'Aumenta la duración de Renew 1 turno por punto.',
       maxRank: 2, tier: 3, requires: null },
   ],
