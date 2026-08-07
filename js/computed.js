@@ -449,11 +449,18 @@ window.APP_COMPUTED = {
           const costPct = buffRank ? buffRank.costPct : a.costPct;
           cost = Math.round((costPct || 0) * this.baseMana);
         }
+        let buffValue = buffRank ? buffRank.value : (a.buff ? a.buff.value : 0);
+        if (a.id === 'power_word_fortitude') {
+          buffValue = Math.round(buffValue * (1 + this.talentRank('improved_fortitude') * 0.15));
+        }
+        if (a.id === 'power_word_shield') {
+          buffValue = Math.round(buffValue * (1 + this.talentRank('improved_shield') * 0.10));
+        }
         return {
           ...a,
           currentRank: rank,
           scaledCost: cost,
-          currentBuffValue: buffRank ? buffRank.value : (a.buff ? a.buff.value : 0),
+          currentBuffValue: buffValue,
           currentBuffDuration: a.buff ? a.buff.duration : 1,
           currentBuffStat: a.buff ? a.buff.stat : '',
         };

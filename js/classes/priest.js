@@ -66,7 +66,7 @@ window.CLASS_REGISTRY.priest = {
       description: 'Aumenta tu armadura mágica en 2 por punto.',
       maxRank: 3, tier: 3, requires: null },
 
-    { id: 'improved_mind_blast', name: 'Improved Mind Blast', icon: '💥',
+    { id: 'improved_mind_blast', name: 'Improved Mind Blast', icon: '💥', iconImg: 'img/talents/priest/improved_mind_blast.jpg',
       description: 'Aumenta la probabilidad de crítico de Mind Blast un 10% por punto.',
       maxRank: 3, tier: 3, requires: null },
 
@@ -98,7 +98,7 @@ window.CLASS_REGISTRY.priest = {
     { id: 'power_word_shield', name: 'Power Word: Shield', icon: '🛡️', iconImg: 'img/abilities/priest/power_word_shield.jpg',
       school: 'Sagrado', category: 'discipline', type: 'heal', requiredLevel: 6,
       baseDamage: 50, spellPowerRatio: 0.5, costPct: 0.09, castType: 'instant', cooldown: 4,
-      description: 'Absorbe daño. Se aplica como curación temporal.',
+      description: 'Absorbe daño durante 4 turnos.',
       damageRanges: [
         { rank: 1, level: 6,  min: 45, max: 45 },
         { rank: 2, level: 12, min: 80, max: 80 },
@@ -144,7 +144,7 @@ window.CLASS_REGISTRY.priest = {
         { rank: 4, level: 36, value: 15, costPct: 0.09 },
       ] },
 
-    { id: 'mind_blast', name: 'Mind Blast', icon: '💥',
+    { id: 'mind_blast', name: 'Mind Blast', icon: '💥', iconImg: 'img/abilities/priest/mind_blast.jpg',
       school: 'Sombra', category: 'shadow', type: 'damage', requiredLevel: 10, damageType: 'magical',
       baseDamage: 50, spellPowerRatio: 0.429, costPct: 0.11, castType: 'cast', cooldown: 2,
       description: 'Daño de sombra al enemigo. Cooldown moderado.',

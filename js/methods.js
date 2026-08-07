@@ -331,9 +331,9 @@ window.APP_METHODS = {
             name: 'Escudo',
             target: 'shield',
             value: roll,
-            duration: 999,
+            duration: 4,
           });
-          this.showToast(ability.name + ' R' + ability.currentRank + ': 🛡️' + roll + ' escudo' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText);
+          this.showToast(ability.name + ' R' + ability.currentRank + ': 🛡️ Escudo aplicado' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText);
         } else {
           roll = Math.round(roll * healBonus);
           this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
@@ -359,8 +359,7 @@ window.APP_METHODS = {
           }
         }
         this.turnDamage += roll;
-        let poisonText = poisonDmg > 0 && ability.damageType === 'physical' ? ' (+' + poisonDmg + ' veneno)' : '';
-        let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + poisonText + holyText) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
+        let dmgText = isCrit ? '¡CRÍTICO!' : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText + comboText + evText);
         const hits = ability.multiHit || 1;
         for (let h = 0; h < hits; h++) {
