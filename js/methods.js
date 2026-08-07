@@ -939,6 +939,14 @@ window.APP_METHODS = {
       }
       eq.mainHand.name = 'Arma básica';
       eq.mainHand.weaponDamage = 3;
+      const cls = this.classConfig;
+      if (cls && cls.name === 'Priest') {
+        eq.mainHand.name = 'Maza de Novicio';
+        eq.mainHand.weaponDamage = 2;
+        eq.mainHand.bonus.espiritu = 1;
+      } else {
+        eq.mainHand.name = 'Espada de Aprendiz';
+      }
       return eq;
     },
 
