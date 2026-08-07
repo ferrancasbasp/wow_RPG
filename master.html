@@ -98,6 +98,9 @@ body {
 .damage-event-value {
   font-size: 24px; font-weight: 700; color: #c0392b; font-family: 'Cinzel', serif;
 }
+.damage-event-value.heal-value {
+  color: #5fa85f;
+}
 .damage-empty {
   text-align: center; padding: 40px 20px; color: var(--text-muted);
   font-style: italic; font-size: 14px;
@@ -286,7 +289,7 @@ body {
                class="damage-event"
                :class="{ selected: selectedEventId === event.id, assigned: event.assigned }"
                @click="selectEvent(event.id)">
-            <span class="damage-event-icon">{{ event.damageType === 'physical' ? '⚔️' : '✨' }}</span>
+            <span class="damage-event-icon">{{ event.damageType === 'physical' ? '⚔️' : event.damageType === 'heal' ? '💚' : '✨' }}</span>
             <div class="damage-event-info">
               <div class="damage-event-player">{{ event.player }}</div>
               <div class="damage-event-detail">
@@ -296,7 +299,7 @@ body {
                 <span class="damage-type-tag effect" v-if="event.effects">DoT/Debuff</span>
               </div>
             </div>
-            <span class="damage-event-value">{{ event.damage }}</span>
+            <span class="damage-event-value" :class="{ 'heal-value': event.damageType === 'heal' }">{{ event.damage }}</span>
           </div>
         </div>
         <div class="damage-empty" v-else>

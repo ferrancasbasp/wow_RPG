@@ -314,6 +314,7 @@ window.APP_METHODS = {
       }
       if (ability.isHot) {
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.hotTick + '/turno · ' + ability.hotDuration + 't (' + ability.hotTotal + ' total) — aplícalo manualmente en Efectos');
+        this.sendHealEvent(ability, ability.hotTotal);
       } else if (ability.isDot) {
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.dotTick + '/turno · ' + ability.dotDuration + 't (' + ability.dotTotal + ' total) — aplícalo al enemigo');
         this.sendDamageEvent(ability, 0, 1, 1);
@@ -322,7 +323,6 @@ window.APP_METHODS = {
         if (ability.id === 'power_word_shield') {
           healBonus *= (1 + this.talentRank('improved_shield') * 0.10);
           roll = Math.round(roll * healBonus);
-          // Crear escudo en vez de curar
           if (!this.character.activeEffects) this.character.activeEffects = [];
           this.character.activeEffects = this.character.activeEffects.filter(e => e.name !== 'Escudo');
           this.character.activeEffects.push({
@@ -336,8 +336,8 @@ window.APP_METHODS = {
           this.showToast(ability.name + ' R' + ability.currentRank + ': 🛡️ Escudo aplicado' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText);
         } else {
           roll = Math.round(roll * healBonus);
-          this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
-          this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText + comboText + evText);
+          this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText + ' — aplícalo al objetivo');
+          this.sendHealEvent(ability, roll);
         }
       } else {
         const poisonDmg = this.getPoisonDamage();
@@ -543,6 +543,27 @@ window.APP_METHODS = {
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
       } else {
         this.showToast(ability.name + ': Lanzado');
+      }
+    },
+
+    sendHealEvent(ability, healAmount) {
+      try {
+        if (typeof firebase === 'undefined' || !firebase.apps.length) return;
+        const db = firebase.database();
+        db.ref('damageEvents').push({
+          player: this.character.name || 'Jugador',
+          ability: ability.name + ' (Cura)',
+          rank: ability.currentRank || 1,
+          damage: healAmount,
+          damageType: 'heal',
+          aoe: false,
+          effects: null,
+          turn: this.turnNumber,
+          timestamp: Date.now(),
+          assigned: false,
+        });
+      } catch (e) {
+        console.error('Firebase send heal error:', e);
       }
     },
 
