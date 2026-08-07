@@ -164,6 +164,10 @@ window.APP_METHODS = {
         case 'endurance':               return `CD Evasión/Sprint: −${rank} turno${rank > 1 ? 's' : ''}`;
         case 'initiative':              return `Combo extra: ${rank * 15}% prob`;
         case 'energetic':               return `Energía máxima: +${rank * 4}`;
+        // --- Priest ---
+        case 'healing_focus':           return `Curación: +${rank * 2}%`;
+        case 'shadow_ally':             return `Daño sombra: +${rank * 3}%`;
+        case 'beligerance':             return `Basic Attack: +${rank * 7}% Smite como sagrado`;
         default: return '';
       }
     },
@@ -264,7 +268,9 @@ window.APP_METHODS = {
       } else if (ability.isDot) {
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.dotTick + '/turno · ' + ability.dotDuration + 't (' + ability.dotTotal + ' total) — aplícalo al enemigo');
         this.sendDamageEvent(ability, 0, 1, 1);
-      } else if (ability.type === 'heal') {
+      } else if (ability.type === 'heal' && !ability.isHot) {
+        const healBonus = 1 + this.talentRank('healing_focus') * 0.02;
+        roll = Math.round(roll * healBonus);
         this.character.currentHP = Math.min(this.maxHP, this.hpActual + roll);
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + rageText + comboText);
       } else {
@@ -272,9 +278,23 @@ window.APP_METHODS = {
         if (poisonDmg > 0 && ability.damageType === 'physical') {
           roll += poisonDmg;
         }
+        let holyDmg = 0;
+        let holyText = '';
+        if (ability.id === 'basic_attack' && this.classConfig.abilities) {
+          const belRank = this.talentRank('beligerance');
+          if (belRank > 0) {
+            const smite = this.classConfig.abilities.find(a => a.id === 'smite');
+            if (smite && ability.currentMin) {
+              const smiteAvg = (ability.currentMin + ability.currentMax) / 2;
+              holyDmg = Math.round(smiteAvg * belRank * 0.07);
+              roll += holyDmg;
+              holyText = ' (+' + holyDmg + ' sagrado)';
+            }
+          }
+        }
         this.turnDamage += roll;
         let poisonText = poisonDmg > 0 && ability.damageType === 'physical' ? ' (+' + poisonDmg + ' veneno)' : '';
-        let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + poisonText) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
+        let dmgText = roll > 0 ? (roll + ' daño' + (isCrit ? ' ¡CRÍTICO!' : '') + poisonText + holyText) : ability.inflictsEffects ? '¡Aturde al enemigo!' : 'Lanzado';
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + dmgText + ccText + rageText + comboText);
         const hits = ability.multiHit || 1;
         for (let h = 0; h < hits; h++) {

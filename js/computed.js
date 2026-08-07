@@ -373,6 +373,11 @@ window.APP_COMPUTED = {
           minVal = Math.round(minVal * oppBonus);
           maxVal = Math.round(maxVal * oppBonus);
         }
+        if (a.category === 'shadow') {
+          const shadowBonus = 1 + this.talentRank('shadow_ally') * 0.03;
+          minVal = Math.round(minVal * shadowBonus);
+          maxVal = Math.round(maxVal * shadowBonus);
+        }
         const dotRange = a.dotRanges ? a.dotRanges.find(dr => dr.rank === rank) : null;
         const stunRange = a.stunRanks ? a.stunRanks.find(sr => sr.rank === rank) : null;
         let hotTick = 0, hotDuration = 0, hotTotal = 0;

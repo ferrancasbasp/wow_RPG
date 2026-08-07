@@ -29,9 +29,28 @@ window.CLASS_REGISTRY.priest = {
     start: 'full',
   },
 
-  talents: [],
+  talents: [
+    { id: 'healing_focus', name: 'Healing Focus', icon: '💚', iconImg: 'img/talents/priest/healing_focus.jpg',
+      description: 'Aumenta la curación realizada un 2% por punto.',
+      maxRank: 5, tier: 1, requires: null },
+
+    { id: 'shadow_ally', name: 'Shadow Ally', icon: '🌑', iconImg: 'img/talents/priest/shadow_ally.jpg',
+      description: 'Aumenta el daño de sombra un 3% por punto.',
+      maxRank: 3, tier: 1, requires: null },
+
+    { id: 'beligerance', name: 'Beligerance', icon: '⚔️', iconImg: 'img/talents/priest/beligerance.jpg',
+      description: 'Los ataques básicos del sacerdote hacen daño sagrado equivalente al 7% del daño de Smite por punto.',
+      maxRank: 5, tier: 1, requires: null },
+  ],
 
   abilities: [
+    { id: 'basic_attack', name: 'Basic Attack', icon: '👊',
+      school: 'Físico', category: 'holy', type: 'damage', requiredLevel: 1, damageType: 'physical',
+      baseDamage: 0, spellPowerRatio: 0, costPct: 0, castType: 'instant', cooldown: 0,
+      description: 'Un golpe básico.',
+      usesWeaponDamage: true,
+    },
+
     { id: 'smite', name: 'Smite', icon: '✨', iconImg: 'img/abilities/priest/smite.jpg',
       school: 'Sagrado', category: 'holy', type: 'damage', requiredLevel: 1, damageType: 'magical',
       baseDamage: 15, spellPowerRatio: 0.571, costPct: 0.08, castType: 'cast', cooldown: 0,
