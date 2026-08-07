@@ -172,6 +172,10 @@ window.APP_METHODS = {
         case 'improved_shield':         return `PW: Shield: +${rank * 10}% absorción`;
         case 'improved_fortitude':      return `PW: Fortitude: +${rank * 15}% Aguante`;
         case 'improved_pain':           return `SW: Pain: +${rank * 10}% daño`;
+        case 'holyness':                return `Regen maná: +${rank * 5}%`;
+        case 'preservation':            return `Armadura mágica: +${rank * 2}`;
+        case 'improved_mind_blast':     return `Mind Blast crit: +${rank * 10}%`;
+        case 'improved_renew':          return `Renew: +${rank} turno${rank > 1 ? 's' : ''}`;
         default: return '';
       }
     },
@@ -220,7 +224,11 @@ window.APP_METHODS = {
       const min = ability.currentMin || 0;
       const max = ability.currentMax || 0;
       let roll = min + Math.floor(Math.random() * (max - min + 1));
-      const isCrit = Math.random() * 100 < parseFloat((isRage || isEnergy) ? this.meleeCrit : this.spellCrit);
+      let critChance = parseFloat((isRage || isEnergy) ? this.meleeCrit : this.spellCrit);
+      if (ability.id === 'mind_blast') {
+        critChance += this.talentRank('improved_mind_blast') * 10;
+      }
+      const isCrit = Math.random() * 100 < critChance;
       if (isCrit) roll = Math.round(roll * 1.5);
       if ((isRage || isEnergy) && this.warriorStance === 'battle') roll = Math.round(roll * 1.10);
 

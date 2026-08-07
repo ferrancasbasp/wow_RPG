@@ -114,7 +114,9 @@ window.APP_COMPUTED = {
     // Regen. de Maná desde Espíritu (fórmula de clase)
     manaRegen() {
       if (!this.classConfig.formulas.manaRegen) return 0;
-      return this.classConfig.formulas.manaRegen(this.finalStats, this.character.level);
+      let regen = this.classConfig.formulas.manaRegen(this.finalStats, this.character.level);
+      regen = Math.round(regen * (1 + this.talentRank('holyness') * 0.05));
+      return regen;
     },
 
     // Armadura física: base de clase + talentos + stance + buffs de armor activos
@@ -134,6 +136,7 @@ window.APP_COMPUTED = {
     magicResistTotal() {
       let total = this.classConfig.magicResist || 0;
       total += this.talentRank('magic_resistance');
+      total += this.talentRank('preservation') * 2;
       if (this.character.activeEffects) {
         for (const eff of this.character.activeEffects) {
           if (eff.type === 'buff' && eff.target === 'magicResist') total += eff.value;

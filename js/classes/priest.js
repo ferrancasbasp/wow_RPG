@@ -57,6 +57,22 @@ window.CLASS_REGISTRY.priest = {
     { id: 'improved_pain', name: 'Improved Pain', icon: '🩸', iconImg: 'img/talents/priest/improved_pain.jpg',
       description: 'Aumenta el daño de Shadow Word: Pain un 10% por punto.',
       maxRank: 3, tier: 2, requires: null },
+
+    { id: 'holyness', name: 'Holyness', icon: '🌟', iconImg: 'img/talents/priest/holyness.jpg',
+      description: 'Aumenta tu regeneración de maná un 5% por punto.',
+      maxRank: 3, tier: 3, requires: null },
+
+    { id: 'preservation', name: 'Preservation', icon: '🛡️', iconImg: 'img/talents/priest/preservation.jpg',
+      description: 'Aumenta tu armadura mágica en 2 por punto.',
+      maxRank: 3, tier: 3, requires: null },
+
+    { id: 'improved_mind_blast', name: 'Improved Mind Blast', icon: '💥',
+      description: 'Aumenta la probabilidad de crítico de Mind Blast un 10% por punto.',
+      maxRank: 3, tier: 3, requires: null },
+
+    { id: 'improved_renew', name: 'Improved Renew', icon: '🌿', iconImg: 'img/talents/priest/improved_renew.jpg',
+      description: 'Aumenta la duración de Renew 1 turno por punto.',
+      maxRank: 2, tier: 3, requires: null },
   ],
 
   abilities: [
