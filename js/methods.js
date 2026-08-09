@@ -944,6 +944,17 @@ window.APP_METHODS = {
         eq.mainHand.name = 'Maza de Novicio';
         eq.mainHand.weaponDamage = 2;
         eq.mainHand.bonus.espiritu = 1;
+      } else if (cls && cls.name === 'Rogue') {
+        eq.mainHand.name = 'Daga de Novato';
+        eq.mainHand.weaponDamage = 2;
+        eq.mainHand.bonus.agilidad = 1;
+        eq.offHand.name = 'Daga de Novato';
+        eq.offHand.weaponDamage = 2;
+        eq.offHand.bonus.agilidad = 1;
+      } else if (cls && cls.name === 'Mage') {
+        eq.mainHand.name = 'Espada de Mago';
+        eq.mainHand.weaponDamage = 1;
+        eq.mainHand.bonus.intelecto = 2;
       } else {
         eq.mainHand.name = 'Espada de Aprendiz';
       }
