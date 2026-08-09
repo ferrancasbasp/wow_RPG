@@ -12,7 +12,6 @@ window.APP_DATA = function() {
       { key: 'feet',      label: 'Pies',     icon: '🥾' },
       { key: 'mainHand',  label: 'Mano Fuerte', icon: '⚔️', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] },
       { key: 'offHand',   label: 'Mano Débil', icon: '🗡️', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }, { key: 'defense', label: 'Defensa', icon: '🛡️' }] },
-      { key: 'twoHand',   label: 'Arma a Dos Manos', icon: '🔨', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] },
     ],
     showExportModal: false,
     showTalentModal: false,

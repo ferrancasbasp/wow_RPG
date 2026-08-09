@@ -352,7 +352,7 @@
         <button class="equip-toggle-btn" @click="showEquipment = false">Ocultar</button>
       </div>
       <div class="panel-body" v-show="showEquipment">
-        <div class="equip-slot" v-for="slot in equipmentSlots" :key="slot.key">
+        <div class="equip-slot" v-for="slot in visibleEquipmentSlots" :key="slot.key">
           <div class="equip-slot-header">
             <span class="equip-slot-icon">{{ slot.icon }}</span>
             <span class="equip-slot-label">{{ slot.label }}</span>

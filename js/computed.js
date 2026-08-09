@@ -341,6 +341,15 @@ window.APP_COMPUTED = {
       return this.resourceConfig.label || 'Maná';
     },
 
+    // Slots de equipo visibles (twoHand solo para warrior)
+    visibleEquipmentSlots() {
+      const slots = [...this.equipmentSlots];
+      if (this.character.classKey === 'warrior') {
+        slots.push({ key: 'twoHand', label: 'Arma a Dos Manos', icon: '🔨', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] });
+      }
+      return slots;
+    },
+
     // Habilidades entrenadas (con dados escalados por rango) — solo damage/heal
     unlockedAbilities() {
       const weaponDmg = this.totalWeaponDamage;
