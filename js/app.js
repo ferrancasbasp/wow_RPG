@@ -6,7 +6,7 @@ createApp({
   methods: window.APP_METHODS,
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v13');
+      const saved = localStorage.getItem('ttrpg_wow_character_v14');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {

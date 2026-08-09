@@ -341,10 +341,10 @@ window.APP_COMPUTED = {
       return this.resourceConfig.label || 'Maná';
     },
 
-    // Slots de equipo visibles (twoHand solo para warrior)
+    // Slots de equipo visibles (twoHand solo si warrior tiene Master of Weapons)
     visibleEquipmentSlots() {
       const slots = [...this.equipmentSlots];
-      if (this.character.classKey === 'warrior') {
+      if (this.character.classKey === 'warrior' && this.talentRank('master_of_weapons') > 0) {
         slots.push({ key: 'twoHand', label: 'Arma a Dos Manos', icon: '🔨', extraFields: [{ key: 'weaponDamage', label: 'Daño', icon: '💥' }] });
       }
       return slots;
@@ -431,11 +431,11 @@ window.APP_COMPUTED = {
     },
 
     // Daño de arma total
-    // Warrior en modo 2H: usa twoHand
-    // Todo lo demas (Warrior 1H+Off, Rogue, Priest, Mage, Shaman): mainHand + offHand
+    // Warrior con Master of Weapons en modo 2H: usa twoHand
+    // Todo lo demas: mainHand + offHand
     totalWeaponDamage() {
       if (!this.character.equipment) return 0;
-      if (this.character.classKey === 'warrior' && this.warriorWeaponMode === 'twohanded') {
+      if (this.character.classKey === 'warrior' && this.talentRank('master_of_weapons') > 0 && this.warriorWeaponMode === 'twohanded') {
         return this.character.equipment.twoHand ? this.character.equipment.twoHand.weaponDamage || 0 : 0;
       }
       const main = this.character.equipment.mainHand ? this.character.equipment.mainHand.weaponDamage || 0 : 0;

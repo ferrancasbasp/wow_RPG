@@ -85,7 +85,7 @@
           <img src="img/talents/warrior/protection_stance.jpg" class="stance-icon" @error="$event.target.style.display='none'"> Prot
         </button>
       </div>
-      <div class="warrior-weapon-row" v-if="character.classKey === 'warrior'">
+      <div class="warrior-weapon-row" v-if="character.classKey === 'warrior' && talentRank('master_of_weapons') > 0">
         <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'dualwield' }" @click="warriorWeaponMode = 'dualwield'">🗡️ 1H + Off</button>
         <button class="weapon-mode-btn" :class="{ active: warriorWeaponMode === 'twohanded' }" @click="warriorWeaponMode = 'twohanded'">🔨 2H</button>
       </div>

@@ -30,9 +30,9 @@ window.CLASS_REGISTRY.warrior = {
   },
 
   talents: [
-    { id: 'master_of_weapons', name: 'Maestría de Armas', icon: '⚔️',
-      description: 'El guerrero es experto en todo tipo de armamento. Puede empuñar un arma a dos manos o combinar un arma de una mano con una off hand, y ambos contribuyen a sus stats y daño.',
-      maxRank: 1, tier: 1, requires: null, passive: true, requiredLevel: 2 },
+    { id: 'master_of_weapons', name: 'Master of Weapons', icon: '⚔️',
+      description: 'Desbloquea el uso de armas a dos manos y permite combinar arma de una mano con off hand. Los stats de ambos se acumulan.',
+      maxRank: 1, tier: 1, requires: null, requiredLevel: 10 },
 
     { id: 'improved_heroic_strike', name: 'Improved Heroic Strike', icon: '⚔️',
       description: 'Reduce el coste de ira de Heroic Strike en 1 por punto.',
