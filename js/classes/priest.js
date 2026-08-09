@@ -13,7 +13,7 @@ window.CLASS_REGISTRY.priest = {
     manaRegen:   (s)      => Math.round(s.espiritu * 0.25 + 15),
   },
 
-  baseStats: { fuerza: 5, agilidad: 5, intelecto: 22, aguante: 15, espiritu: 25 },
+  baseStats: { fuerza: 15, agilidad: 15, intelecto: 22, aguante: 15, espiritu: 25 },
   startingLevel: 1,
 
   statGrowth: { fuerza: 0.1, agilidad: 0.1, intelecto: 1.8, aguante: 0.5, espiritu: 1.2 },
