@@ -421,20 +421,17 @@ window.APP_COMPUTED = {
       });
     },
 
-    // Daño de arma total según modo del warrior
+    // Daño de arma total
+    // Warrior en modo 2H: usa twoHand
+    // Todo lo demas (Warrior 1H+Off, Rogue, Priest, Mage, Shaman): mainHand + offHand
     totalWeaponDamage() {
       if (!this.character.equipment) return 0;
-      if (this.character.classKey === 'warrior') {
-        if (this.warriorWeaponMode === 'dualwield') {
-          const main = this.character.equipment.mainHand ? this.character.equipment.mainHand.weaponDamage || 0 : 0;
-          const off = this.character.equipment.offHand ? this.character.equipment.offHand.weaponDamage || 0 : 0;
-          return main + off;
-        } else {
-          return this.character.equipment.twoHand ? this.character.equipment.twoHand.weaponDamage || 0 : 0;
-        }
-      } else {
-        return this.character.equipment.mainHand ? this.character.equipment.mainHand.weaponDamage || 0 : 0;
+      if (this.character.classKey === 'warrior' && this.warriorWeaponMode === 'twohanded') {
+        return this.character.equipment.twoHand ? this.character.equipment.twoHand.weaponDamage || 0 : 0;
       }
+      const main = this.character.equipment.mainHand ? this.character.equipment.mainHand.weaponDamage || 0 : 0;
+      const off = this.character.equipment.offHand ? this.character.equipment.offHand.weaponDamage || 0 : 0;
+      return main + off;
     },
 
     // Habilidades de utilidad (buffs sin dados, no envian daño al master)
