@@ -186,8 +186,7 @@ window.APP_METHODS = {
         case 'balance_of_nature':       return `Poder de hechizo: +${rank * 10}% Espíritu`;
         case 'lunar_empowerment':       return `Starsurge: +${rank * 10}% daño`;
         case 'equinox':                 return `Fases Lunares: +${rank * 15}% daño bonus`;
-        case 'natural_perfection':      return `Crítico hechizos: +${rank}%`;
-        case 'clearcasting_druid':      return `Prob. hechizo gratuito: ${rank * 2}%`;
+        case 'natural_perfection':      return `Crítico hechizos: +${rank * 2}%`;
         default: return '';
       }
     },
@@ -410,7 +409,7 @@ window.APP_METHODS = {
     },
 
     checkClearcasting() {
-      const cc = this.talentRank('clearcasting') + this.talentRank('clearcasting_druid');
+      const cc = this.talentRank('clearcasting');
       if (cc <= 0) return false;
       return Math.random() * 100 < cc * 2;
     },

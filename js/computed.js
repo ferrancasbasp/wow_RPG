@@ -85,7 +85,7 @@ window.APP_COMPUTED = {
     spellCrit() {
       const fromInt = this.finalStats.intelecto / 60;
       const fromLevel = this.character.level * 0.02;
-      const fromTalent = this.talentRank('call_of_thunder') + this.talentRank('spell_crit_talent') + this.talentRank('natural_perfection');
+      const fromTalent = this.talentRank('call_of_thunder') + this.talentRank('spell_crit_talent') + this.talentRank('natural_perfection') * 2;
       const fromBuff = this.effectStatBonus('spellCrit');
       return (5 + fromInt + fromLevel + fromTalent + fromBuff).toFixed(2);
     },
