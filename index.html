@@ -17,6 +17,7 @@
 <script src="js/classes/warrior.js"></script>
 <script src="js/classes/rogue.js"></script>
 <script src="js/classes/priest.js"></script>
+<script src="js/classes/druid.js"></script>
 
 <link rel="stylesheet" href="css/main.css">
 </head>
@@ -109,11 +110,11 @@
     </div>
   </div>
 
-  <!-- ============================== COMBO POINTS ============================== -->
-  <div class="combo-bar" v-if="resourceConfig.type === 'energy'">
-    <span class="combo-label">Combo Points</span>
+  <!-- ============================== COMBO POINTS / LUNAR PHASES ============================== -->
+  <div class="combo-bar" v-if="resourceConfig.type === 'energy' || (classConfig.comboConfig)">
+    <span class="combo-label">{{ classConfig.comboConfig ? classConfig.comboConfig.label : 'Combo Points' }}</span>
     <div class="combo-points">
-      <div class="combo-point" v-for="n in 5" :key="n" :class="{ active: n <= (character.comboPoints || 0) }"></div>
+      <div class="combo-point" v-for="n in (classConfig.comboConfig ? classConfig.comboConfig.max : 5)" :key="n" :class="{ active: n <= (character.comboPoints || 0) }"></div>
     </div>
   </div>
 

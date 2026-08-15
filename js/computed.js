@@ -81,7 +81,7 @@ window.APP_COMPUTED = {
     spellCrit() {
       const fromInt = this.finalStats.intelecto / 60;
       const fromLevel = this.character.level * 0.02;
-      const fromTalent = this.talentRank('call_of_thunder') + this.talentRank('spell_crit_talent');
+      const fromTalent = this.talentRank('call_of_thunder') + this.talentRank('spell_crit_talent') + this.talentRank('natural_perfection');
       const fromBuff = this.effectStatBonus('spellCrit');
       return (5 + fromInt + fromLevel + fromTalent + fromBuff).toFixed(2);
     },
@@ -258,6 +258,31 @@ window.APP_COMPUTED = {
         // Mago Tier 1: Eficiencia Arcana (-2% coste)
         const me = this.talentRank('mana_efficiency');
         if (me > 0) cost *= (1 - me * 0.02);
+
+        // --- Druid talents ---
+        const naturesGrace = this.talentRank('natures_grace');
+        if (naturesGrace > 0) {
+          value *= (1 + naturesGrace * 0.02);
+          talentNotes.push(`+${naturesGrace * 2}% Naturaleza`);
+        }
+        if (ability.id === 'wrath') {
+          const mf = this.talentRank('moonkin_fury');
+          if (mf > 0) { value *= (1 + mf * 0.03); talentNotes.push(`+${mf * 3}% Fury`); }
+          const iw = this.talentRank('improved_wrath');
+          if (iw > 0) cost *= (1 - iw * 0.03);
+        }
+        if (ability.id === 'moonfire') {
+          const im = this.talentRank('improved_moonfire');
+          if (im > 0) { value *= (1 + im * 0.10); talentNotes.push(`+${im * 10}% Moonfire`); }
+        }
+        if (ability.id === 'starsurge') {
+          const le = this.talentRank('lunar_empowerment');
+          if (le > 0) { value *= (1 + le * 0.10); talentNotes.push(`+${le * 10}% Lunar`); }
+        }
+        if (ability.id === 'rejuvenation') {
+          const ir = this.talentRank('improved_rejuvenation');
+          if (ir > 0) { value *= (1 + ir * 0.05); talentNotes.push(`+${ir * 5}% Rejuv`); }
+        }
 
         return {
           ...ability,
