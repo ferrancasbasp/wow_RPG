@@ -69,7 +69,7 @@ window.CLASS_REGISTRY.druid = {
       maxRank: 3, tier: 3, requires: null },
 
     { id: 'equinox', name: 'Equinox', icon: '🌗', iconImg: '',
-      description: 'Aumenta el daño bonus que aportan las Fases Lunares un 15% por punto. No afecta a Hurricane.',
+      description: 'Aumenta el daño bonus que aportan las Fases Lunares un 15% por punto. Hurricane recibe el bonus a un 50% de eficacia.',
       maxRank: 3, tier: 3, requires: null },
 
     { id: 'natural_perfection', name: 'Natural Perfection', icon: '🎯', iconImg: '',
