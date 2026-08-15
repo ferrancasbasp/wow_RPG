@@ -6,11 +6,12 @@ createApp({
   methods: window.APP_METHODS,
   mounted() {
     try {
-      const saved = localStorage.getItem('ttrpg_wow_character_v14');
+      const saved = localStorage.getItem('ttrpg_wow_character_v15');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.classKey && CLASS_DATA[parsed.classKey]) {
           this.character = parsed;
+          this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.talents) this.character.talents = {};
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
           if (this.character.currentHP === undefined) this.character.currentHP = null;
@@ -30,7 +31,6 @@ createApp({
           if (!eq.offHand) eq.offHand = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0, defense: 0 };
           if (!eq.twoHand) eq.twoHand = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 };
           if (!this.character.activeEffects) this.character.activeEffects = [];
-          if (!this.character.baseStats) this.character.baseStats = { ...CLASS_DATA[parsed.classKey].baseStats };
           if (!this.character.level || this.character.level < 1) this.character.level = 1;
           if (this.character.level > (window.MAX_LEVEL || 60)) this.character.level = window.MAX_LEVEL || 60;
           this.grantPassiveTalents();

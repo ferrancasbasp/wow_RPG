@@ -1027,7 +1027,7 @@ window.APP_METHODS = {
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('ttrpg_wow_character_v10', JSON.stringify(this.character));
+        localStorage.setItem('ttrpg_wow_character_v15', JSON.stringify(this.character));
         this.showToast('Ficha guardada');
       } catch (e) {
         this.showToast('Error al guardar');
@@ -1036,10 +1036,11 @@ window.APP_METHODS = {
 
     loadFromLocalStorage() {
       try {
-        const data = localStorage.getItem('ttrpg_wow_character_v10');
+        const data = localStorage.getItem('ttrpg_wow_character_v15');
         if (data) {
           this.character = JSON.parse(data);
           if (!CLASS_DATA[this.character.classKey]) this.character.classKey = Object.keys(CLASS_DATA)[0] || 'shaman';
+          this.character.baseStats = { ...CLASS_DATA[this.character.classKey].baseStats };
           if (!this.character.talents) this.character.talents = {};
           if (this.character.currentXP === undefined) this.character.currentXP = 0;
           if (this.character.currentHP === undefined) this.character.currentHP = null;
@@ -1049,7 +1050,6 @@ window.APP_METHODS = {
           if (this.character.comboPoints === undefined) this.character.comboPoints = 0;
           if (!this.character.trainedRanks) this.character.trainedRanks = {};
           if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
-          if (!this.character.baseStats) this.character.baseStats = { ...(CLASS_DATA[this.character.classKey] || FALLBACK_CLASS).baseStats };
           this.showToast('Ficha cargada');
         } else {
           this.showToast('No hay ficha guardada');
