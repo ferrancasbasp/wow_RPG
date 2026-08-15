@@ -136,12 +136,12 @@ window.APP_METHODS = {
         case 'elemental_mastery':       return `Daño todos los hechizos: +${rank}%`;
         case 'mana_efficiency':         return `Coste de maná: −${rank * 2}%`;
         // --- Mago Tier 2 ---
-        case 'improved_arcane_intellect': return `Intelecto Arcano: +${rank * 15}%`;
-        case 'improved_frost_armor':    return `Armadura de Escarcha: +${rank * 10}%`;
-        case 'improved_blink':          return `CD Traslación: −${rank} turno${rank > 1 ? 's' : ''}`;
+        case 'improved_arcane_intellect': return `Arcane Intellect: +${rank * 15}%`;
+        case 'improved_frost_armor':    return `Frost Armor: +${rank * 10}%`;
+        case 'improved_blink':          return `CD Blink: −${rank} turno${rank > 1 ? 's' : ''}`;
         case 'magic_resistance':        return `Armadura mágica: +${rank}`;
         // --- Mago Tier 3 ---
-        case 'improved_fire_blast':     return `CD Explosión de Fuego: −${rank} turno${rank > 1 ? 's' : ''}`;
+        case 'improved_fire_blast':     return `CD Fire Blast: −${rank} turno${rank > 1 ? 's' : ''}`;
         case 'frost_power':             return `Daño Escarcha: +${rank * 2}%`;
         case 'spell_crit_talent':       return `Crítico hechizos: +${rank}%`;
         case 'clearcasting':            return `Prob. hechizo gratuito: ${rank * 2}%`;
