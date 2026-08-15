@@ -563,6 +563,10 @@ window.APP_METHODS = {
       } else {
         this.showToast(ability.name + ': Lanzado');
       }
+      if (ability.cooldown > 0) {
+        if (!this.character.currentCooldowns) this.character.currentCooldowns = {};
+        this.character.currentCooldowns[ability.id] = this.getEffectiveCooldown(ability);
+      }
     },
 
     sendHealEvent(ability, healAmount) {

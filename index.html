@@ -315,16 +315,17 @@
       <div class="panel-title">Utilidad</div>
       <div class="panel-body">
         <div class="ability-card" v-for="ability in unlockedUtility" :key="ability.id"
-             :class="{ 'ability-locked': resourceActual < (ability.scaledCost || 0) }">
-          <div class="ability-icon">
+             :class="{ 'ability-locked': resourceActual < (ability.scaledCost || 0), 'ability-cd': getCooldown(ability.id) > 0 }">
+          <div class="ability-icon" :class="{ 'on-cooldown': getCooldown(ability.id) > 0 }">
             <img v-if="ability.iconImg" :src="ability.iconImg" class="ability-icon-img" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='inline'">
             <span v-if="ability.iconImg" style="display:none">{{ ability.icon }}</span>
             <span v-if="!ability.iconImg">{{ ability.icon }}</span>
             <span class="ability-rank-badge" v-if="ability.currentRank > 1">R{{ ability.currentRank }}</span>
+            <span class="ability-cd-badge" v-if="getCooldown(ability.id) > 0">{{ getCooldown(ability.id) }}</span>
           </div>
           <div class="ability-info">
             <div class="ability-name">{{ ability.name }}</div>
-            <div class="ability-school">{{ ability.school }} · Instantáneo · Nv. {{ ability.requiredLevel }}</div>
+            <div class="ability-school">{{ ability.school }} · {{ ability.castType === 'instant' ? 'Instantáneo' : 'Casteo' }} · Nv. {{ ability.requiredLevel }}</div>
             <div class="ability-desc">{{ ability.description }}</div>
             <div class="ability-stats">
               <span class="ability-stat bonus" v-if="ability.currentBuffValue">+{{ ability.currentBuffValue }} {{ ability.currentBuffStat }} · {{ ability.currentBuffDuration }} turnos</span>
@@ -334,8 +335,8 @@
             </div>
             <div class="ability-cast-row">
               <button class="cast-btn" @click="castUtility(ability)"
-                      :disabled="resourceActual < (ability.scaledCost || 0)">
-                Lanzar
+                      :disabled="resourceActual < (ability.scaledCost || 0) || getCooldown(ability.id) > 0">
+                {{ getCooldown(ability.id) > 0 ? 'CD' : 'Lanzar' }}
               </button>
             </div>
           </div>
