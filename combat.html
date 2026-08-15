@@ -242,12 +242,8 @@ body {
             <div class="hp-bar-fill"
                  :class="hpClass(monster)"
                  :style="{ width: hpPercent(monster) + '%' }"></div>
-            <div class="hp-bar-text">{{ monster.currentHP }} / {{ monster.maxHP }}</div>
+            <div class="hp-bar-text">{{ hpPercent(monster) }}%</div>
           </div>
-        </div>
-        <div class="armor-row" v-if="monster.armor || monster.magicResist">
-          <span class="armor-tag" v-if="monster.armor">🛡️ {{ monster.armor }}</span>
-          <span class="armor-tag" v-if="monster.magicResist">✨ {{ monster.magicResist }}</span>
         </div>
         <div class="monster-effects" v-if="monster.effects && monster.effects.length > 0">
           <span class="effect-chip" v-for="(eff, idx) in monster.effects" :key="idx" :class="eff.type">
