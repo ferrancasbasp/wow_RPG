@@ -114,6 +114,15 @@ body {
 }
 .monster-card.targeting { border-color: var(--gold); box-shadow: 0 0 12px var(--gold-glow); cursor: crosshair; }
 .monster-card.dead { opacity: 0.5; filter: grayscale(0.7); }
+.monster-card.attacking { animation: monster-attack-shake 0.4s ease; }
+@keyframes monster-attack-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  15% { transform: translateX(-6px) rotate(-1deg); }
+  30% { transform: translateX(6px) rotate(1deg); }
+  45% { transform: translateX(-4px) rotate(-0.5deg); }
+  60% { transform: translateX(4px) rotate(0.5deg); }
+  75% { transform: translateX(-2px); }
+}
 .monster-header {
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
 }
@@ -332,7 +341,7 @@ body {
         <div class="monster-list" v-if="monsters.length > 0">
           <div v-for="monster in monsters" :key="monster.id"
                class="monster-card"
-               :class="{ targeting: selectedEventId !== null && !getEvent(selectedEventId).assigned, dead: monster.currentHP <= 0 }"
+               :class="{ targeting: selectedEventId !== null && !getEvent(selectedEventId).assigned, dead: monster.currentHP <= 0, attacking: attackingId === monster.id }"
                @click="assignDamageToMonster(monster)">
             <div class="monster-header">
               <span class="monster-name" :class="{ 'dead-name': monster.currentHP <= 0 }">
@@ -397,6 +406,7 @@ createApp({
       newMonsterHP: null,
       dmgInput: {},
       toastMessage: '',
+      attackingId: null,
       firebaseConnected: false,
       monsterIdCounter: 1,
       npcRegistry: window.NPC_REGISTRY || {},
@@ -606,6 +616,8 @@ createApp({
     rollMonsterAttack(monster, attack) {
       const roll = attack.min + Math.floor(Math.random() * (attack.max - attack.min + 1));
       let dotText = this.processMonsterEffects(monster);
+      this.attackingId = monster.id;
+      setTimeout(() => { this.attackingId = null; }, 400);
       this.showToast(monster.name + ' usa ' + attack.name + ': ' + roll + ' daño' + dotText);
     },
 
