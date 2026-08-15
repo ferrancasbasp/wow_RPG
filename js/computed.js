@@ -126,7 +126,7 @@ window.APP_COMPUTED = {
       if (this.warriorStance === 'protection' && this.classConfig.stances) total += 5;
       if (this.character.activeEffects) {
         for (const eff of this.character.activeEffects) {
-          if (eff.type === 'buff' && eff.target === 'armor') total += eff.value;
+          if (eff.type === 'buff' && (eff.target === 'armor' || eff.target === 'all_stats')) total += eff.value;
         }
       }
       return total;
@@ -497,8 +497,8 @@ window.APP_COMPUTED = {
           currentRank: rank,
           scaledCost: cost,
           currentBuffValue: buffValue,
-          currentBuffDuration: a.buff ? a.buff.duration : (a.multiBuff ? a.multiBuff[0].duration : 1),
-          currentBuffStat: a.buff ? a.buff.stat : (a.multiBuff ? a.multiBuff[0].stat : ''),
+          currentBuffDuration: a.buff ? a.buff.duration : 1,
+          currentBuffStat: a.buff ? a.buff.stat : '',
         };
       });
     },
