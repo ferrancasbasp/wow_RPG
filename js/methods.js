@@ -184,7 +184,6 @@ window.APP_METHODS = {
         case 'improved_rejuvenation':   return `Rejuvenation: +${rank * 7}% curación`;
         case 'natures_remains':         return `Coste Wrath/Moonfire: −${rank * 5}%`;
         case 'balance_of_nature':       return `Poder de hechizo: +${rank * 10}% Espíritu`;
-        case 'lunar_empowerment':       return `Starsurge: +${rank * 10}% daño`;
         case 'equinox':                 return `Fases Lunares: +${rank * 15}% daño bonus`;
         case 'natural_perfection':      return `Crítico hechizos: +${rank * 2}%`;
         default: return '';

@@ -272,10 +272,6 @@ window.APP_COMPUTED = {
           const im = this.talentRank('improved_moonfire');
           if (im > 0) { value *= (1 + im * 0.10); talentNotes.push(`+${im * 10}% Moonfire`); }
         }
-        if (ability.id === 'starsurge') {
-          const le = this.talentRank('lunar_empowerment');
-          if (le > 0) { value *= (1 + le * 0.10); talentNotes.push(`+${le * 10}% Lunar`); }
-        }
         if (ability.id === 'rejuvenation') {
           const ir = this.talentRank('improved_rejuvenation');
           if (ir > 0) { value *= (1 + ir * 0.07); talentNotes.push(`+${ir * 7}% Rejuv`); }
