@@ -73,10 +73,10 @@ window.CLASS_REGISTRY.druid = {
       maxRank: 3, tier: 3, requires: null },
 
     { id: 'natural_perfection', name: 'Natural Perfection', icon: '🎯', iconImg: '',
-      description: 'Aumenta tu probabilidad de crítico con hechizos un 1% por punto.',
+      description: 'Aumenta tu probabilidad de crítico con hechizos un 2% por punto.',
       maxRank: 3, tier: 3, requires: null },
 
-    { id: 'clearcasting_druid', name: 'Clearcasting', icon: '🔮', iconImg: '',
+    { id: 'clearcasting', name: 'Clearcasting', icon: '🔮', iconImg: 'img/talents/mage/clearcasting.jpg',
       description: 'Tus hechizos tienen un 2% de probabilidad por punto de ser gratuitos al lanzarlos.',
       maxRank: 5, tier: 3, requires: null },
   ],
