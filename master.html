@@ -434,6 +434,17 @@ createApp({
           if (this.selectedEventId === event.id) this.selectedEventId = null;
         }
       });
+      this.syncMonsters();
+    },
+
+    syncMonsters() {
+      if (typeof firebase !== 'undefined' && firebase.apps.length) {
+        firebase.database().ref('monsters').set({
+          list: this.monsters,
+          counter: this.monsterIdCounter,
+          timestamp: Date.now(),
+        });
+      }
     },
 
     selectEvent(id) {
@@ -671,6 +682,7 @@ createApp({
           counter: this.monsterIdCounter,
         }));
       } catch (e) {}
+      this.syncMonsters();
     },
 
     loadMonsters() {
