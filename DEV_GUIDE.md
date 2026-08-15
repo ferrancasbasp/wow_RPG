@@ -166,8 +166,8 @@ node --check /tmp/check.js
 
 ## Fórmulas clave
 - **AP**: `fuerza * 2` (warrior), `fuerza * 2 + agilidad` (rogue), `0` (casters)
-- **DañoBasic Attack**: `weaponDamage + AP/7`, ±15%
-- **Daño habilidades melee**: `weaponDamage * multiplier + AP/7 + bonusPerRank`, ±15%
+- **DañoBasic Attack**: `weaponDamage + AP/7`, ±50%
+- **Daño habilidades melee**: `weaponDamage * multiplier + AP/7 + bonusPerRank`, ±50%
 - **Spell crit**: `5% + Int/60 + level*0.02%`
 - **Melee crit**: `5% + Agi/20 + level*0.02%`
 - **Armor reduction**: `armor / (armor + 50 + 5*level) * 100`

@@ -937,26 +937,27 @@ window.APP_METHODS = {
         if (extras[s]) for (const f of extras[s]) item[f] = 0;
         eq[s] = item;
       }
-      eq.mainHand.name = 'Arma básica';
-      eq.mainHand.weaponDamage = 3;
+      eq.mainHand.name = 'Espada de Aprendiz';
+      eq.mainHand.weaponDamage = 4;
       const cls = this.classConfig;
       if (cls && cls.name === 'Priest') {
         eq.mainHand.name = 'Maza de Novicio';
-        eq.mainHand.weaponDamage = 2;
+        eq.mainHand.weaponDamage = 4;
         eq.mainHand.bonus.espiritu = 1;
       } else if (cls && cls.name === 'Rogue') {
         eq.mainHand.name = 'Daga de Novato';
-        eq.mainHand.weaponDamage = 2;
+        eq.mainHand.weaponDamage = 3;
         eq.mainHand.bonus.agilidad = 1;
         eq.offHand.name = 'Daga de Novato';
-        eq.offHand.weaponDamage = 2;
+        eq.offHand.weaponDamage = 3;
         eq.offHand.bonus.agilidad = 1;
       } else if (cls && cls.name === 'Mage') {
-        eq.mainHand.name = 'Espada de Mago';
-        eq.mainHand.weaponDamage = 1;
+        eq.mainHand.name = 'Bastón Arcano';
+        eq.mainHand.weaponDamage = 4;
         eq.mainHand.bonus.intelecto = 2;
-      } else {
-        eq.mainHand.name = 'Espada de Aprendiz';
+      } else if (cls && cls.name === 'Shaman') {
+        eq.mainHand.name = 'Maza de Chamán';
+        eq.mainHand.weaponDamage = 4;
       }
       return eq;
     },
