@@ -269,7 +269,7 @@ window.APP_COMPUTED = {
           const mf = this.talentRank('moonkin_fury');
           if (mf > 0) { value *= (1 + mf * 0.03); talentNotes.push(`+${mf * 3}% Fury`); }
           const iw = this.talentRank('improved_wrath');
-          if (iw > 0) cost *= (1 - iw * 0.03);
+          if (iw > 0) { value *= (1 + iw * 0.03); talentNotes.push(`+${iw * 3}% Imp Wrath`); }
         }
         if (ability.id === 'moonfire') {
           const im = this.talentRank('improved_moonfire');
@@ -491,6 +491,9 @@ window.APP_COMPUTED = {
         }
         if (a.id === 'power_word_shield') {
           buffValue = Math.round(buffValue * (1 + this.talentRank('improved_shield') * 0.10));
+        }
+        if (a.id === 'mark_of_the_wild') {
+          buffValue = Math.round(buffValue * (1 + this.talentRank('improved_mark_of_the_wild') * 0.15));
         }
         return {
           ...a,

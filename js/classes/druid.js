@@ -44,16 +44,24 @@ window.CLASS_REGISTRY.druid = {
       description: 'Aumenta el daño de Wrath un 3% por punto.',
       maxRank: 5, tier: 1, requires: null },
 
+    { id: 'improved_mark_of_the_wild', name: 'Improved Mark of the Wild', icon: '🐾', iconImg: '',
+      description: 'Aumenta el efecto de Mark of the Wild un 15% por punto.',
+      maxRank: 3, tier: 1, requires: null },
+
+    { id: 'improved_wrath', name: 'Improved Wrath', icon: '☀️', iconImg: '',
+      description: 'Aumenta el daño de Wrath un 3% por punto.',
+      maxRank: 5, tier: 1, requires: null },
+
+    { id: 'lunar_healing', name: 'Lunar Healing', icon: '🌙', iconImg: '',
+      description: 'Tus hechizos de curación tienen un 6% de probabilidad por punto de otorgarte una Fase Lunar.',
+      maxRank: 4, tier: 1, requires: null },
+
     { id: 'improved_moonfire', name: 'Improved Moonfire', icon: '🌙', iconImg: '',
       description: 'Aumenta el daño de Moonfire un 10% por punto.',
       maxRank: 3, tier: 2, requires: null },
 
     { id: 'improved_rejuvenation', name: 'Improved Rejuvenation', icon: '🍃', iconImg: '',
       description: 'Aumenta la curación de Rejuvenation un 5% por punto.',
-      maxRank: 3, tier: 2, requires: null },
-
-    { id: 'improved_wrath', name: 'Improved Wrath', icon: '☀️', iconImg: '',
-      description: 'Reduce el coste de maná de Wrath un 3% por punto.',
       maxRank: 3, tier: 2, requires: null },
 
     { id: 'lunar_empowerment', name: 'Lunar Empowerment', icon: '🌟', iconImg: '',
@@ -178,7 +186,7 @@ window.CLASS_REGISTRY.druid = {
     { id: 'mark_of_the_wild', name: 'Mark of the Wild', icon: '🐾', iconImg: '',
       school: 'Naturaleza', type: 'utility', requiredLevel: 2,
       costPct: 0.08, castType: 'cast', cooldown: 0,
-      description: 'Aumenta todos los atributos y la armadura del objetivo. El buffo más mítico del druida. Aplicar manualmente en Efectos.',
+      description: 'Aumenta todos los atributos. El buffo más mítico del druida. Aplicar manualmente en Efectos.',
       buff: { stat: 'all_stats', duration: 30, applySelf: false },
       buffRanks: [
         { rank: 1, level: 2,  value: 2,  costPct: 0.08 },
