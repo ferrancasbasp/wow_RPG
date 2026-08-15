@@ -64,10 +64,6 @@ window.CLASS_REGISTRY.druid = {
       description: 'Aumenta tu poder de hechizo en un 10% de tu Espíritu por punto.',
       maxRank: 3, tier: 2, requires: null },
 
-    { id: 'lunar_empowerment', name: 'Lunar Empowerment', icon: '🌟', iconImg: '',
-      description: 'Aumenta el daño de Starsurge un 10% por punto.',
-      maxRank: 3, tier: 3, requires: null },
-
     { id: 'equinox', name: 'Equinox', icon: '🌗', iconImg: '',
       description: 'Aumenta el daño bonus que aportan las Fases Lunares un 15% por punto. Hurricane recibe el bonus a un 50% de eficacia.',
       maxRank: 3, tier: 3, requires: null },
