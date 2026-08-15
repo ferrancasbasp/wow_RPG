@@ -36,14 +36,6 @@ window.CLASS_REGISTRY.druid = {
   },
 
   talents: [
-    { id: 'natures_grace', name: "Nature's Grace", icon: '🌿', iconImg: '',
-      description: 'Aumenta el daño de todos tus hechizos un 2% por punto.',
-      maxRank: 5, tier: 1, requires: null },
-
-    { id: 'moonkin_fury', name: 'Moonkin Fury', icon: '🦉', iconImg: '',
-      description: 'Aumenta el daño de Wrath un 3% por punto.',
-      maxRank: 5, tier: 1, requires: null },
-
     { id: 'improved_mark_of_the_wild', name: 'Improved Mark of the Wild', icon: '🐾', iconImg: '',
       description: 'Aumenta el efecto de Mark of the Wild un 15% por punto.',
       maxRank: 3, tier: 1, requires: null },
@@ -61,7 +53,15 @@ window.CLASS_REGISTRY.druid = {
       maxRank: 3, tier: 2, requires: null },
 
     { id: 'improved_rejuvenation', name: 'Improved Rejuvenation', icon: '🍃', iconImg: '',
-      description: 'Aumenta la curación de Rejuvenation un 5% por punto.',
+      description: 'Aumenta la curación de Rejuvenation un 7% por punto.',
+      maxRank: 2, tier: 2, requires: null },
+
+    { id: 'natures_remains', name: "Nature's Remains", icon: '🍂', iconImg: '',
+      description: 'Reduce el coste de maná de Wrath y Moonfire un 5% por punto.',
+      maxRank: 4, tier: 2, requires: null },
+
+    { id: 'balance_of_nature', name: 'Balance of Nature', icon: '⚖️', iconImg: '',
+      description: 'Aumenta tu poder de hechizo en un 10% de tu Espíritu por punto.',
       maxRank: 3, tier: 2, requires: null },
 
     { id: 'lunar_empowerment', name: 'Lunar Empowerment', icon: '🌟', iconImg: '',

@@ -177,13 +177,13 @@ window.APP_METHODS = {
         case 'improved_mind_blast':     return `Mind Blast crit: +${rank * 10}%`;
         case 'improved_renew':          return `Renew: +${rank} turno${rank > 1 ? 's' : ''}`;
         // --- Druid ---
-        case 'natures_grace':           return `Daño todos los hechizos: +${rank * 2}%`;
-        case 'moonkin_fury':            return `Daño Wrath: +${rank * 3}%`;
         case 'improved_mark_of_the_wild': return `Mark of the Wild: +${rank * 15}% efecto`;
         case 'improved_wrath':          return `Daño Wrath: +${rank * 3}%`;
         case 'lunar_healing':           return `Curación: ${rank * 6}% prob. Fase Lunar`;
         case 'improved_moonfire':       return `Moonfire: +${rank * 10}% daño`;
-        case 'improved_rejuvenation':   return `Rejuvenation: +${rank * 5}% curación`;
+        case 'improved_rejuvenation':   return `Rejuvenation: +${rank * 7}% curación`;
+        case 'natures_remains':         return `Coste Wrath/Moonfire: −${rank * 5}%`;
+        case 'balance_of_nature':       return `Poder de hechizo: +${rank * 10}% Espíritu`;
         case 'lunar_empowerment':       return `Starsurge: +${rank * 10}% daño`;
         case 'natural_perfection':      return `Crítico hechizos: +${rank}%`;
         case 'clearcasting_druid':      return `Prob. hechizo gratuito: ${rank * 2}%`;
