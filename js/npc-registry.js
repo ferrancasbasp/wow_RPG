@@ -57,3 +57,62 @@ window.NPC_REGISTRY['elder_goretusk'] = {
     { name: 'Trample', min: 12, max: 38, type: 'physical' },
   ],
 };
+
+window.NPC_REGISTRY['defias_looter'] = {
+  name: 'Defias Looter',
+  icon: '🗡️',
+  imageUrl: 'img/enemies/defias_looter.jpg',
+  level: 6,
+  hp: 175,
+  armor: 25,
+  magicResist: 5,
+  attacks: [
+    { name: 'Backstab', min: 8, max: 14, type: 'physical' },
+    { name: 'Slash', min: 6, max: 11, type: 'physical' },
+    { name: 'Pickpocket Strike', min: 5, max: 10, type: 'physical' },
+  ],
+};
+
+window.NPC_REGISTRY['defias_evoker'] = {
+  name: 'Defias Evoker',
+  icon: '✨',
+  imageUrl: 'img/enemies/defias_evoker.jpg',
+  level: 7,
+  hp: 198,
+  armor: 10,
+  magicResist: 20,
+  attacks: [
+    { name: 'Fire Bolt', min: 10, max: 16, type: 'magical' },
+    { name: 'Frost Nova', min: 7, max: 12, type: 'magical' },
+    { name: 'Arcane Missiles', min: 5, max: 9, type: 'magical' },
+  ],
+};
+
+window.NPC_REGISTRY['riverpaw_gnoll'] = {
+  name: 'Riverpaw Gnoll',
+  icon: '🪓',
+  imageUrl: 'img/enemies/gnoll_riverpaw.jpg',
+  level: 6,
+  hp: 210,
+  armor: 25,
+  magicResist: 5,
+  attacks: [
+    { name: 'Cleave', min: 9, max: 15, type: 'physical' },
+    { name: 'Strike', min: 7, max: 12, type: 'physical' },
+  ],
+};
+
+window.NPC_REGISTRY['riverpaw_bone_chanter'] = {
+  name: 'Riverpaw Bone Chanter',
+  icon: '🦴',
+  imageUrl: 'img/enemies/gnoll_bone_chanter.jpg',
+  level: 13,
+  hp: 475,
+  armor: 35,
+  magicResist: 25,
+  attacks: [
+    { name: 'Bone Strike', min: 16, max: 26, type: 'physical' },
+    { name: 'Shadow Bolt', min: 12, max: 22, type: 'magical' },
+    { name: 'Cursed Howl', min: 10, max: 30, type: 'magical' },
+  ],
+};
