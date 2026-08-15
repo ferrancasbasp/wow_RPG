@@ -126,7 +126,7 @@ window.APP_COMPUTED = {
       if (this.warriorStance === 'protection' && this.classConfig.stances) total += 5;
       if (this.character.activeEffects) {
         for (const eff of this.character.activeEffects) {
-          if (eff.type === 'buff' && (eff.target === 'armor' || eff.target === 'all_stats')) total += eff.value;
+          if (eff.type === 'buff' && eff.target === 'armor') total += eff.value;
         }
       }
       return total;
