@@ -71,6 +71,10 @@ window.APP_COMPUTED = {
       let sp = this.baseSpellPower;
       const stormPower = this.talentRank('storm_power');
       sp = Math.round(sp * (1 + stormPower * 0.10));
+      const balanceOfNature = this.talentRank('balance_of_nature');
+      if (balanceOfNature > 0) {
+        sp += Math.round(this.finalStats.espiritu * 0.10 * balanceOfNature);
+      }
       sp += this.effectStatBonus('spellPower');
       return sp;
     },
@@ -260,14 +264,7 @@ window.APP_COMPUTED = {
         if (me > 0) cost *= (1 - me * 0.02);
 
         // --- Druid talents ---
-        const naturesGrace = this.talentRank('natures_grace');
-        if (naturesGrace > 0) {
-          value *= (1 + naturesGrace * 0.02);
-          talentNotes.push(`+${naturesGrace * 2}% Naturaleza`);
-        }
         if (ability.id === 'wrath') {
-          const mf = this.talentRank('moonkin_fury');
-          if (mf > 0) { value *= (1 + mf * 0.03); talentNotes.push(`+${mf * 3}% Fury`); }
           const iw = this.talentRank('improved_wrath');
           if (iw > 0) { value *= (1 + iw * 0.03); talentNotes.push(`+${iw * 3}% Imp Wrath`); }
         }
@@ -281,7 +278,11 @@ window.APP_COMPUTED = {
         }
         if (ability.id === 'rejuvenation') {
           const ir = this.talentRank('improved_rejuvenation');
-          if (ir > 0) { value *= (1 + ir * 0.05); talentNotes.push(`+${ir * 5}% Rejuv`); }
+          if (ir > 0) { value *= (1 + ir * 0.07); talentNotes.push(`+${ir * 7}% Rejuv`); }
+        }
+        if (['wrath', 'moonfire'].includes(ability.id)) {
+          const nr = this.talentRank('natures_remains');
+          if (nr > 0) cost *= (1 - nr * 0.05);
         }
 
         return {
