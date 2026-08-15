@@ -26,8 +26,8 @@ createApp({
           if (eq.weapon && !eq.mainHand) { eq.mainHand = eq.weapon; delete eq.weapon; }
           if (eq.offhand && !eq.offHand) { eq.offHand = eq.offhand; delete eq.offhand; }
           if (eq.dualwield) { delete eq.dualwield; }
-          if (!eq.mainHand) eq.mainHand = { name: 'Arma básica', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 3 };
-          if (eq.mainHand.weaponDamage === undefined) eq.mainHand.weaponDamage = 3;
+          if (!eq.mainHand) eq.mainHand = { name: 'Arma básica', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 4 };
+          if (eq.mainHand.weaponDamage === undefined) eq.mainHand.weaponDamage = 4;
           if (!eq.offHand) eq.offHand = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0, defense: 0 };
           if (!eq.twoHand) eq.twoHand = { name: '', bonus: { fuerza: 0, agilidad: 0, intelecto: 0, aguante: 0, espiritu: 0 }, weaponDamage: 0 };
           if (!this.character.activeEffects) this.character.activeEffects = [];
