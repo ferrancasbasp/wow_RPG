@@ -179,9 +179,11 @@ window.APP_METHODS = {
         // --- Druid ---
         case 'natures_grace':           return `Daño todos los hechizos: +${rank * 2}%`;
         case 'moonkin_fury':            return `Daño Wrath: +${rank * 3}%`;
+        case 'improved_mark_of_the_wild': return `Mark of the Wild: +${rank * 15}% efecto`;
+        case 'improved_wrath':          return `Daño Wrath: +${rank * 3}%`;
+        case 'lunar_healing':           return `Curación: ${rank * 6}% prob. Fase Lunar`;
         case 'improved_moonfire':       return `Moonfire: +${rank * 10}% daño`;
         case 'improved_rejuvenation':   return `Rejuvenation: +${rank * 5}% curación`;
-        case 'improved_wrath':          return `Coste Wrath: −${rank * 3}%`;
         case 'lunar_empowerment':       return `Starsurge: +${rank * 10}% daño`;
         case 'natural_perfection':      return `Crítico hechizos: +${rank}%`;
         case 'clearcasting_druid':      return `Prob. hechizo gratuito: ${rank * 2}%`;
@@ -323,21 +325,35 @@ window.APP_METHODS = {
         comboText = ' · ' + comboSpent + ' combo gastados';
       }
       if (ability.isHot) {
-        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.hotTick + '/turno · ' + ability.hotDuration + 't (' + ability.hotTotal + ' total) — aplícalo manualmente en Efectos');
+        let lunarText = '';
+        const lhRank = this.talentRank('lunar_healing');
+        if (lhRank > 0 && Math.random() * 100 < lhRank * 6) {
+          const comboMax = (this.classConfig.comboConfig && this.classConfig.comboConfig.max) || 5;
+          this.character.comboPoints = Math.min(comboMax, (this.character.comboPoints || 0) + 1);
+          lunarText = ' · 🌙 +1 Fase Lunar';
+        }
+        this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.hotTick + '/turno · ' + ability.hotDuration + 't (' + ability.hotTotal + ' total)' + lunarText + ' — aplícalo manualmente en Efectos');
         this.sendHealEvent(ability, ability.hotTotal);
       } else if (ability.isDot) {
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + ability.dotTick + '/turno · ' + ability.dotDuration + 't (' + ability.dotTotal + ' total) — aplícalo al enemigo');
         this.sendDamageEvent(ability, 0, 1, 1);
       } else if (ability.type === 'heal' && !ability.isHot) {
         let healBonus = 1 + this.talentRank('healing_focus') * 0.02;
+        let lunarText = '';
+        const lhRank = this.talentRank('lunar_healing');
+        if (lhRank > 0 && Math.random() * 100 < lhRank * 6) {
+          const comboMax = (this.classConfig.comboConfig && this.classConfig.comboConfig.max) || 5;
+          this.character.comboPoints = Math.min(comboMax, (this.character.comboPoints || 0) + 1);
+          lunarText = ' · 🌙 +1 Fase Lunar';
+        }
         if (ability.id === 'power_word_shield') {
           healBonus *= (1 + this.talentRank('improved_shield') * 0.10);
           roll = Math.round(roll * healBonus);
-          this.showToast(ability.name + ' R' + ability.currentRank + ': 🛡️ ' + roll + ' absorción' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText + ' — aplícalo al objetivo');
+          this.showToast(ability.name + ' R' + ability.currentRank + ': 🛡️ ' + roll + ' absorción' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText + lunarText + ' — aplícalo al objetivo');
           this.sendHealEvent(ability, roll);
         } else {
           roll = Math.round(roll * healBonus);
-          this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText + ' — aplícalo al objetivo');
+          this.showToast(ability.name + ' R' + ability.currentRank + ': ' + roll + ' curación' + (isCrit ? ' ¡CRÍTICO!' : '') + ccText + evText + lunarText + ' — aplícalo al objetivo');
           this.sendHealEvent(ability, roll);
         }
       } else {
