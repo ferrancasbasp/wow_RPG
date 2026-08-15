@@ -202,6 +202,8 @@ h1, h2, h3, .title-font { font-family: 'Cinzel', serif; letter-spacing: 0.05em; 
   text-transform: uppercase; letter-spacing: 0.08em; text-align: center; width: 100%;
   padding-bottom: 4px; border-bottom: 1px dashed rgba(138,115,68,0.15);
 }
+.tier-locked .wow-tier-nodes { opacity: 0.4; pointer-events: none; }
+.tier-lock-hint { font-size: 10px; color: var(--danger); text-transform: none; letter-spacing: 0; }
 .wow-tier-nodes {
   display: flex; gap: 28px; justify-content: center; flex-wrap: wrap;
 }
