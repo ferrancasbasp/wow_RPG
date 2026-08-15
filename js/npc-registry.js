@@ -10,8 +10,8 @@ window.NPC_REGISTRY['mottled_boar'] = {
   armor: 10,
   magicResist: 0,
   attacks: [
-    { name: 'Charge', min: 4, max: 7, type: 'physical' },
-    { name: 'Bite', min: 3, max: 5, type: 'physical' },
+    { name: 'Charge', min: 10, max: 18, type: 'physical' },
+    { name: 'Bite', min: 8, max: 14, type: 'physical' },
   ],
 };
 
@@ -25,8 +25,8 @@ window.NPC_REGISTRY['dire_boar'] = {
   armor: 20,
   magicResist: 5,
   attacks: [
-    { name: 'Charge', min: 7, max: 12, type: 'physical' },
-    { name: 'Bite', min: 5, max: 9, type: 'physical' },
+    { name: 'Charge', min: 16, max: 28, type: 'physical' },
+    { name: 'Bite', min: 12, max: 22, type: 'physical' },
   ],
 };
 
@@ -40,9 +40,9 @@ window.NPC_REGISTRY['defias_looter'] = {
   armor: 25,
   magicResist: 5,
   attacks: [
-    { name: 'Backstab', min: 8, max: 14, type: 'physical' },
-    { name: 'Slash', min: 6, max: 11, type: 'physical' },
-    { name: 'Pickpocket Strike', min: 5, max: 10, type: 'physical' },
+    { name: 'Backstab', min: 18, max: 30, type: 'physical' },
+    { name: 'Slash', min: 14, max: 24, type: 'physical' },
+    { name: 'Pickpocket Strike', min: 12, max: 20, type: 'physical' },
   ],
 };
 
@@ -56,9 +56,9 @@ window.NPC_REGISTRY['defias_evoker'] = {
   armor: 10,
   magicResist: 20,
   attacks: [
-    { name: 'Fire Bolt', min: 10, max: 16, type: 'magical' },
-    { name: 'Frost Nova', min: 7, max: 12, type: 'magical' },
-    { name: 'Arcane Missiles', min: 5, max: 9, type: 'magical' },
+    { name: 'Fire Bolt', min: 22, max: 36, type: 'magical' },
+    { name: 'Frost Nova', min: 16, max: 28, type: 'magical' },
+    { name: 'Arcane Missiles', min: 12, max: 20, type: 'magical' },
   ],
 };
 
@@ -72,8 +72,8 @@ window.NPC_REGISTRY['riverpaw_gnoll'] = {
   armor: 25,
   magicResist: 5,
   attacks: [
-    { name: 'Cleave', min: 9, max: 15, type: 'physical' },
-    { name: 'Strike', min: 7, max: 12, type: 'physical' },
+    { name: 'Cleave', min: 20, max: 32, type: 'physical' },
+    { name: 'Strike', min: 16, max: 26, type: 'physical' },
   ],
 };
 
@@ -87,9 +87,9 @@ window.NPC_REGISTRY['great_goretusk'] = {
   armor: 40,
   magicResist: 10,
   attacks: [
-    { name: 'Gore', min: 14, max: 22, type: 'physical' },
-    { name: 'Savage Bite', min: 10, max: 18, type: 'physical' },
-    { name: 'Trample', min: 8, max: 26, type: 'physical' },
+    { name: 'Gore', min: 32, max: 50, type: 'physical' },
+    { name: 'Savage Bite', min: 24, max: 40, type: 'physical' },
+    { name: 'Trample', min: 20, max: 60, type: 'physical' },
   ],
 };
 
@@ -103,9 +103,9 @@ window.NPC_REGISTRY['riverpaw_bone_chanter'] = {
   armor: 35,
   magicResist: 25,
   attacks: [
-    { name: 'Bone Strike', min: 16, max: 26, type: 'physical' },
-    { name: 'Shadow Bolt', min: 12, max: 22, type: 'magical' },
-    { name: 'Cursed Howl', min: 10, max: 30, type: 'magical' },
+    { name: 'Bone Strike', min: 36, max: 56, type: 'physical' },
+    { name: 'Shadow Bolt', min: 28, max: 48, type: 'magical' },
+    { name: 'Cursed Howl', min: 24, max: 64, type: 'magical' },
   ],
 };
 
@@ -119,8 +119,8 @@ window.NPC_REGISTRY['elder_goretusk'] = {
   armor: 55,
   magicResist: 15,
   attacks: [
-    { name: 'Gore', min: 20, max: 32, type: 'physical' },
-    { name: 'Savage Bite', min: 15, max: 25, type: 'physical' },
-    { name: 'Trample', min: 12, max: 38, type: 'physical' },
+    { name: 'Gore', min: 44, max: 68, type: 'physical' },
+    { name: 'Savage Bite', min: 34, max: 54, type: 'physical' },
+    { name: 'Trample', min: 28, max: 82, type: 'physical' },
   ],
 };
