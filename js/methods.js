@@ -252,11 +252,10 @@ window.APP_METHODS = {
           if (isEnergy) this.character.currentEnergy = Math.min(this.resourceMax, this.resourceActual + (ability.costEnergy || 0));
           return;
         }
-        if (ability.id !== 'hurricane') {
-          const equinoxRank = this.talentRank('equinox');
-          const fragMult = 1 + equinoxRank * 0.15;
-          roll = Math.round(roll * (1 + (comboSpent - 1) * fragMult));
-        }
+        const equinoxRank = this.talentRank('equinox');
+        const fragMult = 1 + equinoxRank * 0.15;
+        const aoeMult = ability.aoe ? 0.5 : 1.0;
+        roll = Math.round(roll * (1 + (comboSpent - 1) * fragMult * aoeMult));
         this.character.comboPoints = 0;
       }
 
