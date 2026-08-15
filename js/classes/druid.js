@@ -78,7 +78,7 @@ window.CLASS_REGISTRY.druid = {
   ],
 
   abilities: [
-    { id: 'basic_attack', name: 'Basic Attack', icon: '👊', iconImg: '',
+    { id: 'basic_attack', name: 'Basic Attack', icon: '👊', iconImg: 'img/abilities/druid/basic_attack.jpg',
       school: 'Físico', type: 'damage', requiredLevel: 1, damageType: 'physical',
       baseDamage: 0, spellPowerRatio: 0, costPct: 0, castType: 'instant', cooldown: 0,
       description: 'Un golpe básico.',
