@@ -36,43 +36,43 @@ window.CLASS_REGISTRY.druid = {
   },
 
   talents: [
-    { id: 'improved_mark_of_the_wild', name: 'Improved Mark of the Wild', icon: '🐾', iconImg: '',
+    { id: 'improved_mark_of_the_wild', name: 'Improved Mark of the Wild', icon: '🐾', iconImg: 'img/talents/druid/mark_of_the_wild.jpg',
       description: 'Aumenta el efecto de Mark of the Wild un 15% por punto.',
       maxRank: 3, tier: 1, requires: null },
 
-    { id: 'improved_wrath', name: 'Improved Wrath', icon: '☀️', iconImg: '',
+    { id: 'improved_wrath', name: 'Improved Wrath', icon: '☀️', iconImg: 'img/talents/druid/wrath.jpg',
       description: 'Aumenta el daño de Wrath un 3% por punto.',
       maxRank: 5, tier: 1, requires: null },
 
-    { id: 'lunar_healing', name: 'Lunar Healing', icon: '🌙', iconImg: '',
+    { id: 'lunar_healing', name: 'Lunar Healing', icon: '🌙', iconImg: 'img/talents/druid/lunar_healing.jpg',
       description: 'Tus hechizos de curación tienen un 6% de probabilidad por punto de otorgarte una Fase Lunar.',
       maxRank: 4, tier: 1, requires: null },
 
-    { id: 'improved_moonfire', name: 'Improved Moonfire', icon: '🌙', iconImg: '',
+    { id: 'improved_moonfire', name: 'Improved Moonfire', icon: '🌙', iconImg: 'img/talents/druid/moonfire.jpg',
       description: 'Aumenta el daño de Moonfire un 10% por punto.',
       maxRank: 3, tier: 2, requires: null },
 
-    { id: 'improved_rejuvenation', name: 'Improved Rejuvenation', icon: '🍃', iconImg: '',
+    { id: 'improved_rejuvenation', name: 'Improved Rejuvenation', icon: '🍃', iconImg: 'img/talents/druid/rejuvenation.jpg',
       description: 'Aumenta la curación de Rejuvenation un 7% por punto.',
       maxRank: 2, tier: 2, requires: null },
 
-    { id: 'natures_remains', name: "Nature's Remains", icon: '🍂', iconImg: '',
+    { id: 'natures_remains', name: "Nature's Remains", icon: '🍂', iconImg: 'img/talents/druid/natures_remains.jpg',
       description: 'Reduce el coste de maná de Wrath y Moonfire un 5% por punto.',
       maxRank: 4, tier: 2, requires: null },
 
-    { id: 'balance_of_nature', name: 'Balance of Nature', icon: '⚖️', iconImg: '',
+    { id: 'balance_of_nature', name: 'Balance of Nature', icon: '⚖️', iconImg: 'img/talents/druid/balance_of_nature.jpg',
       description: 'Aumenta tu poder de hechizo en un 10% de tu Espíritu por punto.',
       maxRank: 3, tier: 2, requires: null },
 
-    { id: 'equinox', name: 'Equinox', icon: '🌗', iconImg: '',
+    { id: 'equinox', name: 'Equinox', icon: '🌗', iconImg: 'img/talents/druid/equinox.jpg',
       description: 'Aumenta el daño bonus que aportan las Fases Lunares un 15% por punto. Hurricane recibe el bonus a un 50% de eficacia.',
       maxRank: 3, tier: 3, requires: null },
 
-    { id: 'natural_perfection', name: 'Natural Perfection', icon: '🎯', iconImg: '',
+    { id: 'natural_perfection', name: 'Natural Perfection', icon: '🎯', iconImg: 'img/talents/druid/natural_perfection.jpg',
       description: 'Aumenta tu probabilidad de crítico con hechizos un 2% por punto.',
       maxRank: 3, tier: 3, requires: null },
 
-    { id: 'clearcasting', name: 'Clearcasting', icon: '🔮', iconImg: 'img/talents/mage/clearcasting.jpg',
+    { id: 'clearcasting', name: 'Clearcasting', icon: '🔮', iconImg: 'img/talents/druid/clearcasting.jpg',
       description: 'Tus hechizos tienen un 2% de probabilidad por punto de ser gratuitos al lanzarlos.',
       maxRank: 5, tier: 3, requires: null },
   ],
@@ -85,7 +85,7 @@ window.CLASS_REGISTRY.druid = {
       usesWeaponDamage: true,
     },
 
-    { id: 'wrath', name: 'Wrath', icon: '☀️', iconImg: '',
+    { id: 'wrath', name: 'Wrath', icon: '☀️', iconImg: 'img/abilities/druid/wrath.jpg',
       school: 'Naturaleza', type: 'damage', requiredLevel: 1, damageType: 'magical',
       baseDamage: 55, spellPowerRatio: 0.85, costPct: 0.07, castType: 'cast', cooldown: 0,
       generatesCombo: 1,
@@ -96,7 +96,7 @@ window.CLASS_REGISTRY.druid = {
         { rank: 3, level: 14, min: 60, max: 75 },
       ] },
 
-    { id: 'moonfire', name: 'Moonfire', icon: '🌙', iconImg: '',
+    { id: 'moonfire', name: 'Moonfire', icon: '🌙', iconImg: 'img/abilities/druid/moonfire.jpg',
       school: 'Arcano', type: 'damage', requiredLevel: 4, damageType: 'magical',
       baseDamage: 20, spellPowerRatio: 0.4, costPct: 0.09, castType: 'instant', cooldown: 0,
       generatesCombo: 1,
@@ -118,7 +118,7 @@ window.CLASS_REGISTRY.druid = {
         { rank: 3, level: 16, value: 25, duration: 3 },
       ] },
 
-    { id: 'starsurge', name: 'Starsurge', icon: '🌟', iconImg: '',
+    { id: 'starsurge', name: 'Starsurge', icon: '🌟', iconImg: 'img/abilities/druid/starsurge.jpg',
       school: 'Arcano', type: 'damage', requiredLevel: 10, damageType: 'magical',
       baseDamage: 40, spellPowerRatio: 1.5, costPct: 0.05, castType: 'cast', cooldown: 0,
       spendsCombo: true,
@@ -130,7 +130,7 @@ window.CLASS_REGISTRY.druid = {
         { rank: 3, level: 26, min: 90, max: 120 },
       ] },
 
-    { id: 'hurricane', name: 'Hurricane', icon: '🌪️', iconImg: '',
+    { id: 'hurricane', name: 'Hurricane', icon: '🌪️', iconImg: 'img/abilities/druid/hurricane.jpg',
       school: 'Naturaleza', type: 'damage', requiredLevel: 20, damageType: 'magical', aoe: true,
       baseDamage: 45, spellPowerRatio: 0.6, costPct: 0.15, castType: 'instant', cooldown: 3,
       spendsCombo: true,
@@ -141,7 +141,7 @@ window.CLASS_REGISTRY.druid = {
         { rank: 2, level: 28, min: 110, max: 130 },
       ] },
 
-    { id: 'healing_touch', name: 'Healing Touch', icon: '🌿', iconImg: '',
+    { id: 'healing_touch', name: 'Healing Touch', icon: '🌿', iconImg: 'img/abilities/druid/healing_touch.jpg',
       school: 'Naturaleza', type: 'heal', requiredLevel: 1,
       baseDamage: 80, spellPowerRatio: 1.2, costPct: 0.12, castType: 'cast', cooldown: 0,
       description: 'Sana una gran cantidad de salud al objetivo.',
@@ -151,7 +151,7 @@ window.CLASS_REGISTRY.druid = {
         { rank: 3, level: 14, min: 180, max: 230 },
       ] },
 
-    { id: 'rejuvenation', name: 'Rejuvenation', icon: '🍃', iconImg: '',
+    { id: 'rejuvenation', name: 'Rejuvenation', icon: '🍃', iconImg: 'img/abilities/druid/rejuvenation.jpg',
       school: 'Naturaleza', type: 'heal', requiredLevel: 6,
       baseDamage: 30, spellPowerRatio: 0.8, costPct: 0.08, castType: 'instant', cooldown: 0,
       isHot: true,
@@ -163,7 +163,7 @@ window.CLASS_REGISTRY.druid = {
         { rank: 3, level: 18, min: 300, max: 300 },
       ] },
 
-    { id: 'entangling_roots', name: 'Entangling Roots', icon: '🌱', iconImg: '',
+    { id: 'entangling_roots', name: 'Entangling Roots', icon: '🌱', iconImg: 'img/abilities/druid/entangling_roots.jpg',
       school: 'Naturaleza', type: 'utility', requiredLevel: 8,
       costPct: 0.06, castType: 'cast', cooldown: 4,
       description: 'Inmoviliza al objetivo durante 2 turnos. Aplícalo al enemigo.',
@@ -174,7 +174,7 @@ window.CLASS_REGISTRY.druid = {
         { rank: 3, level: 24, value: 0, costPct: 0.06 },
       ] },
 
-    { id: 'moonkin_form', name: 'Moonkin Form', icon: '🪶', iconImg: '',
+    { id: 'moonkin_form', name: 'Moonkin Form', icon: '🪶', iconImg: 'img/abilities/druid/moonkin_form.jpg',
       school: 'Físico', type: 'utility', requiredLevel: 10,
       costPct: 0.15, castType: 'instant', cooldown: 1,
       description: 'Te transformas en Lechúcico. Aumenta tu armadura y daño mágico. Aplícalo en Efectos.',
@@ -183,7 +183,7 @@ window.CLASS_REGISTRY.druid = {
         { rank: 1, level: 10, value: 1, costPct: 0.15 },
       ] },
 
-    { id: 'mark_of_the_wild', name: 'Mark of the Wild', icon: '🐾', iconImg: '',
+    { id: 'mark_of_the_wild', name: 'Mark of the Wild', icon: '🐾', iconImg: 'img/abilities/druid/mark_of_the_wild.jpg',
       school: 'Naturaleza', type: 'utility', requiredLevel: 2,
       costPct: 0.08, castType: 'cast', cooldown: 0,
       description: 'Aumenta todos los atributos. El buffo más mítico del druida. Aplicar manualmente en Efectos.',
