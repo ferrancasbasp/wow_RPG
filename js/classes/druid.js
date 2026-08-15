@@ -68,6 +68,10 @@ window.CLASS_REGISTRY.druid = {
       description: 'Aumenta el daño de Starsurge un 10% por punto.',
       maxRank: 3, tier: 3, requires: null },
 
+    { id: 'equinox', name: 'Equinox', icon: '🌗', iconImg: '',
+      description: 'Aumenta el daño bonus que aportan las Fases Lunares un 15% por punto. No afecta a Hurricane.',
+      maxRank: 3, tier: 3, requires: null },
+
     { id: 'natural_perfection', name: 'Natural Perfection', icon: '🎯', iconImg: '',
       description: 'Aumenta tu probabilidad de crítico con hechizos un 1% por punto.',
       maxRank: 3, tier: 3, requires: null },

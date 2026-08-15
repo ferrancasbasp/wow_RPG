@@ -185,6 +185,7 @@ window.APP_METHODS = {
         case 'natures_remains':         return `Coste Wrath/Moonfire: −${rank * 5}%`;
         case 'balance_of_nature':       return `Poder de hechizo: +${rank * 10}% Espíritu`;
         case 'lunar_empowerment':       return `Starsurge: +${rank * 10}% daño`;
+        case 'equinox':                 return `Fases Lunares: +${rank * 15}% daño bonus`;
         case 'natural_perfection':      return `Crítico hechizos: +${rank}%`;
         case 'clearcasting_druid':      return `Prob. hechizo gratuito: ${rank * 2}%`;
         default: return '';
@@ -251,7 +252,11 @@ window.APP_METHODS = {
           if (isEnergy) this.character.currentEnergy = Math.min(this.resourceMax, this.resourceActual + (ability.costEnergy || 0));
           return;
         }
-        roll = roll * comboSpent;
+        if (ability.id !== 'hurricane') {
+          const equinoxRank = this.talentRank('equinox');
+          const fragMult = 1 + equinoxRank * 0.15;
+          roll = Math.round(roll * (1 + (comboSpent - 1) * fragMult));
+        }
         this.character.comboPoints = 0;
       }
 
