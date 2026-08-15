@@ -85,6 +85,7 @@ const BUFF_DEBUFF_STATS = [
   { key: 'aguante', label: 'Aguante' },
   { key: 'espiritu', label: 'Espíritu' },
   { key: 'intelecto', label: 'Intelecto' },
+  { key: 'all_stats', label: 'Todos los Atributos' },
   { key: 'attackPower', label: 'Poder de Ataque' },
   { key: 'spellPower', label: 'Poder de Hechizo' },
   { key: 'spellCrit', label: 'Prob. Crítico Hechizos' },
