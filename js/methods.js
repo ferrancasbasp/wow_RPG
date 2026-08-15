@@ -41,7 +41,18 @@ window.APP_METHODS = {
     },
 
     // ¿Los requisitos previos se cumplen?
+    tierPointsSpent(tier) {
+      const talents = this.classConfig.talents.filter(t => t.tier === tier);
+      return talents.reduce((sum, t) => sum + this.talentRank(t.id), 0);
+    },
+
+    tierUnlocked(tier) {
+      if (tier <= 1) return true;
+      return this.tierPointsSpent(tier - 1) >= 5;
+    },
+
     prereqMet(talent) {
+      if (!this.tierUnlocked(talent.tier)) return false;
       if (!talent.requires) return true;
       return this.talentRank(talent.requires.id) >= talent.requires.points;
     },
@@ -60,7 +71,16 @@ window.APP_METHODS = {
 
     removeTalentPoint(id) {
       if (this.talentRank(id) === 0) return;
-      // No permitir quitar si hay talentos dependientes con puntos
+      const talent = this.classConfig.talents.find(t => t.id === id);
+      if (talent) {
+        const nextTier = talent.tier + 1;
+        const hasPointsAbove = this.tierPointsSpent(nextTier) > 0;
+        const currentTierPoints = this.tierPointsSpent(talent.tier);
+        if (hasPointsAbove && currentTierPoints <= 5) {
+          this.showToast('No puedes quitar puntos: hay talentos en el siguiente tier que dependen de los 5 puntos de este tier.');
+          return;
+        }
+      }
       const dependents = this.classConfig.talents.filter(
         t => t.requires && t.requires.id === id && this.talentRank(t.id) > 0
       );

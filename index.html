@@ -417,8 +417,8 @@
       <div class="talent-modal-layout">
         <div class="talent-modal-tree">
           <div class="wow-talent-list">
-            <div class="wow-tier-row" v-for="tier in tiers" :key="tier">
-              <div class="wow-tier-label">{{ tierLabel(tier) }}</div>
+            <div class="wow-tier-row" v-for="tier in tiers" :key="tier" :class="{ 'tier-locked': !tierUnlocked(tier) }">
+              <div class="wow-tier-label">{{ tierLabel(tier) }}<span v-if="!tierUnlocked(tier)" class="tier-lock-hint"> (requires 5 in tier {{ tier - 1 }})</span></div>
               <div class="wow-tier-nodes">
               <div v-for="talent in talentsByTier(tier)" :key="talent.id"
                    class="wow-node" :class="talentNodeClass(talent)"
