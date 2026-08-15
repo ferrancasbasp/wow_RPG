@@ -618,6 +618,8 @@ createApp({
       let dotText = this.processMonsterEffects(monster);
       this.attackingId = monster.id;
       setTimeout(() => { this.attackingId = null; }, 400);
+      monster.lastAttackAt = Date.now();
+      this.saveMonsters();
       this.showToast(monster.name + ' usa ' + attack.name + ': ' + roll + ' daño' + dotText);
     },
 
