@@ -542,6 +542,9 @@ window.APP_METHODS = {
       } else if (ability.buff) {
         const buffText = '+' + ability.currentBuffValue + ' ' + ability.currentBuffStat + ' (' + ability.currentBuffDuration + ' turnos)';
         this.showToast(ability.name + ' R' + ability.currentRank + ': ' + buffText + ' — aplícalo manualmente en Efectos');
+      } else if (ability.multiBuff) {
+        const stats = ability.multiBuff.map(b => b.stat).join(', ');
+        this.showToast(ability.name + ' R' + ability.currentRank + ': +' + ability.currentBuffValue + ' ' + stats + ' (' + ability.currentBuffDuration + ' turnos) — aplícalo manualmente en Efectos');
       } else {
         this.showToast(ability.name + ': Lanzado');
       }

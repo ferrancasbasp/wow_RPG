@@ -497,8 +497,8 @@ window.APP_COMPUTED = {
           currentRank: rank,
           scaledCost: cost,
           currentBuffValue: buffValue,
-          currentBuffDuration: a.buff ? a.buff.duration : 1,
-          currentBuffStat: a.buff ? a.buff.stat : '',
+          currentBuffDuration: a.buff ? a.buff.duration : (a.multiBuff ? a.multiBuff[0].duration : 1),
+          currentBuffStat: a.buff ? a.buff.stat : (a.multiBuff ? a.multiBuff[0].stat : ''),
         };
       });
     },

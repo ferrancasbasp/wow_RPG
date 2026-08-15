@@ -174,5 +174,24 @@ window.CLASS_REGISTRY.druid = {
       buffRanks: [
         { rank: 1, level: 10, value: 1, costPct: 0.15 },
       ] },
+
+    { id: 'mark_of_the_wild', name: 'Mark of the Wild', icon: '🐾', iconImg: '',
+      school: 'Naturaleza', type: 'utility', requiredLevel: 2,
+      costPct: 0.08, castType: 'cast', cooldown: 0,
+      description: 'Aumenta todos los atributos y la armadura del objetivo. El buffo más mítico del druida. Aplicar manualmente en Efectos.',
+      multiBuff: [
+        { stat: 'fuerza',   duration: 30 },
+        { stat: 'agilidad',  duration: 30 },
+        { stat: 'intelecto', duration: 30 },
+        { stat: 'aguante',   duration: 30 },
+        { stat: 'espiritu',  duration: 30 },
+        { stat: 'armor',     duration: 30 },
+      ],
+      buffRanks: [
+        { rank: 1, level: 2,  value: 2,  costPct: 0.08 },
+        { rank: 2, level: 12, value: 4,  costPct: 0.09 },
+        { rank: 3, level: 24, value: 7,  costPct: 0.10 },
+        { rank: 4, level: 36, value: 10, costPct: 0.11 },
+      ] },
   ],
 };
