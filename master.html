@@ -439,8 +439,9 @@ createApp({
 
     syncMonsters() {
       if (typeof firebase !== 'undefined' && firebase.apps.length) {
+        const cleanMonsters = JSON.parse(JSON.stringify(this.monsters));
         firebase.database().ref('monsters').set({
-          list: this.monsters,
+          list: cleanMonsters,
           counter: this.monsterIdCounter,
           timestamp: Date.now(),
         });
