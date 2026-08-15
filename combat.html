@@ -83,12 +83,23 @@ body {
 .monster-card.healed {
   animation: pulse-green 0.5s ease;
 }
+.monster-card.attacking {
+  animation: combat-shake 0.4s ease;
+}
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px); }
   40% { transform: translateX(8px); }
   60% { transform: translateX(-5px); }
   80% { transform: translateX(5px); }
+}
+@keyframes combat-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  15% { transform: translateX(-6px) rotate(-1deg); }
+  30% { transform: translateX(6px) rotate(1deg); }
+  45% { transform: translateX(-4px) rotate(-0.5deg); }
+  60% { transform: translateX(4px) rotate(0.5deg); }
+  75% { transform: translateX(-2px); }
 }
 @keyframes pulse-green {
   0%, 100% { box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
@@ -219,7 +230,7 @@ body {
   <div class="combat-grid" v-if="monsters.length > 0">
     <div v-for="monster in monsters" :key="monster.id"
          class="monster-card"
-         :class="{ dead: monster.currentHP <= 0, damaged: damagedIds[monster.id] === 'damage', healed: damagedIds[monster.id] === 'heal' }">
+         :class="{ dead: monster.currentHP <= 0, damaged: damagedIds[monster.id] === 'damage', healed: damagedIds[monster.id] === 'heal', attacking: attackingIds[monster.id] }">
 
       <div class="monster-portrait">
         <span class="monster-level-badge" v-if="monster.level">Nv. {{ monster.level }}</span>
@@ -270,7 +281,9 @@ createApp({
       monsters: [],
       connected: false,
       prevHpMap: {},
+      prevAttackMap: {},
       damagedIds: {},
+      attackingIds: {},
       flashNumbers: {},
     };
   },
@@ -292,9 +305,11 @@ createApp({
   },
   methods: {
     onMonstersUpdate(list) {
-      const newMap = {};
+      const newHpMap = {};
+      const newAttackMap = {};
       for (const m of list) {
-        newMap[m.id] = m.currentHP;
+        newHpMap[m.id] = m.currentHP;
+        newAttackMap[m.id] = m.lastAttackAt || 0;
         if (this.prevHpMap[m.id] !== undefined && this.prevHpMap[m.id] !== m.currentHP) {
           const diff = m.currentHP - this.prevHpMap[m.id];
           if (diff < 0) {
@@ -303,9 +318,18 @@ createApp({
             this.triggerHeal(m.id, diff);
           }
         }
+        if (this.prevAttackMap[m.id] !== undefined && newAttackMap[m.id] > this.prevAttackMap[m.id]) {
+          this.triggerAttack(m.id);
+        }
       }
-      this.prevHpMap = newMap;
+      this.prevHpMap = newHpMap;
+      this.prevAttackMap = newAttackMap;
       this.monsters = list;
+    },
+
+    triggerAttack(monsterId) {
+      this.attackingIds[monsterId] = true;
+      setTimeout(() => { this.attackingIds[monsterId] = false; }, 400);
     },
 
     triggerDamage(monsterId, amount) {
