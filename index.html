@@ -112,7 +112,7 @@
 
   <!-- ============================== COMBO POINTS / LUNAR PHASES ============================== -->
   <div class="combo-bar" v-if="resourceConfig.type === 'energy' || (classConfig.comboConfig)">
-    <span class="combo-label">{{ classConfig.comboConfig ? classConfig.comboConfig.label : 'Combo Points' }}</span>
+    <span class="combo-label">{{ classConfig.comboConfig ? (classConfig.comboConfig.icon + ' ' + classConfig.comboConfig.label) : 'Combo Points' }}</span>
     <div class="combo-points">
       <div class="combo-point" v-for="n in (classConfig.comboConfig ? classConfig.comboConfig.max : 5)" :key="n" :class="{ active: n <= (character.comboPoints || 0) }"></div>
     </div>
