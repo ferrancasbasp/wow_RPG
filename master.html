@@ -332,9 +332,11 @@ body {
         <div class="npc-preset-row">
           <select v-model="selectedNpc" class="add-monster-input" @change="addPresetNpc">
             <option value="">+ Añadir pregenerado...</option>
-            <option v-for="(npc, key) in npcRegistry" :key="key" :value="key">
-              {{ npc.icon }} {{ npc.name }} (Nv. {{ npc.level }})
-            </option>
+            <optgroup v-for="zone in npcZones" :key="zone" :label="zone">
+              <option v-for="(npc, key) in npcsByZone[zone]" :key="key" :value="key">
+                {{ npc.icon }} {{ npc.name }} (Nv. {{ npc.level }})
+              </option>
+            </optgroup>
           </select>
         </div>
 
@@ -412,6 +414,26 @@ createApp({
       npcRegistry: window.NPC_REGISTRY || {},
       selectedNpc: '',
     };
+  },
+
+  computed: {
+    npcZones() {
+      const zones = new Set();
+      for (const key in this.npcRegistry) {
+        if (this.npcRegistry[key].zone) zones.add(this.npcRegistry[key].zone);
+      }
+      return Array.from(zones).sort();
+    },
+    npcsByZone() {
+      const grouped = {};
+      for (const key in this.npcRegistry) {
+        const npc = this.npcRegistry[key];
+        const zone = npc.zone || 'Otros';
+        if (!grouped[zone]) grouped[zone] = {};
+        grouped[zone][key] = npc;
+      }
+      return grouped;
+    },
   },
 
   mounted() {

@@ -4,6 +4,7 @@ window.NPC_REGISTRY['mottled_boar'] = {
   name: 'Mottled Boar',
   icon: '🐗',
   imageUrl: 'img/enemies/boar_young.jpg',
+  zone: 'Elwynn Forest',
   level: 3,
   hp: 85,
   armor: 10,
@@ -18,6 +19,7 @@ window.NPC_REGISTRY['dire_boar'] = {
   name: 'Dire Boar',
   icon: '🐗',
   imageUrl: 'img/enemies/boar_dire.jpg',
+  zone: 'Elwynn Forest',
   level: 5,
   hp: 152,
   armor: 20,
@@ -28,40 +30,11 @@ window.NPC_REGISTRY['dire_boar'] = {
   ],
 };
 
-window.NPC_REGISTRY['great_goretusk'] = {
-  name: 'Great Goretusk',
-  icon: '🐗',
-  imageUrl: 'img/enemies/boar_goretusk.jpg',
-  level: 12,
-  hp: 412,
-  armor: 40,
-  magicResist: 10,
-  attacks: [
-    { name: 'Gore', min: 14, max: 22, type: 'physical' },
-    { name: 'Savage Bite', min: 10, max: 18, type: 'physical' },
-    { name: 'Trample', min: 8, max: 26, type: 'physical' },
-  ],
-};
-
-window.NPC_REGISTRY['elder_goretusk'] = {
-  name: 'Elder Goretusk',
-  icon: '🐗',
-  imageUrl: 'img/enemies/boar_elder_goretusk.jpg',
-  level: 15,
-  hp: 585,
-  armor: 55,
-  magicResist: 15,
-  attacks: [
-    { name: 'Gore', min: 20, max: 32, type: 'physical' },
-    { name: 'Savage Bite', min: 15, max: 25, type: 'physical' },
-    { name: 'Trample', min: 12, max: 38, type: 'physical' },
-  ],
-};
-
 window.NPC_REGISTRY['defias_looter'] = {
   name: 'Defias Looter',
   icon: '🗡️',
   imageUrl: 'img/enemies/defias_looter.jpg',
+  zone: 'Westfall',
   level: 6,
   hp: 175,
   armor: 25,
@@ -77,6 +50,7 @@ window.NPC_REGISTRY['defias_evoker'] = {
   name: 'Defias Evoker',
   icon: '✨',
   imageUrl: 'img/enemies/defias_evoker.jpg',
+  zone: 'Westfall',
   level: 7,
   hp: 198,
   armor: 10,
@@ -92,6 +66,7 @@ window.NPC_REGISTRY['riverpaw_gnoll'] = {
   name: 'Riverpaw Gnoll',
   icon: '🪓',
   imageUrl: 'img/enemies/gnoll_riverpaw.jpg',
+  zone: 'Westfall',
   level: 6,
   hp: 210,
   armor: 25,
@@ -102,10 +77,27 @@ window.NPC_REGISTRY['riverpaw_gnoll'] = {
   ],
 };
 
+window.NPC_REGISTRY['great_goretusk'] = {
+  name: 'Great Goretusk',
+  icon: '🐗',
+  imageUrl: 'img/enemies/boar_goretusk.jpg',
+  zone: 'Redridge Mountains',
+  level: 12,
+  hp: 412,
+  armor: 40,
+  magicResist: 10,
+  attacks: [
+    { name: 'Gore', min: 14, max: 22, type: 'physical' },
+    { name: 'Savage Bite', min: 10, max: 18, type: 'physical' },
+    { name: 'Trample', min: 8, max: 26, type: 'physical' },
+  ],
+};
+
 window.NPC_REGISTRY['riverpaw_bone_chanter'] = {
   name: 'Riverpaw Bone Chanter',
   icon: '🦴',
   imageUrl: 'img/enemies/gnoll_bone_chanter.jpg',
+  zone: 'Redridge Mountains',
   level: 13,
   hp: 475,
   armor: 35,
@@ -114,5 +106,21 @@ window.NPC_REGISTRY['riverpaw_bone_chanter'] = {
     { name: 'Bone Strike', min: 16, max: 26, type: 'physical' },
     { name: 'Shadow Bolt', min: 12, max: 22, type: 'magical' },
     { name: 'Cursed Howl', min: 10, max: 30, type: 'magical' },
+  ],
+};
+
+window.NPC_REGISTRY['elder_goretusk'] = {
+  name: 'Elder Goretusk',
+  icon: '🐗',
+  imageUrl: 'img/enemies/boar_elder_goretusk.jpg',
+  zone: 'Redridge Mountains',
+  level: 15,
+  hp: 585,
+  armor: 55,
+  magicResist: 15,
+  attacks: [
+    { name: 'Gore', min: 20, max: 32, type: 'physical' },
+    { name: 'Savage Bite', min: 15, max: 25, type: 'physical' },
+    { name: 'Trample', min: 12, max: 38, type: 'physical' },
   ],
 };
