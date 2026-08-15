@@ -4,11 +4,13 @@
 - **GitHub**: https://github.com/ferrancasbasp/wow_RPG
 - **Página**: https://ferrancasbasp.github.io/wow_RPG/
 - **Master Screen**: https://ferrancasbasp.github.io/wow_RPG/master.html
+- **Combat Screen**: https://ferrancasbasp.github.io/wow_RPG/combat.html
 
 ## Estructura del proyecto
 ```
 index.html              HTML template + script tags
 master.html             Master screen (self-contained)
+combat.html             Combat screen (real-time monster display via Firebase)
 css/main.css            Todos los estilos
 js/constants.js         Constantes globales (CLASS_DATA, EFFECT_TYPES, etc)
 js/data.js              Data del Vue app
@@ -150,6 +152,8 @@ node --check /tmp/check.js
 - Realtime Database URL: https://rpgwow-118f7-default-rtdb.europe-west1.firebasedatabase.app
 - Reglas: read/write true (modo test)
 - Los eventos se envían a `damageEvents` con `{player, ability, damage, damageType, aoe, effects, assigned}`
+- El master screen sincroniza el estado de monstruos a `monsters` con `{list, counter, timestamp}` en cada cambio
+- Combat screen escucha `monsters` en tiempo real y muestra cards animadas
 
 ## Colores WoW Classic por clase
 | Clase | Color | Hex |
