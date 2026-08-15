@@ -968,7 +968,7 @@ window.APP_METHODS = {
       } else if (cls && cls.name === 'Shaman') {
         eq.mainHand.name = 'Maza de Chamán';
         eq.mainHand.weaponDamage = 4;
-      } else if (cls && cls.name === 'Druid') {
+      } else if (cls && cls.name === 'Druid Balance') {
         eq.mainHand.name = 'Bastón Druida';
         eq.mainHand.weaponDamage = 4;
         eq.mainHand.bonus.espiritu = 2;

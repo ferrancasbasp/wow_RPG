@@ -1,6 +1,6 @@
 window.CLASS_REGISTRY = window.CLASS_REGISTRY || {};
 window.CLASS_REGISTRY.druid = {
-  name: 'Druid',
+  name: 'Druid Balance',
   color: '#FF7D0A',
   icon: '🦉',
   iconImg: 'img/classes/druid.jpg',
