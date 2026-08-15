@@ -694,6 +694,17 @@ createApp({
           const parsed = JSON.parse(data);
           this.monsters = parsed.monsters || [];
           this.monsterIdCounter = parsed.counter || (this.monsters.length + 1);
+          for (const m of this.monsters) {
+            if (!m.imageUrl) {
+              for (const key in this.npcRegistry) {
+                const npc = this.npcRegistry[key];
+                if (npc.name === m.name && npc.imageUrl) {
+                  m.imageUrl = npc.imageUrl;
+                  break;
+                }
+              }
+            }
+          }
         }
       } catch (e) {}
     },
