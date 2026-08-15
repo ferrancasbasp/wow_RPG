@@ -7,7 +7,7 @@ window.CLASS_REGISTRY.druid = {
 
   formulas: {
     hp:          (s, lvl) => 40 + s.aguante * 9 + lvl * 5,
-    mana:        (s, lvl) => 45 + s.intelecto * 18 + lvl * 5,
+    mana:        (s, lvl) => 45 + s.intelecto * 15 + lvl * 5,
     spellPower:  (s)      => Math.round(s.intelecto * 0.35 + s.espiritu * 0.05),
     attackPower: (s)      => 0,
     manaRegen:   (s)      => Math.round(s.espiritu * 0.35 + 10),
