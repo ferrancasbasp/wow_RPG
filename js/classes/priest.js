@@ -8,7 +8,7 @@ window.CLASS_REGISTRY.priest = {
   formulas: {
     hp:          (s, lvl) => 30 + s.aguante * 8 + lvl * 4,
     mana:        (s, lvl) => 50 + s.intelecto * 20 + lvl * 5,
-    spellPower:  (s)      => Math.round(s.intelecto * 0.5),
+    spellPower:  (s)      => Math.round(s.intelecto * 0.3),
     attackPower: (s)      => 0,
     manaRegen:   (s)      => Math.round(s.espiritu * 0.25 + 15),
   },
