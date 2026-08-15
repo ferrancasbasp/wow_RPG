@@ -3,6 +3,7 @@ window.NPC_REGISTRY = window.NPC_REGISTRY || {};
 window.NPC_REGISTRY['young_boar'] = {
   name: 'Cerdo Joven',
   icon: '🐗',
+  imageUrl: 'img/enemies/boar_young.jpg',
   level: 2,
   hp: 120,
   armor: 15,
@@ -15,6 +16,7 @@ window.NPC_REGISTRY['young_boar'] = {
 window.NPC_REGISTRY['dire_boar'] = {
   name: 'Jabalí Feroz',
   icon: '🐗',
+  imageUrl: 'img/enemies/boar_dire.jpg',
   level: 5,
   hp: 280,
   armor: 30,
@@ -22,5 +24,20 @@ window.NPC_REGISTRY['dire_boar'] = {
   attacks: [
     { name: 'Embestida', min: 12, max: 18, type: 'physical' },
     { name: 'Mordisco', min: 8, max: 14, type: 'physical' },
+  ],
+};
+
+window.NPC_REGISTRY['enraged_boar'] = {
+  name: 'Jabalí Enfurecido',
+  icon: '🐗',
+  imageUrl: 'img/enemies/boar_enraged.jpg',
+  level: 10,
+  hp: 650,
+  armor: 55,
+  magicResist: 15,
+  attacks: [
+    { name: 'Embestida Salvaje', min: 25, max: 38, type: 'physical' },
+    { name: 'Mordisco Furioso', min: 18, max: 30, type: 'physical' },
+    { name: 'Aplastar', min: 15, max: 45, type: 'physical' },
   ],
 };
