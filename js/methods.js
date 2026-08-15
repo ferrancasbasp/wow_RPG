@@ -176,6 +176,15 @@ window.APP_METHODS = {
         case 'preservation':            return `Armadura mágica: +${rank * 2}`;
         case 'improved_mind_blast':     return `Mind Blast crit: +${rank * 10}%`;
         case 'improved_renew':          return `Renew: +${rank} turno${rank > 1 ? 's' : ''}`;
+        // --- Druid ---
+        case 'natures_grace':           return `Daño todos los hechizos: +${rank * 2}%`;
+        case 'moonkin_fury':            return `Daño Wrath: +${rank * 3}%`;
+        case 'improved_moonfire':       return `Moonfire: +${rank * 10}% daño`;
+        case 'improved_rejuvenation':   return `Rejuvenation: +${rank * 5}% curación`;
+        case 'improved_wrath':          return `Coste Wrath: −${rank * 3}%`;
+        case 'lunar_empowerment':       return `Starsurge: +${rank * 10}% daño`;
+        case 'natural_perfection':      return `Crítico hechizos: +${rank}%`;
+        case 'clearcasting_druid':      return `Prob. hechizo gratuito: ${rank * 2}%`;
         default: return '';
       }
     },
@@ -306,8 +315,9 @@ window.APP_METHODS = {
           const initChance = this.talentRank('initiative') * 15;
           if (Math.random() * 100 < initChance) comboGen += 1;
         }
-        this.character.comboPoints = Math.min(5, (this.character.comboPoints || 0) + comboGen);
-        comboText = ' · ' + this.character.comboPoints + ' combo';
+        const comboMax = (this.classConfig.comboConfig && this.classConfig.comboConfig.max) || 5;
+        this.character.comboPoints = Math.min(comboMax, (this.character.comboPoints || 0) + comboGen);
+        comboText = ' · ' + this.character.comboPoints + ' ' + (this.classConfig.comboConfig ? this.classConfig.comboConfig.label.toLowerCase().split(' ')[0] : 'combo');
       }
       if (ability.spendsCombo) {
         comboText = ' · ' + comboSpent + ' combo gastados';
@@ -380,7 +390,7 @@ window.APP_METHODS = {
     },
 
     checkClearcasting() {
-      const cc = this.talentRank('clearcasting');
+      const cc = this.talentRank('clearcasting') + this.talentRank('clearcasting_druid');
       if (cc <= 0) return false;
       return Math.random() * 100 < cc * 2;
     },
@@ -958,6 +968,10 @@ window.APP_METHODS = {
       } else if (cls && cls.name === 'Shaman') {
         eq.mainHand.name = 'Maza de Chamán';
         eq.mainHand.weaponDamage = 4;
+      } else if (cls && cls.name === 'Druid') {
+        eq.mainHand.name = 'Bastón Druida';
+        eq.mainHand.weaponDamage = 4;
+        eq.mainHand.bonus.espiritu = 2;
       }
       return eq;
     },
