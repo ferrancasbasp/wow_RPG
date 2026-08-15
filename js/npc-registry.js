@@ -56,9 +56,9 @@ window.NPC_REGISTRY['defias_evoker'] = {
   armor: 10,
   magicResist: 20,
   attacks: [
-    { name: 'Fire Bolt', min: 22, max: 36, type: 'magical' },
-    { name: 'Frost Nova', min: 16, max: 28, type: 'magical' },
-    { name: 'Arcane Missiles', min: 12, max: 20, type: 'magical' },
+    { name: 'Fire Bolt', min: 42, max: 58, type: 'magical' },
+    { name: 'Frost Nova', min: 32, max: 48, type: 'magical' },
+    { name: 'Arcane Missiles', min: 24, max: 40, type: 'magical' },
   ],
 };
 
@@ -104,8 +104,8 @@ window.NPC_REGISTRY['riverpaw_bone_chanter'] = {
   magicResist: 25,
   attacks: [
     { name: 'Bone Strike', min: 36, max: 56, type: 'physical' },
-    { name: 'Shadow Bolt', min: 28, max: 48, type: 'magical' },
-    { name: 'Cursed Howl', min: 24, max: 64, type: 'magical' },
+    { name: 'Shadow Bolt', min: 52, max: 72, type: 'magical' },
+    { name: 'Cursed Howl', min: 44, max: 88, type: 'magical' },
   ],
 };
 
